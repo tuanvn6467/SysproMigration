@@ -1,0 +1,32 @@
+use tempdb 
+  IF(NOT EXISTS (SELECT * 
+  FROM INFORMATION_SCHEMA.TABLES 
+  WHERE TABLE_SCHEMA = 'dbo'
+  AND  TABLE_NAME = 'MigrateSupport'))
+  BEGIN 
+	  CREATE TABLE [tempdb].[dbo].[MigrateSupport](
+	  Id int identity (1,1),
+	  SourceCompany varchar(20),
+	  SourceTable varchar(40),
+	  TargetServer varchar(50),
+	  TargetCompany varchar(20),
+	  TargetTable varchar(40),
+	  OldValTable nvarchar(100),
+	  NewValTable nvarchar(100),
+	  DatabaseID int,
+	  TenantID int,
+	  CreatedDate datetime
+	  ) 
+	  CREATE UNIQUE INDEX MigrateSupport_Index ON [tempdb].[dbo].[MigrateSupport](
+			   [SourceCompany]
+			  ,[SourceTable]
+			  ,[TargetServer]
+			  ,[TargetCompany]
+			  ,[TargetTable]
+			  ,[OldValTable]
+			  ,[NewValTable]
+			  ,[DatabaseID]
+			  ,[TenantID]
+		  ) WITH IGNORE_DUP_KEY
+
+  END

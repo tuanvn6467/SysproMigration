@@ -1,0 +1,595 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Web;
+using System.Web.Hosting;
+using System.Web.Security;
+using log4net;
+using Migration;
+using Migration.Common;
+using Migration.Enums;
+using Newtonsoft.Json;
+using Syspro.Core.Helper.Logging;
+using SysproMigration.Utility;
+
+namespace SysproMigration.Models
+{
+    /// <summary>
+    /// delegate for event
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    public delegate void MigrationProcessBeginHandler(object sender, MigrationEventArgs e);
+    public delegate void MigrationProcessEndHandler(object sender, MigrationEventArgs e);
+    public delegate void TableMigratingHandler(object sender, MigrationEventArgs e);
+    public delegate void TableMigratedHandler(object sender, MigrationEventArgs e);
+    public delegate void PackageMigratingHandler(object sender, MigrationEventArgs e);
+    public delegate void PackageMigratedHandler(object sender, MigrationEventArgs e);
+    public delegate void FixingHandler(object sender, MigrationEventArgs e);
+    public delegate void FixedHanlder(object sender, MigrationEventArgs e);
+    public delegate void ErrorHandler(object sender, MigrationEventArgs e);
+
+    /// <summary>
+    /// Migration class
+    /// </summary>
+    public class MigratorModel
+    {
+        private const string TRUNCATE_TEMPLATE = "truncate table {0}";
+
+        private int _batchSize;
+        private bool _running;
+
+        public bool Running
+        {
+            get { return _running; }
+            set { _running = value; }
+        }
+
+        public bool Error { get; set; }
+
+        public bool Truncatable { get; set; }
+
+        public MigratorStatus MigrateStatus { get; set; }
+
+        private List<FieldsMap> _fieldsMapsCompany;
+
+        public List<FieldsMap> FieldsMapsCompany
+        {
+            get { return _fieldsMapsCompany; }
+            set { _fieldsMapsCompany = value; }
+        }
+        private List<FieldsMap> _fieldsMapsSystem;
+
+        public List<FieldsMap> FieldsMapsSystem
+        {
+            get { return _fieldsMapsSystem; }
+            set { _fieldsMapsSystem = value; }
+        }
+        private List<FieldsMap> _fieldsMapsSecurity;
+
+        public List<FieldsMap> FieldsMapsSecurity
+        {
+            get { return _fieldsMapsSecurity; }
+            set { _fieldsMapsSecurity = value; }
+        }
+        private string _soureConnectionString;
+
+        public string SourceConnectionString
+        {
+            get { return _soureConnectionString; }
+            set { _soureConnectionString = value; }
+        }
+        private string _destinationConnectionString;
+
+        public string DestinationConnectionString
+        {
+            get { return _destinationConnectionString; }
+            set { _destinationConnectionString = value; }
+        }
+
+        public string TenantIdList { get; set; }
+
+        public bool Success { get; set; }
+
+        public string SourceUserAdapt { get; set; }
+
+        public string SourcePassAdapt { get; set; }
+
+        public string SourceDbSystemAdapt { get; set; }
+
+        public string DestinationServer { get; set; }
+
+        public string SystemDbNewCrm { get; set; }
+
+        public string DestinationDb { get; set; }
+
+        /// <summary>
+        /// events
+        /// </summary>
+        public event MigrationProcessBeginHandler MigrationProcessBegin;
+        public event MigrationProcessEndHandler MigrationProcessEnd;
+        public event TableMigratingHandler TableMigrating;
+        public event TableMigratedHandler TableMigrated;
+        public event PackageMigratingHandler PackageMigrating;
+        public event PackageMigratedHandler PackageMigrated;
+        public event FixingHandler Fixing;
+        public event FixedHanlder Fixed;
+        public event ErrorHandler MigrationError;
+
+        //true if migrate only specifict tables
+        public bool MigrateSpec { get; set; }
+
+        //the specific tables that migrated only
+        public List<string> SpecTables { get; set; }
+
+        private string _migratedFilePath;
+        private string _migratedFileFolder;
+
+        public int TableMigratedCount { get; set; }
+
+        public int TenantID { get; set; }
+
+        public int DatabaseID { get; set; }
+
+        public MigratorModel()
+        {
+            Init();
+        }
+
+        /// <summary>
+        /// read config, init parameters
+        /// read fieldsMapping.json file
+        /// </summary>
+        private void Init()
+        {
+            _batchSize = Convert.ToInt32(ConfigurationManager.AppSettings[Constants.BatchSizeConfig]);
+            //_soureConnectionString = ConfigurationManager.ConnectionStrings[Constants.SourceConfig].ConnectionString;
+            //_destinationConnectionString = ConfigurationManager.ConnectionStrings[Constants.DestinationConfig].ConnectionString;
+            //_migratedFileFolder = Path.Combine(HostingEnvironment.ApplicationPhysicalPath, ConfigurationManager.AppSettings["Server"]);
+            //_migratedFilePath = Path.Combine(_migratedFileFolder, ConfigurationManager.AppSettings["sspMigratedRestFile"]);
+
+            SourceUserAdapt = ConfigurationManager.AppSettings[Constants.UserSqlAdapt];
+            SourcePassAdapt = ConfigurationManager.AppSettings[Constants.PassSqlAdapt];
+            SourceDbSystemAdapt = ConfigurationManager.AppSettings[Constants.SystemDbAdapt];
+
+            DestinationServer = ConfigurationManager.AppSettings[Constants.DestinationServer];
+            SystemDbNewCrm = ConfigurationManager.AppSettings[Constants.SystemDbNewCrm];
+            LoadFieldsMap();
+
+            SpecTables = new List<string>();
+        }
+
+        public void LoadFieldsMap()
+        {
+            //read db fields map company
+            using (
+                var sr =
+                    new StreamReader(Path.Combine(HostingEnvironment.ApplicationPhysicalPath,
+                        ConfigurationManager.AppSettings[Constants.FieldMappingFileCompany])))
+            {
+                var mapString = sr.ReadToEnd();
+                _fieldsMapsCompany = JsonConvert.DeserializeObject<List<FieldsMap>>(mapString) ??
+                                     new List<FieldsMap>();
+            }
+            //read db fields map system
+            using (
+                var sr =
+                    new StreamReader(Path.Combine(HostingEnvironment.ApplicationPhysicalPath,
+                        ConfigurationManager.AppSettings[Constants.FieldMappingFileSystem])))
+            {
+                var mapString = sr.ReadToEnd();
+                _fieldsMapsSystem = JsonConvert.DeserializeObject<List<FieldsMap>>(mapString) ??
+                                    new List<FieldsMap>();
+            }
+            //read db fields map security
+            using (
+                var sr =
+                    new StreamReader(Path.Combine(HostingEnvironment.ApplicationPhysicalPath,
+                        ConfigurationManager.AppSettings[Constants.FieldMappingFileSecurity])))
+            {
+                var mapString = sr.ReadToEnd();
+                _fieldsMapsSecurity = JsonConvert.DeserializeObject<List<FieldsMap>>(mapString) ??
+                                      new List<FieldsMap>();
+            }
+        }
+
+        /// <summary>
+        /// execute the migration process
+        /// iterate the fieldsMaps, query the source and bulkCopy t des
+        /// </summary>
+        public void Run()
+        {
+            MigrateStatus = MigratorStatus.Running;
+
+            var start = DateTime.Now;
+
+            Logging.PushInfo("=======================================================================\n\nStart Migrating at : " + start.ToString(CultureInfo.InvariantCulture));
+
+            _running = true;
+            try
+            {
+                //raise migration process begin event
+                if (MigrationProcessBegin != null)
+                {
+                    TableMigratedCount = 0;
+                    MigrationProcessBegin(this, new MigrationEventArgs() { Message = "Migration process begin..." });
+                }
+
+                // Disable all triggers
+                using (var conn = new SqlConnection(_destinationConnectionString))
+                {
+                    Logging.PushInfo("Start Disable all triggers");
+                    conn.Open();
+                    const string disableTriggerSql = "sp_MSforeachtable 'alter table ? disable trigger all'";
+                    Logging.PushInfo("Command : " + disableTriggerSql);
+                    var disableTriggerCmd = new SqlCommand(disableTriggerSql, conn);
+                    disableTriggerCmd.ExecuteNonQuery();
+
+                    Logging.PushInfo("End Disable all triggers");
+                }
+
+                //open connections
+                var sourceConn = new SqlConnection(_soureConnectionString);
+
+                sourceConn.Open();
+
+                Utils.CreateSupportTempDb(sourceConn);
+
+                var desConn = new SqlConnection(_destinationConnectionString);
+
+                desConn.Open();
+
+                var usersAdapt = Utils.GetListUserAdapt(sourceConn);
+
+                var listEmailDuplicate = new List<string>();
+
+                if (usersAdapt.Any())
+                {
+                    foreach (var userAdapt in usersAdapt)
+                    {
+                        var isValid = true;//Utils.CheckExistEmail(desConn, TenantID, userAdapt.Email);
+                        if (isValid)
+                        {
+                            MembershipCreateStatus createStatus;
+                            var user = Membership.CreateUser(userAdapt.Email,
+                                ConfigurationManager.AppSettings["DefaultPasswordNewUser"], userAdapt.Email,
+                                Constants.PasswordQuestion,
+                                Constants.PasswordAnswer, true, null, out createStatus);
+                            if (createStatus == MembershipCreateStatus.Success)
+                            {
+                                if (user != null)
+                                {
+                                    var query = string.Format(QueryConstants.QueryInsertUserTempdb,
+                                        SourceDbSystemAdapt,
+                                        "[dbo].[users]", DestinationServer, "st_Security", "[dbo].[sec_User]",
+                                        userAdapt.Email, ParseData.GetGuid(user.ProviderUserKey), TenantID, DatabaseID);
+                                    using (SqlCommand command = new SqlCommand(query, sourceConn))
+                                    {
+                                        command.ExecuteNonQuery();
+                                    }
+                                }
+                                /*if (user != null)
+                                {
+                                    userAdapt.UserGUID = ParseData.GetGuid(user.ProviderUserKey);
+                                    userAdapt.TenantID = TenantID;
+                                    var id = Utils.UpdateUserInfo(desConn, userAdapt);
+                                    if (id < 0)
+                                    {
+                                        Logging.PushInfo(string.Format("User {0} is migrate error",
+                                            userAdapt.FullName));
+                                        if (TableMigrated != null)
+                                        {
+                                            TableMigrated(this, new MigrationEventArgs()
+                                            {
+                                                Message = string.Format("User {0} is migrate error",
+                                                    userAdapt.FullName)
+                                            });
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Logging.PushInfo(string.Format("User {0} is migrate success",
+                                            userAdapt.FullName));
+                                        if (TableMigrated != null)
+                                        {
+                                            TableMigrated(this, new MigrationEventArgs()
+                                            {
+                                                Message = string.Format("User {0} is migrated",
+                                                    userAdapt.FullName)
+                                            });
+                                        }
+                                    }
+                                }*/
+                            }
+                            else if (createStatus == MembershipCreateStatus.DuplicateEmail ||
+                                     createStatus == MembershipCreateStatus.DuplicateUserName)
+                            {
+                                listEmailDuplicate.Add("'" + userAdapt.Email + "'");
+                            }
+                        }
+                    }
+                }
+
+                if (desConn.State == ConnectionState.Open)
+                {
+                    desConn.Close();
+                    desConn.Dispose();
+                }
+
+                //iterate the fieldsMaps and migrate every tables
+                foreach (var fieldsMap in _fieldsMapsCompany)
+                {
+                    MigrateNew(fieldsMap, _destinationConnectionString, sourceConn,
+                        listEmailDuplicate.Any() ? string.Join(",", listEmailDuplicate) : "");
+                }
+
+                //raise migration process end event
+                if (MigrationProcessEnd != null)
+                {
+                    MigrationProcessEnd(this, new MigrationEventArgs() { Message = "Migration process done!!" });
+                }
+
+                // Enable all triggers
+                using (var conn = new SqlConnection(_destinationConnectionString))
+                {
+                    Logging.PushInfo("Start Enable all triggers");
+                    conn.Open();
+                    const string enableTriggerSql = "sp_MSforeachtable 'alter table ? enable trigger all'";
+                    Logging.PushInfo("Command : " + enableTriggerSql);
+                    var enableTriggerCmd = new SqlCommand(enableTriggerSql, conn);
+                    enableTriggerCmd.ExecuteNonQuery();
+
+                    Logging.PushInfo("End Enable all triggers");
+                }
+
+                //UpdateMigratedRestList(_migratedFilePath);
+                Success = true;
+                MigrateStatus = MigratorStatus.CompletedMigrate;
+                var finish = DateTime.Now;
+                Logging.PushInfo("=======================================================================\n\nFinish Migrating at : " + finish.ToString(CultureInfo.InvariantCulture));
+                Logging.PushInfo("Process time : " + finish.Subtract(start));
+            }
+            catch (Exception e)
+            {
+                if (MigrationError != null)
+                {
+                    var evg = new MigrationEventArgs { Message = string.Format("{0}\n{1}", e.Message, e.StackTrace) };
+                    MigrationError(this, evg);
+                    Error = true;
+                    Running = false;
+                    Logging.PutError("MigrateError : ", e);
+                }
+                //log.Error("Run : ", e);
+            }
+            finally
+            {
+                _running = false;
+            }
+        }
+
+        private void MigrateNew(FieldsMap fieldsMap, string connectionString, SqlConnection sourceConn, string conditionWhere)
+        {
+            SqlBulkCopy sbc = null;                //raise table migrating event
+            SqlBulkCopy sbcGetKeys = null;
+            SqlConnection conn = null;
+
+            try
+            {
+                conn = new SqlConnection(connectionString);
+                Logging.PushInfo("Connecting to SQL Server");
+
+                conn.Open();
+                Logging.PushInfo("Connected");
+
+
+
+                if (fieldsMap.NeedTruncate)
+                {
+                    var sqlString = string.Format(TRUNCATE_TEMPLATE, fieldsMap.Destination.Tables);
+                    var cmd = new SqlCommand(sqlString, conn);
+                    cmd.ExecuteNonQuery();
+
+                    Logging.PushInfo("Truncate table " + fieldsMap.Destination.Tables);
+                    Logging.PushInfo("Query : " + sqlString);
+                }
+
+
+                sbc = new SqlBulkCopy(connectionString, SqlBulkCopyOptions.KeepIdentity)
+                {
+                    BatchSize = _batchSize,
+                    BulkCopyTimeout = 0,
+                    EnableStreaming = true
+                };
+
+                if (TableMigrating != null)
+                {
+                    TableMigrating(this, new MigrationEventArgs() { Message = "Begin migrate table " + fieldsMap.Destination.Tables });
+                }
+
+                //migrate table            
+                sbc.DestinationTableName = fieldsMap.Destination.Tables;
+                var map = fieldsMap.Map.ToArray<KeyValuePair<string, string>>();
+                sbc.ColumnMappings.Clear();
+                for (var i = 0; i < map.Length; i++)
+                {
+                    sbc.ColumnMappings.Add(new SqlBulkCopyColumnMapping(i, map[i].Value));
+                }
+                var p = 0;
+                var done = false;
+                while (!done)
+                {
+                    var sql = fieldsMap.CreateQueryFromSource(p, _batchSize, conditionWhere, TenantID);
+                    if (PackageMigrating != null)
+                    {
+                        PackageMigrating(this,
+                            new MigrationEventArgs()
+                            {
+                                Message = "Begin import package",
+                                DestinationTable = fieldsMap.Destination.Tables,
+                                Package = p + 1,
+                                MigratedRecords = p * _batchSize
+                            });
+                    }
+
+                    var records = 0;
+                    using (var dr = QueryBlock(sourceConn, sql, fieldsMap.IsGetKeys, out done, out records))
+                    {
+                        Logging.PushInfo("Copying data to sqlserver");
+                        sbc.WriteToServer(dr);
+
+                        dr.Close();
+                        Logging.PushInfo("Copyied");
+
+                        //get keys and insert to table migrate support
+                        if (fieldsMap.IsGetKeys)
+                        {
+                            fieldsMap.Destination.Top = records.ToString(CultureInfo.InvariantCulture);
+                            sbcGetKeys = new SqlBulkCopy(sourceConn.ConnectionString, SqlBulkCopyOptions.KeepIdentity)
+                            {
+                                BatchSize = _batchSize,
+                                BulkCopyTimeout = 0,
+                                EnableStreaming = true
+                            };
+                            sbcGetKeys.DestinationTableName = Constants.MiggrateSupportTable;
+                            var mapKeys = fieldsMap.MapKeys.ToArray();
+                            sbcGetKeys.ColumnMappings.Clear();
+                            for (var i = 0; i < mapKeys.Length; i++)
+                            {
+                                sbcGetKeys.ColumnMappings.Add(new SqlBulkCopyColumnMapping(i, mapKeys[i].Value));
+                            }
+                            var doneGetKeys = false;
+                            var sqlGetKeys = fieldsMap.CreateQueryFromDestination(TenantID);
+                            if (PackageMigrating != null)
+                            {
+                                PackageMigrating(this,
+                                    new MigrationEventArgs()
+                                    {
+                                        Message = "Begin import package",
+                                        DestinationTable = fieldsMap.Source.Tables,
+                                        MigratedRecords = records
+                                    });
+                            }
+                            var recordGetKeys = 0;
+                            using (
+                                var drGetKeys = QueryBlock(conn, sqlGetKeys, fieldsMap.IsGetKeys, out doneGetKeys, out recordGetKeys)
+                                )
+                            {
+                                Logging.PushInfo("Copying data to sqlserver");
+                                sbcGetKeys.WriteToServer(drGetKeys);
+
+                                drGetKeys.Close();
+                                Logging.PushInfo("Copyied");
+                            }
+                        }
+                    }
+
+                    //raise package migrated event
+                    if (PackageMigrated != null)
+                    {
+                        PackageMigrated(this, new MigrationEventArgs() { Message = "Begin import package", DestinationTable = fieldsMap.Destination.Tables, Package = p + 1, MigratedRecords = (p + 1) * _batchSize });
+                    }
+                    p++;
+                }
+
+                //raise table migrated event
+                if (TableMigrated != null)
+                {
+                    TableMigrated(this, new MigrationEventArgs() { Message = "Table " + fieldsMap.Destination.Tables + " migrated!" });
+                    TableMigratedCount++;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.PutError("MigrateNew : ", ex);
+                throw;
+            }
+            finally
+            {
+
+                var connStringAdmin =
+                    string.Format(
+                        ConfigurationManager.ConnectionStrings[Constants.AdminConnectionConfig].ConnectionString,
+                        DestinationDb);
+                const string strFeeBuffer = " DBCC DROPCLEANBUFFERS ";
+                const string strFeeSession = " DBCC FREESESSIONCACHE WITH NO_INFOMSGS ";
+                var connAdmin = new SqlConnection(connStringAdmin);
+
+                connAdmin.Open();
+
+                var cmd = new SqlCommand(strFeeBuffer, connAdmin);
+                cmd.ExecuteNonQuery();
+
+                cmd = new SqlCommand(strFeeSession, connAdmin);
+                cmd.ExecuteNonQuery();
+
+                if (sbc != null)
+                {
+                    sbc.Close();
+                    sbc = null;
+                }
+                if (sbcGetKeys != null)
+                {
+                    sbcGetKeys.Close();
+                    sbcGetKeys = null;
+                }
+
+                if (conn != null && conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                    conn.Dispose();
+                    conn = null;
+                }
+                if (connAdmin.State == ConnectionState.Open)
+                {
+                    connAdmin.Close();
+                    connAdmin.Dispose();
+                    connAdmin = null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Query a block of data
+        /// </summary>
+        /// <param name="conn">source connection</param>
+        /// <param name="sql">sql query string</param>
+        /// <param name="isGetKeys"></param>
+        /// <param name="done"></param>
+        /// <param name="records"></param>
+        /// <returns></returns>
+        private IDataReader QueryBlock(SqlConnection conn, string sql, bool isGetKeys, out bool done, out int records)
+        {
+            records = 0;
+            var query = sql;
+            Debug.WriteLine(query);
+            var start = DateTime.Now;
+            Logging.PushInfo("Start get data from sql source at : " + start);
+            Logging.PushInfo(query);
+
+            var cmd = new SqlCommand(query, conn) { CommandTimeout = int.MaxValue };
+
+            var res = cmd.ExecuteReader();
+
+            if (isGetKeys)
+            {
+                DataTable dt = new DataTable();
+                dt.Load(res);
+                records = dt.Rows.Count;
+                res = null;
+                res = cmd.ExecuteReader();
+            }
+            done = !res.HasRows;
+
+            var end = DateTime.Now;
+            Logging.PushInfo("End get data from sql source at : " + end);
+            Logging.PushInfo("Finish Get Data from SQL source in " + end.Subtract(start));
+            return res;
+        }
+    }
+}

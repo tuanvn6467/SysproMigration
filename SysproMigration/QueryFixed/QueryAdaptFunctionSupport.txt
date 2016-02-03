@@ -1,0 +1,62 @@
+
+CREATE function [dbo].[GetNewValue]
+	(
+	@SourceCompany		varchar(20),
+	@TargetCompany		varchar(20),
+	@SourceTable		varchar(40),
+	@TargetTable		varchar(40),
+	@OldValTable		nvarchar(100),
+	@DatabaseID			int,
+	@TenantID			int,
+	@Type				int = null
+	)
+	returns nvarchar(100)
+as
+begin
+	declare @Result		nvarchar(100)	
+	set @Type			= ISNULL(@Type,0)
+	set @DatabaseID		= ISNULL(@DatabaseID,0)
+	-- Type = 1 :  get user id from new crm with user_id in adapt crm (exp: BOB, GREG,...)
+	if(@Type = 1)
+	begin
+		declare @EmailAddress	nvarchar(100)
+		select	@EmailAddress = Email_Address 
+			from [adaptv3system].[dbo].[users] where User_ID = @OldValTable
+		
+		select	top 1	@Result			= NewValTable
+			from		[tempdb].[dbo].[MigrateSupport]
+			where		SourceCompany	= @SourceCompany
+				and		TargetCompany	= @TargetCompany
+				and		SourceTable		= @SourceTable
+				and		TargetTable		= @TargetTable
+				and		OldValTable		= @EmailAddress
+				and		TenantID		= @TenantID
+			order by	Id desc
+	end 
+	else
+	begin
+		if (@DatabaseID > 0)
+		begin
+			select	top 1	@Result			= NewValTable 
+			from		[tempdb].[dbo].[MigrateSupport]
+			where		SourceCompany	= @SourceCompany
+				and		TargetCompany	= @TargetCompany
+				and		SourceTable		= @SourceTable
+				and		TargetTable		= @TargetTable
+				and		OldValTable		= @OldValTable
+				and		TenantID		= @TenantID
+				and		DatabaseID		= @DatabaseID
+			order by	Id desc
+		end
+			select	top 1	@Result			= NewValTable 
+			from		[tempdb].[dbo].[MigrateSupport]
+			where		SourceCompany	= @SourceCompany
+				and		TargetCompany	= @TargetCompany
+				and		SourceTable		= @SourceTable
+				and		TargetTable		= @TargetTable
+				and		OldValTable		= @OldValTable
+				and		TenantID		= @TenantID
+			order by	Id desc
+	end
+	return @Result
+end

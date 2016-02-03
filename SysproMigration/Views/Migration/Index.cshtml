@@ -1,0 +1,132 @@
+﻿@using Migration
+@using SysproMigration.Models
+@{
+    ViewBag.Title = "Index.cshtml";
+    var lstDatabase = ViewBag.LstDatabase != null ? (List<DatabaseModel>)ViewBag.LstDatabase : new List<DatabaseModel>();
+    var totalTableMigrateCount = ViewBag.TableMigrateCount != null ? (int)ViewBag.TableMigrateCount : 0;
+}
+<head>
+    <title>CRM Database Conversion Utility</title>
+
+    <link href="~/Css/main.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/modernizr-2.6.2.js"></script>
+    <script src="~/Scripts/migrationController.js"></script>
+    <script src="~/Scripts/jquery-ui.js"></script>
+
+    <link href="~/Css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Scripts/jquery-ui.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="content">
+        <div class="main-content">
+            <div class="panel-heading">
+                <div class="first clearfix">
+                    <div class="col-md-12 text-center grid-title">
+                        CRM Database Conversion Utility
+                    </div>
+                </div>
+            </div>
+            <div class="inner-content">
+                <div class="form-group">
+                    <div class="col-md-6"><h4 class="col-md-12 control-label">Source</h4>    </div>
+                    <div class="col-md-6"><h4 class="col-md-12 control-label">Target</h4></div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">SQL Server Name</label>
+                            <div class="col-md-5">
+                                <input type="text" class="form-control" id="SourceServerName" value="."/>
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-info" id="btnSourceGetListCompany" type="button">Get Company</button>
+                            </div>
+                        </div>
+                        @*<div class="form-group">
+                            <label class="col-md-4 control-label">Date Range</label>
+                            <div class="col-md-8">
+                                <pre>Applies to  Activity, Task, Appointment,
+            Ticket, Opportunity, Contract,Items, 
+            Item owned, Campaign Modules</pre>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 70px;">
+                            <label class="col-md-4 control-label"></label>
+                            <span class="col-md-1">
+                                From
+                            </span>
+                            <div class="col-md-3">
+                                <input type="text" id="fromdate" class="form-control" />
+                            </div>
+                            <span class="col-md-1">
+                                to
+                            </span>
+                            <div class="col-md-3">
+                                <input type="text" id="todate" class="form-control" />
+                            </div>
+                        </div>*@
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">Database Company</label>
+                            <div class="col-md-5">
+                                <select id="dbSourceCompany" class="form-control"></select>
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-info" id="btnSourceCheckExist" type="button">Test Company</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">User Login</label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" id="DestinationUserLogin" value="sysweb_migrate244" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">User Password</label>
+                            <div class="col-md-5">
+                                <input type="password" class="form-control" id="DestinationUserPassword" value="syswebmigrate3" />
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-info" id="btnDestinationGetListCompany" type="button">Get Company</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">Database Company</label>
+                            <div class="col-md-5">
+                                <select id="dbDestinationCompany" class="form-control">
+                                    
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-info" id="btnDestinationCheckExist" type="button">Test Company</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-12 text-center">
+                        <button class="btn btn-info" id="btnMigrate" type="button">MIGRATE</button>
+                    </div>
+                    <div id="dialog" title="Migrate">
+                        <div class="progress-label">Migrating...</div>
+                        <div id="progressbar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal">
+
+    </div>
+</body>
+<script type="text/javascript">
+    migrationController.init();
+    migrationController.totalTableMigrateCount = @(Html.Raw(Json.Encode(totalTableMigrateCount)));
+    /*var $body = $("body");
+
+    $(document).on({
+        ajaxStart: function () { $body.addClass("loading"); },
+        ajaxStop: function () { $body.removeClass("loading"); }
+    });*/
+</script>

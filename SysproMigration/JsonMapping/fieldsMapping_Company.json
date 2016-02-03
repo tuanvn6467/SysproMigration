@@ -1,0 +1,222 @@
+﻿[
+    /*{
+        "Source": {
+            "Tables": "act",
+            //"Where" : "restaurant_id in ({0})",
+            "OrderBy": "order by Activity_ID"
+        },
+        "Destination": "act_Activity",
+        "Map": {
+            "Activity_ID": "ActivityID",
+            "Account_Number": "AccountNumber",
+            "Contact_Number": "ContactNumber",
+            "convert(date,substring(Activity_Date, 1, 4) + '-' + substring(Activity_Date, 5, 2) + '-' + substring(Activity_Date, 7, 2)) Activity_Date": "ActivityDate",
+            //"syspro_date_Activity_Date" :  "ActivityDate"
+
+        }
+    },*/
+    {
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[users] u",
+            "OrderBy": "order by [User_ID]",
+            "Where": "Email_Address not in ({0})"
+        },
+        "Destination": {
+            "Tables": "[st_Security].[dbo].[sec_User]",
+            "OrderBy": "order by UserID desc",
+            "Top": "{0}"
+        },
+        "NeedTruncate": false,
+        "IsGetKeys": true,
+        "MapKeys": {
+            "'st_Security' SourceCompany": "SourceCompany",
+            "'[dbo].[sec_User]' SourceTable": "SourceTable",
+            "'.' TargetServer": "TargetServer",
+            "'adaptv3system' TargetCompany": "TargetCompany",
+            "'[dbo].[users]' TargetTable": "TargetTable",
+            "Email OldValTable": "OldValTable",
+            "convert(nvarchar,UserID ) as NewValTable": "NewValTable",
+            "TenantID TenantID": "TenantID"
+        },
+        "Map": {
+            //"0 UserID": "UserID",
+            "convert(UNIQUEIDENTIFIER,(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where OldValTable = Email_Address)) UserGUID": "UserGUID",
+            "(select top 1 TenantID from [tempdb].[dbo].[MigrateSupport] where OldValTable = Email_Address) TenantID": "TenantID",
+            "User_ID": "UserName",
+            "First_Name": "FirstName",
+            "Last_Name": "LastName",
+            "case when Active = 'T' then 1 else 0 end Active": "StatusID",
+            "License_Type": "LicenseType",
+            "Job_Title": "JobTitle",
+            "Department": "Department",
+            "Work_Phone_Number": "WorkPhone",
+            "Work_Phone_Ext": "WorkPhoneExt",
+            "Home_Phone_Number": "HomePhone",
+            "Mobile_Phone_Number": "MobilePhone",
+            "Fax_Number": "FaxPhone",
+            "Email_Address": "Email",
+            "Mailing_Address": "MailingAddress",
+            "Street_Address_Line_1": "AddressLine1",
+            "Street_Address_Line_2": "AddressLine2",
+            "Street_Address_Line_3": "AddressLine3",
+            "City": "City",
+            //"(select top 1 Country_ID from [adaptv3system].[dbo].[country] where Country_Name = [Home_Country]) County": "County",
+            //"(select top 1 Country_ID from [adaptv3system].[dbo].[state] where Country_Name = [Home_Country]) State": "State",
+            "Postal_Code": "PostalCode",
+            "(select top 1 Country_ID from [adaptv3system].[dbo].[country] where Country_Name = [Country]) Country": "Country",
+            "Created_Date": "CreatedDate",
+            "Modified_Date": "UpdatedDate"
+        }
+    },
+    {
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[users] u",
+            "OrderBy": "order by [User_ID]"
+        },
+        "Destination": {
+            "Tables": "[crm_System].[dbo].[utl_Database_User_Xref]"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "(select top 1 DatabaseID from [tempdb].[dbo].[MigrateSupport] where OldValTable = Email_Address and SourceTable = '[dbo].[users]' order by Id desc) DatabaseID": "DatabaseID",
+            "(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where OldValTable = Email_Address and TargetServer='.' order by Id desc) UserID": "UserID"
+        }
+    },
+    {
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[roles] r",
+            "OrderBy": "order by [Role_ID]"
+        },
+        "Destination": {
+            "Tables": "[st_Security].[dbo].[sec_Role]",
+            "OrderBy": "order by [RoleID] desc",
+            //"Top": "{0}"
+            "Top": "1000",
+            "Where": "TenantID = {0} and (RoleName = 'Administrator' or RoleName = 'Service' or RoleName = 'Marketing' or RoleName = 'Sales')"
+        },
+        "NeedTruncate": false,
+        "IsGetKeys": true,
+        "MapKeys": {
+            "'st_Security' SourceCompany": "SourceCompany",
+            "'[dbo].[sec_Role]' SourceTable": "SourceTable",
+            "'.' TargetServer": "TargetServer",
+            "'adaptv3system' TargetCompany": "TargetCompany",
+            "'[dbo].[roles]' TargetTable": "TargetTable",
+            "RoleName OldValTable": "OldValTable",
+            "convert(nvarchar,RoleID ) as NewValTable": "NewValTable",
+            "Syspro_TenantID TenantID": "TenantID"
+        },
+        "Map": {
+            "Role_Name": "RoleName",
+            "Syspro_TenantID TenantID": "TenantID",
+            "convert(varchar,Notes) Notes": "RoleDesc",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[urights] table to sec_User_Role table
+    {
+        "Source": {
+            "Tables": "[tempdb].[dbo].[MigrateSupport] ms",
+            "OrderBy": "order by NewValTable",
+            "Where": "TargetServer = '.' and OldValTable in (select Email_Address from [adaptv3system].[dbo].[users] where User_ID in (select User_ID from [adaptv3system].[dbo].[urights] ur where ur.Right_ID = 'ADMIN'))"
+        },
+        "Destination": {
+            "Tables": "[st_Security].[dbo].[sec_User_Role]"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "NewValTable User_ID": "UserID",
+            "(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where OldValTable = 'Administrator' and TenantID = convert(int, Syspro_TenantID) order by Id desc) RoleID": "RoleID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[user_roles] table to sec_User_Role table
+    {
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[user_roles] ur",
+            "OrderBy": "order by User_ID",
+            "Where":  "[Role_Type] <> 3"
+        },
+        "Destination": {
+            "Tables": "[st_Security].[dbo].[sec_User_Role]"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "[tempdb].[dbo].[GetNewValue]('st_Security','adaptv3system','[dbo].[sec_User]','[dbo].[users]',[User_ID],null,Syspro_TenantID,1) [User_ID]": "UserID",
+            "[tempdb].[dbo].[GetNewValue]('st_Security','adaptv3system','[dbo].[sec_Role]','[dbo].[roles]',case when [Role_Type] = 1 then 'Sales' when [Role_Type] = 2 then 'Service' when [Role_Type] = 4 then 'Marketing' end,null,Syspro_TenantID,null) [Role_ID]": "RoleID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[sgroup] table to sec_Group
+    {
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[sgroup] sg",
+            "OrderBy": "order by Group_ID"
+        },
+        "Destination": {
+            "Tables": "[st_Security].[dbo].[sec_Group]",
+            "OrderBy": "order by [GroupID] desc",
+            "Top": "{0}"
+        },
+        "NeedTruncate": false,
+        "IsGetKeys": true,
+        "MapKeys": {
+            "'st_Security' SourceCompany": "SourceCompany",
+            "'[dbo].[sec_Group]' SourceTable": "SourceTable",
+            "'.' TargetServer": "TargetServer",
+            "'adaptv3system' TargetCompany": "TargetCompany",
+            "'[dbo].[sgroup]' TargetTable": "TargetTable",
+            "GroupName OldValTable": "OldValTable",
+            "convert(nvarchar,GroupID ) as NewValTable": "NewValTable",
+            "TenantID": "TenantID"
+        },
+        "Map": {
+            "0 ParentGroupID": "ParentGroupID",
+            "Group_ID": "GroupName",
+            "Syspro_TenantID TenantID": "TenantID",
+            "1 GroupLevel": "GroupLevel",
+            "0 IsLeaf": "IsLeaf",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[sgrpmem] table to sec_User_Role table
+    {
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[sgrpmem] sgm",
+            "OrderBy": "order by User_ID"
+        },
+        "Destination": {
+            "Tables": "[st_Security].[dbo].[sec_User_Group]"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "[tempdb].[dbo].[GetNewValue]('st_Security','adaptv3system','[dbo].[sec_User]','[dbo].[users]',[User_ID],null,Syspro_TenantID,1) [User_ID]": "UserID",
+            "[tempdb].[dbo].[GetNewValue]('st_Security','adaptv3system','[dbo].[sec_Group]','[dbo].[sgroup]',[Group_ID],null,Syspro_TenantID,null) [Group_ID]": "GroupID"
+        }
+    },
+    //migrate adaptv3system..acctyp to acc_Account_Type
+    {
+        "Source": {
+            "Tables": "adaptv3system..acctyp tat",
+            "OrderBy": "order by Account_Type_ID"
+        },
+        "Destination": {
+            "Tables": "acc_Account_Type"
+        },
+        //"NeedTruncate": false,
+        "Map": {
+            "Account_Type_ID": "AccountTypeID",
+            "Account_Type_Name": "AccountTypeName",
+            "case when tat.Use_Alternate_Milestones = 'F' then 0 else 1 end Use_Alternate_Milestones": "UseAlternateMilestones",
+            "Notes": "Notes",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    }
+]

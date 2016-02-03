@@ -1,0 +1,91 @@
+SELECT 0 UserID
+	   ,[User_ID] UserName
+      ,[First_Name] FirstName
+      ,[Last_Name] LastName
+      ,[Full_Name] FullName
+      ,case when [Active] = 'T' then 1 else 0 end StatusID
+      ,[License_Type] LicenseType
+      ,[Job_Title] JobTitle
+      ,[Department] Department
+      ,[Calendar] DefaultCalendarID
+      ,[Work_Phone_Number] WorkPhone
+      ,[Work_Phone_Ext] WorkPhoneExt
+      ,[Home_Phone_Number] HomePhone
+      ,[Mobile_Phone_Number] MobilePhone
+      ,[Fax_Number] FaxPhone
+      --,[Pager_Number]
+      --,[Pager_Identification_Number]
+      ,[Email_Address] Email
+      ,[Mailing_Address] MailingAddress
+      ,[Street_Address_Line_1] AddressLine1
+      ,[Street_Address_Line_2] AddressLine2
+      ,[Street_Address_Line_3] AddressLine3
+      ,[City] City
+      ,[County] County
+      ,[State] State
+      ,[Postal_Code] PostalCode
+      ,[Country] Country
+      --,[Account_Number] 
+      --,[Dashboard_ID]
+      --,[Account_Template]
+      --,[Contact_Template]
+      --,[Opportunity_Template]
+      --,[Service_Ticket_Template]
+      --,[Defect_Template]
+      --,[Campaign_Template]
+      --,[Project_Template]
+      --,[Enable_Remote_Access]
+      --,[Remote_Location_ID]
+      ,[Regional_Settings] IsRegionalSettings
+      ,(select top 1 Country_ID from [adaptv3system].[dbo].[country] where Country_Name = [Home_Country]) HomeCountry
+      ,[Date_Format] DateFormatType
+      ,[Date_Picture] DatePictureFormat
+      ,[Time_Format] TimeFormatType
+      ,[Time_Picture] TimePictureFormat
+      ,[Phone_Format] PhoneNumberFormat
+      ,case when [Use_Postal_Codes] = 'T' then 1 else 0 end IsUsePostalCodeTable 
+      --,[Language]
+      ,case when [Enable_Alarms] = 'T' then 1 else 0 end IsEnableAlarm
+      ,case when [Outlook_Sync_Inbound_Emails] = 'T' then 1 else 0 end IsOutlookSyncInboundEmails 
+      ,case when [Outlook_Auto_Sync_Flag] = 'T' then 1 else 0 end IsOutlookAutoSyncFlag
+      ,[Outlook_Auto_Sync_Minutes] OutlookAutoSyncMinutes
+      ,case when [Outlook_Sync_on_Login] = 'T' then 1 else 0 end IsOutlookSyncOnLogin
+      --,[Xpedite_User_Name]
+      --,[Xpedite_Password]
+      ,[Dial_Location] DialFromLocation
+      --,[Limit_Activity_Types] 
+      --,[Resource_ID]
+      ,[Temporary_File_Path] DefaultTemporaryDirectory
+      --,[Alarm_On_Appt_Due] 
+      ,[Alarm_On_Appt_Due_Period] AlarmOnApptDuePeriod
+      ,[Alarm_On_Appt_Due_Units] AlarmOnApptDueUnits
+      ,case when [Alarm_On_New_Appt] = 'T' then 1 else 0 end IsAlarmOnNewAppt
+      ,[Alarm_On_New_Appt_Min_Priority] AlarmOnNewApptPriority
+      --,[Alarm_On_Task_Due]
+      ,[Alarm_On_Task_Due_Period] AlarmOnTaskDuePeriod
+      ,[Alarm_On_Task_Due_Units] AlarmOnTaskDueUnits
+      ,case when [Alarm_On_New_Task] = 'T' then 1 else 0 end IsAlarmOnNewTask
+      ,[Alarm_On_New_Task_Min_Priority] AlarmOnNewTaskPriority
+      ,[Default_Snooze_Period] DefaultSnoozePeriod
+      ,[Default_Snooze_Units] DefaultSnoozeUnits
+      ,case when [Write_Appointments_to_Outlook] = 'T' then 1 else 0 end IsWriteAppointmentsToOutlook
+      ,case when [Write_Tasks_to_Outlook] = 'T' then 1 else 0 end WriteTasksToOutlook
+      ,case when [Write_Contacts_to_Outlook] = 'T' then 1 else 0 end IsWriteContactsToOutlook
+      ,[Default_Activity_Type] DefaultActivityTypeID
+      --,[Default_Activity_Location] DefaultActivityLocationID
+      ,[Default_Appointment_Type] DefaultAppointmentTypeID
+      ,[Default_Task_Priority] DefaultTaskPriorityID
+      ,[Email_Method] DefaultEmailMethod
+      ,[Default_Net_Email_Account_ID] DefaultEmailAccount
+      ,[Default_Web_Email_Account_ID] DefaultEmailAccount
+      ,[Fax_Method] DefaultFaxMethod
+      --,[User_Profile_File]
+      --,[User_Private_Doc_Folder]
+      --,[Allow_Web_Access_Read]
+      --,[Allow_Web_Access_Write]
+	  ,convert(datetime,substring(Created_Date, 1, 4) + '-' + substring(Created_Date, 5, 2) + '-' + substring(Created_Date, 7, 2) + ' ' + substring(Created_Date, 1, 2) + ':' + substring(Created_Date, 3, 2) + ':' + substring(Created_Date, 5, 2)) CreatedDate
+      --,[Created_By]
+      ,convert(datetime,substring(Modified_Date, 1, 4) + '-' + substring(Modified_Date, 5, 2) + '-' + substring(Modified_Date, 7, 2) + ' ' + substring(Created_Time, 1, 2) + ':' + substring(Created_Time, 3, 2) + ':' + substring(Created_Time, 5, 2)) ModifiedDate
+      --,[Modified_By]
+      --,[Notes]
+  FROM [adaptv3system].[dbo].[users] u
