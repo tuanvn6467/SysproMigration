@@ -16,5 +16,9 @@ namespace Migration
 
         public const string GetPostalCodeID = "GetPostalCodeID";
 
+        public const string CompareModuleID = "CompareModuleID";
+
+        public const string ConvertFieldName = "ConvertFieldName";
+
     }
 }

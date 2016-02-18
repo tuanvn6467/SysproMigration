@@ -245,9 +245,12 @@ namespace SysproMigration.Models
 
                 Utils.CreateSupportTempDb(sourceConn);
 
+
                 var desConn = new SqlConnection(_destinationConnectionString);
 
                 desConn.Open();
+
+                Utils.CreateUniqueIndex(desConn);
 
                 var usersAdapt = Utils.GetListUserAdapt(sourceConn);
 
@@ -355,6 +358,10 @@ namespace SysproMigration.Models
                 {
                     MigrationProcessEnd(this, new MigrationEventArgs() { Message = "Migration process done!!" });
                 }
+
+                desConn = DestinationConnectionString.CreateAndOpenConnection("Target");
+                Utils.DropUniqueIndex(desConn);
+                desConn.CloseConnection();
 
                 // Enable all triggers
                 using (var conn = new SqlConnection(_destinationConnectionString))

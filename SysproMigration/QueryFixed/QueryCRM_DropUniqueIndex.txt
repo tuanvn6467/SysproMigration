@@ -1,0 +1,54 @@
+if(exists (SELECT * 
+			FROM st_Security.sys.indexes 
+			WHERE name='sec_User_Index_Ignore_Dup_Key' AND object_id = OBJECT_ID('[st_Security].[dbo].[sec_User]')))
+	begin
+		drop index sec_User_Index_Ignore_Dup_Key on [st_Security].[dbo].[sec_User]
+	end
+
+if(exists (SELECT * 
+			FROM crm_System.sys.indexes 
+			WHERE name='utl_Database_User_Xref_Index_Ignore_Dup_Key' AND object_id = OBJECT_ID('[crm_System].[dbo].[utl_Database_User_Xref]')))
+	begin
+		drop index utl_Database_User_Xref_Index_Ignore_Dup_Key on [crm_System].[dbo].[utl_Database_User_Xref]
+	end
+
+if(exists (SELECT * 
+			FROM st_Security.sys.indexes 
+			WHERE name='sec_Role_Index_Ignore_Dup_Key' AND object_id = OBJECT_ID('[st_Security].[dbo].[sec_Role]')))
+	begin
+		drop index sec_Role_Index_Ignore_Dup_Key on [st_Security].[dbo].[sec_Role] 
+	end
+	
+if(exists (SELECT * 
+			FROM st_Security.sys.indexes 
+			WHERE name='sec_User_Role_Ignore_Dup_Key' AND object_id = OBJECT_ID('[st_Security].[dbo].[sec_User_Role]')))
+	begin
+		drop index sec_User_Role_Ignore_Dup_Key on [st_Security].[dbo].[sec_User_Role]
+	end
+
+if(exists (SELECT * 
+			FROM st_Security.sys.indexes 
+			WHERE name='sec_Group_Ignore_Dup_Key' AND object_id = OBJECT_ID('[st_Security].[dbo].[sec_Group]')))
+	begin
+		drop index sec_Group_Ignore_Dup_Key on [st_Security].[dbo].[sec_Group]
+	end
+
+if(exists (SELECT * 
+			FROM st_Security.sys.indexes 
+			WHERE name='sec_User_Group_Ignore_Dup_Key' AND object_id = OBJECT_ID('[st_Security].[dbo].[sec_User_Group]')))
+	begin
+		drop index sec_User_Group_Ignore_Dup_Key on [st_Security].[dbo].[sec_User_Group]
+	end
+
+if(exists (SELECT * 
+			FROM st_Security.sys.indexes 
+			WHERE name='sec_User_Group_Ignore_Dup_Key' AND object_id = OBJECT_ID('[st_Security].[dbo].[sec_User_Group]')))
+	begin
+		drop index sec_User_Group_Ignore_Dup_Key on [st_Security].[dbo].[sec_User_Group]
+	end
+if(exists (SELECT * 
+			FROM [{0}].sys.indexes 
+			WHERE name='fld_Field_Ignore_Dup_Key' AND object_id = OBJECT_ID('[{0}].[dbo].[fld_Field]')))
+	begin
+		drop index fld_Field_Ignore_Dup_Key on [{0}].[dbo].[fld_Field]
+	end

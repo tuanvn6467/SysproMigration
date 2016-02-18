@@ -42,6 +42,16 @@ namespace Migration
 
         public static string QueryAdaptViewPref1Pivot_Default = "QueryAdaptViewPref1Pivot_Default.txt";
 
+        public static string QueryCRM_CreateUniqueIndex = "QueryCRM_CreateUniqueIndex.txt";
+
+        public static string QueryCRM_DropUniqueIndex = "QueryCRM_DropUniqueIndex.txt";
+
+        public static string QueryAdaptFunctionCompareModuleID = "QueryAdaptFunctionCompareModuleID.txt";
+
+        public static string QueryAdaptConvertFieldName = "QueryAdaptConvertFieldName.txt";
+
+        public static string QueryCRMUpdatePhysicalFieldName = "QueryCRMUpdatePhysicalFieldName.txt";
+
         public static string QueryAdaptCheckFunctionExist = "use tempdb " +
                                                             "if exists (select * from sys.objects where object_id = OBJECT_ID(N'[dbo].[{0}]')  " +
                                                             "AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' )) " +

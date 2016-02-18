@@ -703,5 +703,112 @@
             "TaxLevelID": "TaxLevelID",
             "TaxLevelName": "TaxLevelName"
         }
+    },
+    //migrate [adaptv3system].[dbo].[tax_rate] to opp_Tax_Rate
+    {
+        "Id": 33,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[tax_rate] tr",
+            "OrderBy": "order by Tax_Rate_ID"
+        },
+        "Destination": {
+            "Tables": "opp_Tax_Rate"
+        },
+        "Map": {
+            "Tax_Rate_ID": "TaxRateID",
+            "Tax_Rate_Name": "TaxRateName",
+            "Tax_Level": "TaxLevel",
+            "Tax_Rate_Name": "TaxRateName",
+            "Tax_Rate": "TaxRateVal",
+            "Notes": "Notes",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[tax_schedule] to opp_Tax_Schedule
+    {
+        "Id": 34,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[tax_schedule] ts",
+            "OrderBy": "order by Tax_Schedule_ID"
+        },
+        "Destination": {
+            "Tables": "opp_Tax_Schedule"
+        },
+        "Map": {
+            "Tax_Schedule_ID": "TaxScheduleID",
+            "Tax_Schedule_Name": "TaxScheduleName",
+            "Accounting_Tax_Code": "AccountingTaxCode",
+            "Tax_Level_1_Rate_ID": "TaxLevel1RateID",
+            "Tax_Level_2_Rate_ID": "TaxLevel2RateID",
+            "Tax_Level_3_Rate_ID": "TaxLevel3RateID",
+            "Tax_Level_4_Rate_ID": "TaxLevel4RateID",
+            "Tax_Level_5_Rate_ID": "TaxLevel5RateID",
+            "convert(varchar(1000),Notes) Notes": "Notes",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[servloc] to set_Service_Location
+    {
+        "Id": 35,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[servloc] sl",
+            "OrderBy": "order by Location_ID"
+        },
+        "Destination": {
+            "Tables": "set_Service_Location"
+        },
+        "Map": {
+            "Location_ID": "LocationID",
+            "Location_Name": "LocationName",
+            "Notes": "Notes",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[fields] to fld_Field
+    {
+        "Id": 36,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[fields] f",
+            "OrderBy": "order by Field_ID",
+            "Where":  "f.Record_Source = 'U' and f.Record_Type  not in (4,31,116)"
+        },
+        "Destination": {
+            "Tables": "fld_Field",
+            "Script":  "QueryCRMUpdatePhysicalFieldName.txt"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "Field_ID": "FieldID",
+            "[tempdb].[dbo].[CompareModuleID](Record_Type) ModuleID": "ModuleID",
+            "[tempdb].[dbo].[CompareModuleID](Record_Type) TableID": "TableID",
+            "[tempdb].[dbo].[ConvertFieldName](Field_Name) Field_Name": "FieldName",
+            "[tempdb].[dbo].[ConvertFieldName](Field_Name) FieldLabel":  "FieldLabel",
+            "Field_Type": "FieldTypeID",
+            "Storage": "Storage",
+            "Picture": "Picture",
+            "Validate_Input_Syspro_TF": "IsValidate",
+            "Lookup_Table": "TableLookUpID",
+            "Min_Value": "MinValue",
+            "Max_Value": "MaxValue",
+            "Number_of_Values": "NumberOfValues",
+            "Default_Value": "DefaultValue",
+            "Required_Syspro_TF": "IsRequired",
+            "Default_Prompt": "DefaultPrompt",
+            "7 ProcessStatusID": "ProcessStatusID",
+            "Notes":  "Notes",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
     }
 ]

@@ -134,6 +134,11 @@
     <Content Include="Css\main.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
+    <Content Include="QueryFixed\QueryCRMUpdatePhysicalFieldName.txt" />
+    <Content Include="QueryFixed\QueryAdaptConvertFieldName.txt" />
+    <Content Include="QueryFixed\QueryAdaptFunctionCompareModuleID.txt" />
+    <Content Include="QueryFixed\QueryCRM_DropUniqueIndex.txt" />
+    <Content Include="QueryFixed\QueryCRM_CreateUniqueIndex.txt" />
     <Content Include="QueryFixed\QueryAdaptViewPref1Pivot_Default.txt" />
     <Content Include="QueryFixed\QueryCRM_Update_utl_Module_PreferDefault_Field.txt" />
     <Content Include="QueryFixed\QueryCRM_Update_utl_Module_PreferRequired_Field.txt" />

@@ -172,6 +172,28 @@ namespace SysproMigration.Utility
             return lst;
         }
 
+        public static void CreateUniqueIndex(SqlConnection con)
+        {
+            Logging.PushInfo("Create Unique Index In New CRM");
+            var query = QueryConstants.QueryCRM_CreateUniqueIndex.GetTextInQueryFixedFolder();
+            query = string.Format(query, con.Database);
+            using (SqlCommand command = new SqlCommand(query, con))
+            {
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public static void DropUniqueIndex(SqlConnection con)
+        {
+            Logging.PushInfo("Drop Unique Index In New CRM");
+            var query = QueryConstants.QueryCRM_DropUniqueIndex.GetTextInQueryFixedFolder();
+            query = string.Format(query, con.Database);
+            using (SqlCommand command = new SqlCommand(query, con))
+            {
+                command.ExecuteNonQuery();
+            }
+        }
+
         public static void CreateSupportTempDb(SqlConnection con)
         {
             var queryTable = QueryConstants.QueryCreateTableTempDb.GetTextInQueryFixedFolder();
@@ -203,6 +225,14 @@ namespace SysproMigration.Utility
             CheckViewExist(con, ViewConstants.Pref1_Pivot_Default);
             var queryViewPref1Pivot_Default = QueryConstants.QueryAdaptViewPref1Pivot_Default.GetTextInQueryFixedFolder();
             Execute(con, queryViewPref1Pivot_Default);
+            //function compare module
+            CheckFunctionExist(con, FunctionConstants.CompareModuleID);
+            var queryFunctionCompareModuleID = QueryConstants.QueryAdaptFunctionCompareModuleID.GetTextInQueryFixedFolder();
+            Execute(con, queryFunctionCompareModuleID);
+            //function convert field name
+            CheckFunctionExist(con, FunctionConstants.ConvertFieldName);
+            var queryFunctionConvertFieldName = QueryConstants.QueryAdaptConvertFieldName.GetTextInQueryFixedFolder();
+            Execute(con, queryFunctionConvertFieldName);
         }
 
         private static void CheckViewExist(SqlConnection con,string viewName)
