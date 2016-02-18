@@ -16,10 +16,10 @@
         }
     },*/
     {
+        "Id": 1,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[users] u",
-            "OrderBy": "order by [User_ID]",
-            "Where": "Email_Address not in ({0})"
+            "OrderBy": "order by [User_ID]"
         },
         "Destination": {
             "Tables": "[st_Security].[dbo].[sec_User]",
@@ -28,6 +28,7 @@
         },
         "NeedTruncate": false,
         "IsGetKeys": true,
+        "WhereGlobal": "UserGUID is not null",
         "MapKeys": {
             "'st_Security' SourceCompany": "SourceCompany",
             "'[dbo].[sec_User]' SourceTable": "SourceTable",
@@ -40,12 +41,12 @@
         },
         "Map": {
             //"0 UserID": "UserID",
-            "convert(UNIQUEIDENTIFIER,(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where OldValTable = Email_Address)) UserGUID": "UserGUID",
-            "(select top 1 TenantID from [tempdb].[dbo].[MigrateSupport] where OldValTable = Email_Address) TenantID": "TenantID",
-            "User_ID": "UserName",
+            "convert(UNIQUEIDENTIFIER,(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where OldValTable = Email_Address and DatabaseID is not null)) UserGUID": "UserGUID",
+            "Syspro_TenantID TenantID": "TenantID",
+            "First_Name + ' ' + Last_Name UserName": "UserName",
             "First_Name": "FirstName",
             "Last_Name": "LastName",
-            "case when Active = 'T' then 1 else 0 end Active": "StatusID",
+            "Active_Syspro_TF": "StatusID",
             "License_Type": "LicenseType",
             "Job_Title": "JobTitle",
             "Department": "Department",
@@ -60,8 +61,8 @@
             "Street_Address_Line_2": "AddressLine2",
             "Street_Address_Line_3": "AddressLine3",
             "City": "City",
-            //"(select top 1 Country_ID from [adaptv3system].[dbo].[country] where Country_Name = [Home_Country]) County": "County",
-            //"(select top 1 Country_ID from [adaptv3system].[dbo].[state] where Country_Name = [Home_Country]) State": "State",
+            "[tempdb].[dbo].[GetCountyID](County) County": "County",
+            "[tempdb].[dbo].[GetStateID](State) State": "State",
             "Postal_Code": "PostalCode",
             "(select top 1 Country_ID from [adaptv3system].[dbo].[country] where Country_Name = [Country]) Country": "Country",
             "Created_Date": "CreatedDate",
@@ -69,6 +70,7 @@
         }
     },
     {
+        "Id": 2,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[users] u",
             "OrderBy": "order by [User_ID]"
@@ -77,12 +79,14 @@
             "Tables": "[crm_System].[dbo].[utl_Database_User_Xref]"
         },
         "NeedTruncate": false,
+        "WhereGlobal": "DatabaseID is not null and UserID is not null",
         "Map": {
             "(select top 1 DatabaseID from [tempdb].[dbo].[MigrateSupport] where OldValTable = Email_Address and SourceTable = '[dbo].[users]' order by Id desc) DatabaseID": "DatabaseID",
             "(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where OldValTable = Email_Address and TargetServer='.' order by Id desc) UserID": "UserID"
         }
     },
     {
+        "Id": 3,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[roles] r",
             "OrderBy": "order by [Role_ID]"
@@ -118,6 +122,7 @@
     },
     //migrate [adaptv3system].[dbo].[urights] table to sec_User_Role table
     {
+        "Id": 4,
         "Source": {
             "Tables": "[tempdb].[dbo].[MigrateSupport] ms",
             "OrderBy": "order by NewValTable",
@@ -127,6 +132,7 @@
             "Tables": "[st_Security].[dbo].[sec_User_Role]"
         },
         "NeedTruncate": false,
+        "WhereGlobal": "User_ID is not null and RoleID is not null",
         "Map": {
             "NewValTable User_ID": "UserID",
             "(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where OldValTable = 'Administrator' and TenantID = convert(int, Syspro_TenantID) order by Id desc) RoleID": "RoleID"
@@ -134,15 +140,17 @@
     },
     //migrate [adaptv3system].[dbo].[user_roles] table to sec_User_Role table
     {
+        "Id": 5,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[user_roles] ur",
             "OrderBy": "order by User_ID",
-            "Where":  "[Role_Type] <> 3"
+            "Where": "[Role_Type] <> 3"
         },
         "Destination": {
             "Tables": "[st_Security].[dbo].[sec_User_Role]"
         },
         "NeedTruncate": false,
+        "WhereGlobal": "User_ID is not null and Role_ID is not null",
         "Map": {
             "[tempdb].[dbo].[GetNewValue]('st_Security','adaptv3system','[dbo].[sec_User]','[dbo].[users]',[User_ID],null,Syspro_TenantID,1) [User_ID]": "UserID",
             "[tempdb].[dbo].[GetNewValue]('st_Security','adaptv3system','[dbo].[sec_Role]','[dbo].[roles]',case when [Role_Type] = 1 then 'Sales' when [Role_Type] = 2 then 'Service' when [Role_Type] = 4 then 'Marketing' end,null,Syspro_TenantID,null) [Role_ID]": "RoleID"
@@ -150,6 +158,7 @@
     },
     //migrate [adaptv3system].[dbo].[sgroup] table to sec_Group
     {
+        "Id": 6,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[sgroup] sg",
             "OrderBy": "order by Group_ID"
@@ -185,6 +194,7 @@
     },
     //migrate [adaptv3system].[dbo].[sgrpmem] table to sec_User_Role table
     {
+        "Id": 7,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[sgrpmem] sgm",
             "OrderBy": "order by User_ID"
@@ -193,6 +203,7 @@
             "Tables": "[st_Security].[dbo].[sec_User_Group]"
         },
         "NeedTruncate": false,
+        "WhereGlobal": "User_ID is not null and Group_ID is not null",
         "Map": {
             "[tempdb].[dbo].[GetNewValue]('st_Security','adaptv3system','[dbo].[sec_User]','[dbo].[users]',[User_ID],null,Syspro_TenantID,1) [User_ID]": "UserID",
             "[tempdb].[dbo].[GetNewValue]('st_Security','adaptv3system','[dbo].[sec_Group]','[dbo].[sgroup]',[Group_ID],null,Syspro_TenantID,null) [Group_ID]": "GroupID"
@@ -200,6 +211,7 @@
     },
     //migrate adaptv3system..acctyp to acc_Account_Type
     {
+        "Id": 8,
         "Source": {
             "Tables": "adaptv3system..acctyp tat",
             "OrderBy": "order by Account_Type_ID"
@@ -207,16 +219,489 @@
         "Destination": {
             "Tables": "acc_Account_Type"
         },
-        //"NeedTruncate": false,
         "Map": {
             "Account_Type_ID": "AccountTypeID",
             "Account_Type_Name": "AccountTypeName",
-            "case when tat.Use_Alternate_Milestones = 'F' then 0 else 1 end Use_Alternate_Milestones": "UseAlternateMilestones",
+            "Use_Alternate_Milestones_Syspro_TF": "UseAlternateMilestones",
             "Notes": "Notes",
             "Created_Date": "CreatedDate",
             "Created_By": "CreatedUserID",
             "Modified_Date": "UpdatedDate",
             "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[customer_class] to acc_Customer_Class
+    {
+        "Id": 9,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[customer_class] cc",
+            "OrderBy": "order by Customer_Class_ID"
+        },
+        "Destination": {
+            "Tables": "acc_Customer_Class"
+        },
+        "Map": {
+            "Customer_Class_ID": "CustomerClassID",
+            "Customer_Class_Name": "CustomerClassName",
+            "Notes": "Notes",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[bustyp] to acc_Business_Type
+    {
+        "Id": 10,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[bustyp] bt",
+            "OrderBy": "order by Business_Type_ID"
+        },
+        "Destination": {
+            "Tables": "acc_Business_Type"
+        },
+        "Map": {
+            "Business_Type_ID": "BusinessTypeID",
+            "Business_Type_Name": "BusinessTypeName",
+            "Notes": "Notes",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[source] to acc_Source
+    {
+        "Id": 11,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[source] s",
+            "OrderBy": "order by Source_ID"
+        },
+        "Destination": {
+            "Tables": "acc_Source"
+        },
+        "Map": {
+            "Source_ID": "SourceID",
+            "Source_Name": "SourceName",
+            "0 Default_Secondary_Source": "DefaultSecondarySource",
+            "Secondary_Source_Count": "SecondarySourceCount",
+            "Notes": "Notes",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[sourced] to acc_Source
+    {
+        "Id": 12,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[sourced] sd",
+            "OrderBy": "order by Secondary_Source_ID"
+        },
+        "Destination": {
+            "Tables": "acc_Source"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "Secondary_Source_Name": "SourceName",
+            "Primary_Source_ID": "ParentID",
+            "(select top 1 case when Secondary_Source_ID > 0 then 1 else 0 end from [adaptv3system].[dbo].[sourced] sdc right join [adaptv3system].[dbo].[source] s on sdc.Secondary_Source_ID = s.Default_Secondary_Source where sdc.Secondary_Source_ID = sd.Secondary_Source_ID) Default_Secondary_Source": "DefaultSecondarySource",
+            "Notes": "Notes",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[terr] to acc_Territories
+    {
+        "Id": 13,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[terr] t",
+            "OrderBy": "order by Territory_ID"
+        },
+        "Destination": {
+            "Tables": "acc_Territories"
+        },
+        "Map": {
+            "Territory_ID": "TerritoryID",
+            "Territory_Name": "TerritoryName",
+            "Accounting_System_Code": "AccountingSystemCode",
+            "Salesperson": "Salesperson",
+            "Notes": "Notes",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[terr_boundary] to acc_Territories_Boundary
+    {
+        "Id": 14,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[terr_boundary] tb",
+            "OrderBy": "order by Territory_ID"
+        },
+        "Destination": {
+            "Tables": "acc_Territories_Boundary"
+        },
+        "Map": {
+            "Territory_ID": "TerritoryID",
+            "Territory_Scope": "TerritoryScope",
+            "Country_ID": "CountryID",
+            "(case Territory_Scope when 1 then 0 when 2 then [tempdb].[dbo].[GetStateID](From_Value) when 3 then [tempdb].[dbo].[GetCountyID](From_Value) when 4 then [tempdb].[dbo].[GetPostalCodeID](From_Value) else 0 end) From_Value": "FromValue",
+            "(case Territory_Scope when 4 then [tempdb].[dbo].[GetPostalCodeID](To_Value) else 0 end) To_Value": "ToValue"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[regions] to acc_Regions
+    {
+        "Id": 15,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[regions] rg",
+            "OrderBy": "order by Region_ID"
+        },
+        "Destination": {
+            "Tables": "acc_Regions"
+        },
+        "Map": {
+            "Region_ID": "RegionID",
+            "Region_Name": "RegionName",
+            "Territory_Count": "TerritoryCount",
+            "Notes": "Notes",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[region_terr] to acc_Region_Territory_Xref
+    {
+        "Id": 16,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[region_terr] rgt",
+            "OrderBy": "order by Region_ID"
+        },
+        "Destination": {
+            "Tables": "acc_Region_Territory_Xref"
+        },
+        "Map": {
+            "Region_ID": "RegionID",
+            "Territory_ID": "TerritoryID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[relatnm] to acc_Relationship_Choice
+    {
+        "Id": 17,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[relatnm] r",
+            "OrderBy": "order by Relationship_Name_ID"
+        },
+        "Destination": {
+            "Tables": "acc_Relationship_Choice"
+        },
+        "Map": {
+            "Relationship_Name_ID": "RelationshipChoiceID",
+            "Direction": "DirectionID",
+            "Relationship_ID": "RelationshipID",
+            "Relationship_Name": "RelationshipChoiceName"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[relation] to acc_Relationship
+    {
+        "Id": 18,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[relation] r",
+            "OrderBy": "order by Relationship_ID"
+        },
+        "Destination": {
+            "Tables": "acc_Relationship"
+        },
+        "Map": {
+            "Relationship_ID": "RelationshipID",
+            "Parent_Child_Syspro_TF": "IsParentChild",
+            "Multiple_Parents_Allowed_Syspro_TF": "IsMultipleParentAllowed",
+            "Multiple_Children_Allowed_Syspro_TF": "IsMultipleChildrenAllowed"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[addrtyp] to utl_Address_Type
+    {
+        "Id": 19,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[addrtyp] at",
+            "OrderBy": "order by Address_Type_ID"
+        },
+        "Destination": {
+            "Tables": "utl_Address_Type"
+        },
+        "Map": {
+            "Address_Type_ID": "AddressTypeID",
+            "Address_Type_Name": "AddressTypeName",
+            "Notes": "Notes",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref1] to acc_Account_Preferences
+    {
+        "Id": 20,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[pref1] p",
+            "OrderBy": "order by One"
+        },
+        "Destination": {
+            "Tables": "acc_Account_Preferences"
+        },
+        "Map": {
+            "One": "AccountPreferenceID",
+            "Territory_Assignment_Method": "TerritoryAssignmentMethod",
+            "Salesperson_Assignment_Method": "SalespersonAssignmentMethod",
+            "Report_Duplicate_Errors_Syspro_TF": "IsReportDuplicateErrors",
+            "Report_Duplicate_Warnings_Syspro_TF": "IsReportDuplicateWarnings",
+            "No_Capitalize_Syspro_TF": "IsNoCapitalize",
+            "No_Inactive_in_Lookup_Syspro_TF": "IsNoInactiveInLookup",
+            "Credit_Hold_in_RED_Syspro_TF": "IsCreditHoldInRED",
+            "Do_Not_Auto_Skip_Milestones_Syspro_TF": "IsDoNotAutoSkipMilestones",
+            "Allow_Print_Preview_Syspro_TF": "IsAllowPrintPreview",
+            "Allow_Printer_Select_Syspro_TF": "IsAllowPrinterSelect"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref1] to acc_Account_PreferPrevent_Field
+    {
+        "Id": 21,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[pref1] p",
+            "OrderBy": "order by One"
+        },
+        "Destination": {
+            "Tables": "acc_Account_PreferPrevent_Field"
+        },
+        "Map": {
+            "One": "AccountPreferenceID",
+            "Dupe_Error_Set_1_Field_1": "DuplicateTypeID1",
+            "Dupe_Error_Set_1_Field_2": "DuplicateTypeID2",
+            "Dupe_Error_Set_1_Field_3": "DuplicateTypeID3",
+            "1 SeqNo": "SeqNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref1] to acc_Account_PreferPrevent_Field
+    {
+        "Id": 22,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[pref1] p",
+            "OrderBy": "order by One"
+        },
+        "Destination": {
+            "Tables": "acc_Account_PreferPrevent_Field"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "One": "AccountPreferenceID",
+            "Dupe_Error_Set_2_Field_1": "DuplicateTypeID1",
+            "Dupe_Error_Set_2_Field_2": "DuplicateTypeID2",
+            "Dupe_Error_Set_2_Field_3": "DuplicateTypeID3",
+            "2 SeqNo": "SeqNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref1] to acc_Account_PreferPrevent_Field
+    {
+        "Id": 23,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[pref1] p",
+            "OrderBy": "order by One"
+        },
+        "Destination": {
+            "Tables": "acc_Account_PreferPrevent_Field"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "One": "AccountPreferenceID",
+            "Dupe_Error_Set_3_Field_1": "DuplicateTypeID1",
+            "Dupe_Error_Set_3_Field_2": "DuplicateTypeID2",
+            "Dupe_Error_Set_3_Field_3": "DuplicateTypeID3",
+            "3 SeqNo": "SeqNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref1] to acc_Account_PreferWarning_Field
+    {
+        "Id": 24,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[pref1] p",
+            "OrderBy": "order by One"
+        },
+        "Destination": {
+            "Tables": "acc_Account_PreferWarning_Field"
+        },
+        "Map": {
+            "One": "AccountPreferenceID",
+            "Dupe_Warning_Set_1_Field_1": "DuplicateTypeID1",
+            "Dupe_Warning_Set_1_Field_2": "DuplicateTypeID2",
+            "Dupe_Warning_Set_1_Field_3": "DuplicateTypeID3",
+            "1 SeqNo": "SeqNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref1] to acc_Account_PreferWarning_Field
+    {
+        "Id": 25,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[pref1] p",
+            "OrderBy": "order by One"
+        },
+        "Destination": {
+            "Tables": "acc_Account_PreferWarning_Field"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "One": "AccountPreferenceID",
+            "Dupe_Warning_Set_2_Field_1": "DuplicateTypeID1",
+            "Dupe_Warning_Set_2_Field_2": "DuplicateTypeID2",
+            "Dupe_Warning_Set_2_Field_3": "DuplicateTypeID3",
+            "2 SeqNo": "SeqNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref1] to acc_Account_PreferWarning_Field
+    {
+        "Id": 26,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[pref1] p",
+            "OrderBy": "order by One"
+        },
+        "Destination": {
+            "Tables": "acc_Account_PreferWarning_Field"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "One": "AccountPreferenceID",
+            "Dupe_Warning_Set_3_Field_1": "DuplicateTypeID1",
+            "Dupe_Warning_Set_3_Field_2": "DuplicateTypeID2",
+            "Dupe_Warning_Set_3_Field_3": "DuplicateTypeID3",
+            "3 SeqNo": "SeqNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref1] to utl_Module_PreferRequired_Field
+    {
+        "Id": 27,
+        "Source": {
+            "Tables": "[tempdb].[dbo].[Pref1_Pivot_Required] pp",
+            "OrderBy": "order by Rownumber"
+        },
+        "Destination": {
+            "Tables": "utl_Module_PreferRequired_Field",
+            "Script": "QueryCRM_Update_utl_Module_PreferRequired_Field.txt"
+        },
+
+        "Map": {
+            "1 ModuleID":  "ModuleID",
+            "Rownumber": "RequiredFieldID",
+            "0 RequiredModeTypeID": "RequiredModeTypeID",
+            "1 ModulePreferenceID": "ModulePreferenceID",
+            "RequiredFieldName": "RequiredFieldName",
+            "RequiredTypeID": "RequiredTypeID",
+            "0 IsReadOnly": "IsReadOnly"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref1] to utl_Module_PreferDefault_Field
+    {
+        "Id": 28,
+        "Source": {
+            "Tables": "[tempdb].[dbo].[Pref1_Pivot_Default] pp",
+            "OrderBy": "order by Rownumber"
+        },
+        "Destination": {
+            "Tables": "utl_Module_PreferDefault_Field",
+            "Script": "QueryCRM_Update_utl_Module_PreferDefault_Field.txt"
+        },
+
+        "Map": {
+            "1 ModuleID": "ModuleID",
+            "Rownumber": "DefaultFieldID",
+            "1 ModulePreferenceID": "ModulePreferenceID",
+            "DefaultFieldName": "DefaultFieldName",
+            "DefaultValue": "DefaultValue"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[fob_terms] to opp_Fob_Terms
+    {
+        "Id": 29,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[fob_terms] ft",
+            "OrderBy": "order by FOB_ID"
+        },
+        "Destination": {
+            "Tables": "opp_Fob_Terms"
+        },
+        "Map": {
+            "FOB_ID": "FobID",
+            "FOB_Name": "FobName",
+            "Accounting_FOB_Code": "AccountingFobCode",
+            "Notes": "Notes",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[shipmeth] to utl_Shipping_Method
+    {
+        "Id": 30,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[shipmeth] s",
+            "OrderBy": "order by Ship_Method_ID"
+        },
+        "Destination": {
+            "Tables": "utl_Shipping_Method"
+        },
+        "Map": {
+            "Ship_Method_ID": "ShipMethodID",
+            "Ship_Method_Name": "ShipMethodName",
+            "Accounting_Ship_Method_Code": "AccountingShipMethodCode",
+            "Notes": "Notes",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[payment_terms] to opp_Payment_Terms
+    {
+        "Id": 31,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[payment_terms] pt",
+            "OrderBy": "order by Terms_ID"
+        },
+        "Destination": {
+            "Tables": "opp_Payment_Terms"
+        },
+        "Map": {
+            "Terms_ID": "TermsID",
+            "Terms_Name": "TermsName",
+            "0 Company_ID": "CompanyID",
+            "Accounting_Terms_Code": "AccountingTermsCode",
+            "Days_to_Pay": "DaysToPay",
+            "Discount_Days": "DiscountDays",
+            "Discount_Percent": "DiscountPercent",
+            "Notes": "Notes",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[tax_levels] to opp_Tax_Levels
+    {
+        "Id": 32,
+        "Source": {
+            "Tables": "(Select ColName, TaxLevelName, ROW_NUMBER() OVER (ORDER BY (SELECT 100)) TaxLevelID from(select [Tax_Level_1] ,[Tax_Level_2] ,[Tax_Level_3] ,[Tax_Level_4]FROM [adaptv3system].[dbo].[tax_levels] ) tl unpivot ( TaxLevelName for ColName in ([Tax_Level_1] ,[Tax_Level_2] ,[Tax_Level_3] ,[Tax_Level_4]) ) tl_pv) tl_pv",
+            "OrderBy": "order by TaxLevelID"
+        },
+        "Destination": {
+            "Tables": "opp_Tax_Levels"
+        },
+        "Map": {
+            "TaxLevelID": "TaxLevelID",
+            "TaxLevelName": "TaxLevelName"
         }
     }
 ]

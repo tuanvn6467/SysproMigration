@@ -11,7 +11,10 @@ namespace Migration
         {
             NeedTruncate = true;
             IsGetKeys = false;
+            WhereGlobal = "";
         }
+
+        public int Id { get; set; }
 
         public Source Source { get; set; }
 
@@ -22,6 +25,8 @@ namespace Migration
         public bool NeedTruncate { get; set; }
 
         public bool IsGetKeys { get; set; }
+
+        public string WhereGlobal { get; set; }
 
         public Dictionary<string, string> MapKeys { get; set; }
 
@@ -38,13 +43,17 @@ namespace Migration
                     result =
                         "(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where TargetServer='.' and OldValTable = (select Email_Address from [adaptv3system].[dbo].[users] where User_ID = Modified_By) order by Id desc) Modified_By";
                     break;
+                case "Salesperson":
+                    result =
+                        "(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where TargetServer='.' and OldValTable = (select Email_Address from [adaptv3system].[dbo].[users] where User_ID = Salesperson) order by Id desc) Salesperson";
+                    break;
                 case "Created_Date":
                     result =
-                        "convert(datetime,substring(Created_Date, 1, 4) + '-' + substring(Created_Date, 5, 2) + '-' + substring(Created_Date, 7, 2) + ' ' + substring(Created_Time, 1, 2) + ':' + substring(Created_Time, 3, 2) + ':' + substring(Created_Time, 5, 2)) Created_Date";
+                        "case when LEN(Created_Date) > 6 then convert(datetime,substring(Created_Date, 1, 4) + '-' + substring(Created_Date, 5, 2) + '-' + substring(Created_Date, 7, 2) + ' ' + substring(Created_Time, 1, 2) + ':' + substring(Created_Time, 3, 2) + ':' + substring(Created_Time, 5, 2)) else null end Created_Date";
                     break;
                 case "Modified_Date":
                     result =
-                        "convert(datetime,substring(Modified_Date, 1, 4) + '-' + substring(Modified_Date, 5, 2) + '-' + substring(Modified_Date, 7, 2) + ' ' + substring(Modified_Time, 1, 2) + ':' + substring(Modified_Time, 3, 2) + ':' + substring(Modified_Time, 5, 2)) Modified_Date";
+                        "case when LEN(Modified_Date) > 6 then convert(datetime,substring(Modified_Date, 1, 4) + '-' + substring(Modified_Date, 5, 2) + '-' + substring(Modified_Date, 7, 2) + ' ' + substring(Modified_Time, 1, 2) + ':' + substring(Modified_Time, 3, 2) + ':' + substring(Modified_Time, 5, 2)) else null end Modified_Date";
                     break;
                 /*case "Syspro_TenantID":
                     result = string.Format("convert(int, {0}) TenantID", tenantID);
@@ -53,11 +62,16 @@ namespace Migration
             if (result.Contains("Syspro_TenantID"))
             {
                 result = result.Replace("Syspro_TenantID", string.Format("convert(int, {0})", tenantID));
+            }else if (result.Contains("_Syspro_TF"))
+            {
+                var fieldName = result.Replace("_Syspro_TF", "");
+                result = string.Format("case when {0} = 'T' then 1 else 0 end {0}", fieldName);
             }
+            
             return result;
         }
 
-        public string CreateQueryFromSource(int page, int pageSize, string conditionWhere = "", int tenantID = 0)
+        public string CreateQueryFromSource(int page, int pageSize, int tenantID = 0)
         {
             var res = Map.Keys.Aggregate("select ", (current, key) => current + (ReplaceKeySpecial(key, tenantID) + ","));
             res = string.Format(res + "ROW_NUMBER() over ({0}) as rownum",
@@ -76,12 +90,13 @@ namespace Migration
 
             if (!string.IsNullOrEmpty(Source.Where))
             {
-                Source.Where = string.Format(Source.Where, conditionWhere);
+                Source.Where = string.Format(Source.Where);
                 Source.Where = Source.Where.Contains("()") ? "" : Source.Where;
                 res += Source.Where == "" ? "" : " where " + Source.Where;
             }
-            res = string.Format("select * from({0}) t where t.rownum >{1} and t.rownum <={2}", res, page*pageSize,
-                (page + 1)*pageSize);
+            res = string.Format("select * from({0}) t where {1} t.rownum >{2} and t.rownum <={3}", res,
+                !string.IsNullOrEmpty(WhereGlobal) ? WhereGlobal + " and " : "",
+                page*pageSize, (page + 1)*pageSize);
             return res;
         }
         public string CreateQueryFromDestination(int tenantID = 0)

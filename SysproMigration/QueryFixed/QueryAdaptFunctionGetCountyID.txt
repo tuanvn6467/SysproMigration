@@ -1,0 +1,18 @@
+create function [dbo].[GetCountyID]
+(
+@County varchar(20)
+)
+returns bigint
+as
+begin
+	declare @Result bigint
+
+	select top 1	@Result = CountyID
+		from		(	SELECT [Country_ID]
+						,ROW_NUMBER() over(order by [County]) CountyID
+						,[County]
+						FROM [adaptv3system].[dbo].[county]
+					) county
+	where county.County = @County
+return @Result
+end

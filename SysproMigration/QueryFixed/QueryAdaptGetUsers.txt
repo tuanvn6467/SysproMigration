@@ -83,9 +83,9 @@ SELECT 0 UserID
       --,[User_Private_Doc_Folder]
       --,[Allow_Web_Access_Read]
       --,[Allow_Web_Access_Write]
-	  ,convert(datetime,substring(Created_Date, 1, 4) + '-' + substring(Created_Date, 5, 2) + '-' + substring(Created_Date, 7, 2) + ' ' + substring(Created_Date, 1, 2) + ':' + substring(Created_Date, 3, 2) + ':' + substring(Created_Date, 5, 2)) CreatedDate
+	  ,case when LEN(Created_Date) > 6 then convert(datetime,substring(Created_Date, 1, 4) + '-' + substring(Created_Date, 5, 2) + '-' + substring(Created_Date, 7, 2) + ' ' + substring(Created_Time, 1, 2) + ':' + substring(Created_Time, 3, 2) + ':' + substring(Created_Time, 5, 2)) else null end CreatedDate
       --,[Created_By]
-      ,convert(datetime,substring(Modified_Date, 1, 4) + '-' + substring(Modified_Date, 5, 2) + '-' + substring(Modified_Date, 7, 2) + ' ' + substring(Created_Time, 1, 2) + ':' + substring(Created_Time, 3, 2) + ':' + substring(Created_Time, 5, 2)) ModifiedDate
+      ,case when LEN(Modified_Date) > 6 then convert(datetime,substring(Modified_Date, 1, 4) + '-' + substring(Modified_Date, 5, 2) + '-' + substring(Modified_Date, 7, 2) + ' ' + substring(Modified_Time, 1, 2) + ':' + substring(Modified_Time, 3, 2) + ':' + substring(Modified_Time, 5, 2)) else null end ModifiedDate
       --,[Modified_By]
       --,[Notes]
   FROM [adaptv3system].[dbo].[users] u

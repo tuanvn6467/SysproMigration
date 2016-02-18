@@ -1,0 +1,19 @@
+create function [dbo].[GetStateID]
+(
+@State varchar(40)
+)
+returns bigint
+as
+begin
+	declare @Result bigint
+
+	select top 1	@Result = StateID
+		from		(	SELECT [Country_ID]
+						,ROW_NUMBER() over(order by [Full_Name]) StateID
+						,[State]
+						,[Full_Name]
+						FROM [adaptv3system].[dbo].[state]
+					) state
+	where state.State = @State
+return @Result
+end

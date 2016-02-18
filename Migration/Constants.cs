@@ -17,6 +17,7 @@ namespace Migration
 
         public static string DestinationConfig = "Destination";
         public static string SourceConfig = "Source";
+        public static string MigrationConnectionConfig = "SysproMigration";
         public static string BatchSizeConfig = "BatchSize";
 
         public static string FieldMappingFileCompany = "fieldMappingFile_Company";
@@ -45,5 +46,6 @@ namespace Migration
         };
 
         public static string MiggrateSupportTable = "[tempdb].[dbo].[MigrateSupport]";
+
     }
 }

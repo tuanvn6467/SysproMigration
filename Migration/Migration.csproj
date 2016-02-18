@@ -48,7 +48,10 @@
     <Compile Include="Common\ParseData.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Enums\MigratorStatus.cs" />
+    <Compile Include="Enums\QueueStatusEnum.cs" />
     <Compile Include="FieldsMap.cs" />
+    <Compile Include="ViewConstants.cs" />
+    <Compile Include="FunctionConstants.cs" />
     <Compile Include="Source.cs" />
     <Compile Include="Helper\XMLHelper.cs" />
     <Compile Include="Logging\Logging.cs" />

@@ -11,5 +11,7 @@
         public string Where { get; set; }
 
         public string OrderBy { get; set; }
+
+        public string Script { get; set; }
     }
 }

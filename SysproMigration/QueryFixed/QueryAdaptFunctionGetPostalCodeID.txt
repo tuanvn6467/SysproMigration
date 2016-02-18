@@ -1,0 +1,19 @@
+create function [dbo].[GetPostalCodeID]
+(
+@PostalCode varchar(10)
+)
+returns bigint
+as
+begin
+	declare @Result bigint
+
+	select top 1	@Result = PostalCodeID
+		from		(	
+						SELECT [Country_ID]
+						,ROW_NUMBER() over(order by [Postal_Code]) PostalCodeID
+						,[Postal_Code]
+						FROM [adaptv3system].[dbo].[postal]
+					) postal
+	where postal.Postal_Code = @PostalCode
+return @Result
+end

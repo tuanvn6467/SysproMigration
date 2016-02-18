@@ -1,0 +1,47 @@
+create view [dbo].[Pref1_Pivot_Default] 
+  as 
+  select DefaultFieldName, DefaultValue, ROW_NUMBER() OVER (ORDER BY (SELECT 100)) Rownumber
+	  from
+	  (select 
+	  --default field
+      CONVERT(varchar,[Default_Address_Type]) AddressType
+      ,CONVERT(varchar,[Default_Business_Type]) BusinessType
+      ,CONVERT(varchar,[Default_Territory]) Territory
+      ,CONVERT(varchar,(select top 1 NewValTable 
+							from [tempdb].[dbo].[MigrateSupport] 
+							where TargetServer='.' and OldValTable = 
+							(select Email_Address from [adaptv3system].[dbo].[users] where User_ID = [Default_Account_Manager]) 
+							order by Id desc)) AccountManager
+      ,CONVERT(varchar,[Default_Account_Type]) AccountType
+      ,CONVERT(varchar,[Default_Account_Source]) OriginalPrimarySource
+      ,CONVERT(varchar,[Default_Service_Location]) ServiceLocation
+      ,CONVERT(varchar,(select top 1 NewValTable 
+							from [tempdb].[dbo].[MigrateSupport] 
+							where TargetServer='.' and OldValTable = 
+							(select Email_Address from [adaptv3system].[dbo].[users] where User_ID = [Default_Service_Manager]) 
+							order by Id desc)) ServiceManager
+      ,CONVERT(varchar,[Default_Customer_Class]) CustomerClass
+      ,CONVERT(varchar,[Default_Payment_Terms]) PaymentTerm
+      ,CONVERT(varchar,[Default_Shipping_Method]) ShippingMethod
+      ,CONVERT(varchar,[Default_Tax_Schedule]) TaxSchedule
+      ,CONVERT(varchar,[Default_FOB]) FOB
+	  from [adaptv3system].[dbo].[pref1]
+	  ) p 
+	  unpivot
+	  (
+		DefaultValue for 
+		DefaultFieldName in (AddressType
+							  ,BusinessType
+							  ,Territory
+							  ,AccountManager
+							  ,AccountType
+							  ,OriginalPrimarySource
+							  ,ServiceLocation
+							  ,ServiceManager
+							  ,CustomerClass
+							  ,PaymentTerm
+							  ,ShippingMethod
+							  ,TaxSchedule
+							  ,FOB
+							  )
+	  ) as DefaultFieldName 

@@ -1,0 +1,24 @@
+update [dbo].[utl_Module_PreferDefault_Field]
+set
+DefaultFieldID = 
+	(select FieldID from [dbo].[fld_Field] f
+		where ModuleID = 1 and
+		(FieldName = DefaultFieldName or FieldName = DefaultFieldName + 'ID')
+		--for Language and CurrentcyCode Field
+		),
+SeqNo = (case	when DefaultFieldName = 'AddressType' then 1
+				when  DefaultFieldName = 'BusinessType' then 5
+				when  DefaultFieldName = 'Territory' then 3
+				when  DefaultFieldName = 'AccountManager' then 4
+				when  DefaultFieldName = 'AccountType' then 2
+				when  DefaultFieldName = 'OriginalPrimarySource' then 6
+				when  DefaultFieldName = 'ServiceLocation' then 13
+				when  DefaultFieldName = 'ServiceManager' then 12
+				when  DefaultFieldName = 'CustomerClass' then 11
+				when  DefaultFieldName = 'PaymentTerm' then 8
+				when  DefaultFieldName = 'ShippingMethod' then 10
+				when  DefaultFieldName = 'TaxSchedule' then 7
+				when  DefaultFieldName = 'FOB' then 9
+				else 0 end
+			)
+where ModuleID = 1

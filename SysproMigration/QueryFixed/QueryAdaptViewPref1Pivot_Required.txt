@@ -1,0 +1,47 @@
+create view [dbo].[Pref1_Pivot_Required] 
+  as 
+  select RequiredFieldName, RequiredTypeID, ROW_NUMBER() OVER (ORDER BY (SELECT 100)) Rownumber
+	  from
+	  (select [Account_Name_Required] AccountName
+      ,[Telephone_Number_Required] TelephoneNumber
+      ,[Fax_Number_Required] FaxNumber
+      ,[Email_Address_Required] EmailAddress
+      ,[Web_Address_Required] WebAddress
+      ,[Street_Address_Required] AddressLine1
+      ,[City_Required] City
+      ,[County_Required] County
+      ,[State_Required] State
+      ,[Postal_Code_Required] PostalCode
+      ,[Country_Required] Country
+	  ,[Business_Type_Required] BusinessType
+      ,[Territory_Required] Territory
+      ,[Account_Manager_Required] AccountManager 
+      ,[Account_Type_Required] AccountType
+      ,[Account_Source_Required] OriginalPrimarySource
+	  ,CONVERT(smallint,3) CurrencyCode
+	  ,CONVERT(smallint,3) Language
+	  from [adaptv3system].[dbo].[pref1]
+	  ) p 
+	  unpivot
+	  (
+		RequiredTypeID for 
+		RequiredFieldName in (AccountName
+							  ,TelephoneNumber
+							  ,FaxNumber
+							  ,EmailAddress
+							  ,WebAddress
+							  ,AddressLine1
+							  ,City
+							  ,County
+							  ,State
+							  ,PostalCode
+							  ,Country
+							  ,BusinessType
+							  ,Territory
+							  ,AccountManager
+							  ,AccountType
+							  ,OriginalPrimarySource
+							  ,CurrencyCode
+							  ,Language
+							  )
+	  ) as RequiredFieldName 

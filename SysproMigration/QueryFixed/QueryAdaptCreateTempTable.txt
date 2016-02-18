@@ -4,15 +4,15 @@ use tempdb
   WHERE TABLE_SCHEMA = 'dbo'
   AND  TABLE_NAME = 'MigrateSupport'))
   BEGIN 
-	  CREATE TABLE [tempdb].[dbo].[MigrateSupport](
+	  create TABLE [tempdb].[dbo].[MigrateSupport](
 	  Id int identity (1,1),
-	  SourceCompany varchar(20),
-	  SourceTable varchar(40),
+	  SourceCompany varchar(50),
+	  SourceTable varchar(100),
 	  TargetServer varchar(50),
-	  TargetCompany varchar(20),
-	  TargetTable varchar(40),
-	  OldValTable nvarchar(100),
-	  NewValTable nvarchar(100),
+	  TargetCompany varchar(50),
+	  TargetTable varchar(100),
+	  OldValTable nvarchar(120),
+	  NewValTable nvarchar(120),
 	  DatabaseID int,
 	  TenantID int,
 	  CreatedDate datetime

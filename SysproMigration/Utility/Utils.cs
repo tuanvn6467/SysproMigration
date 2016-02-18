@@ -12,6 +12,7 @@ using System.Web.SessionState;
 using Migration;
 using Migration.Common;
 using Migration.Helper;
+using Syspro.Core.Helper.Logging;
 using SysproMigration.Models;
 
 namespace SysproMigration.Utility
@@ -131,25 +132,102 @@ namespace SysproMigration.Utility
             return userModels;
         }
 
+        public static List<QueueMigrate> GetQueueMigrates(SqlConnection queueConnection,QueueMigrate objectQueue)
+        {
+            var lst = new List<QueueMigrate>();
+            using (SqlCommand cmd = new SqlCommand(QueryConstants.Get_QueueMigrate, queueConnection))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.Add("@SourceServerName", SqlDbType.VarChar).Value = objectQueue.SourceServerName;
+                cmd.Parameters.Add("@SourceDatabaseCompany", SqlDbType.VarChar).Value = objectQueue.SourceDatabaseCompany;
+                cmd.Parameters.Add("@TargetServerName", SqlDbType.VarChar).Value = objectQueue.TargetServerName;
+                cmd.Parameters.Add("@TargetDatabaseCompany", SqlDbType.VarChar).Value = objectQueue.TargetDatabaseCompany;
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        lst.Add(new QueueMigrate
+                        {
+                           Id = ParseData.GetInt(reader["Id"]) ?? 0,
+                           SourceServerName = ParseData.GetString(reader["SourceServerName"]) ?? "",
+                           SourceDatabaseCompany = ParseData.GetString(reader["SourceDatabaseCompany"]) ?? "",
+                           SourceTable = ParseData.GetString(reader["SourceTable"]) ?? "",
+                           TargetServerName = ParseData.GetString(reader["TargetServerName"]) ?? "",
+                           TargetDatabaseCompany = ParseData.GetString(reader["TargetDatabaseCompany"]) ?? "",
+                           TargetTable = ParseData.GetString(reader["TargetTable"]) ?? "",
+                           SqlQuery = ParseData.GetString(reader["SqlQuery"]) ?? "",
+                           IsGetKeys = ParseData.GetShort(reader["IsGetKeys"]) ?? 0,
+                           IsLastRecord = ParseData.GetShort(reader["IsLastRecord"]) ?? 0,
+                           FieldsMapId = ParseData.GetShort(reader["FieldsMapId"]) ?? 0,
+                           Status = ParseData.GetShort(reader["Status"]) ?? 0,
+                           Exception = ParseData.GetString(reader["Exception"]) ?? "", 
+                           CreatedDate = ParseData.GetDateTime(reader["CreatedDate"]),
+                           UpdatedDate = ParseData.GetDateTime(reader["UpdatedDate"]),
+                        });
+                    }
+                }
+            }
+            return lst;
+        }
+
         public static void CreateSupportTempDb(SqlConnection con)
         {
             var queryTable = QueryConstants.QueryCreateTableTempDb.GetTextInQueryFixedFolder();
-            var queryCheckFunctionExist = QueryConstants.QueryAdaptCheckFunctionExist;
-            var queryFunction = QueryConstants.QueryAdaptFunctionSupport.GetTextInQueryFixedFolder();
             using (SqlCommand command = new SqlCommand(queryTable, con))
             {
                 command.ExecuteNonQuery();
             }
-            using (SqlCommand command = new SqlCommand(queryCheckFunctionExist, con))
-            {
-                command.ExecuteNonQuery();
-            }
-            using (SqlCommand command = new SqlCommand(queryFunction, con))
+            //function get new value
+            CheckFunctionExist(con, FunctionConstants.GetNewValue);
+            var queryFunctionGetNewValue = QueryConstants.QueryAdaptFunctionGetNewValue.GetTextInQueryFixedFolder();
+            Execute(con, queryFunctionGetNewValue);
+            //function get state id
+            CheckFunctionExist(con, FunctionConstants.GetStateID);
+            var queryFunctionGetStateID = QueryConstants.QueryAdaptFunctionGetStateID.GetTextInQueryFixedFolder();
+            Execute(con, queryFunctionGetStateID);
+            //function get county id
+            CheckFunctionExist(con, FunctionConstants.GetCountyID);
+            var queryFunctionGetCountyID = QueryConstants.QueryAdaptFunctionGetCountyID.GetTextInQueryFixedFolder();
+            Execute(con, queryFunctionGetCountyID);
+            //function get postal code id
+            CheckFunctionExist(con, FunctionConstants.GetPostalCodeID);
+            var queryFunctionGetPostalCodeID = QueryConstants.QueryAdaptFunctionGetPostalCodeID.GetTextInQueryFixedFolder();
+            Execute(con, queryFunctionGetPostalCodeID);
+            //view pivot pref1 required table
+            CheckViewExist(con, ViewConstants.Pref1_Pivot_Required);
+            var queryViewPref1Pivot_Required = QueryConstants.QueryAdaptViewPref1Pivot_Required.GetTextInQueryFixedFolder();
+            Execute(con, queryViewPref1Pivot_Required);
+            //view pivot pref1 default table
+            CheckViewExist(con, ViewConstants.Pref1_Pivot_Default);
+            var queryViewPref1Pivot_Default = QueryConstants.QueryAdaptViewPref1Pivot_Default.GetTextInQueryFixedFolder();
+            Execute(con, queryViewPref1Pivot_Default);
+        }
+
+        private static void CheckViewExist(SqlConnection con,string viewName)
+        {
+            var queryCheckViewExist = string.Format(QueryConstants.QueryAdaptCheckViewExist, viewName);
+            using (SqlCommand command = new SqlCommand(queryCheckViewExist, con))
             {
                 command.ExecuteNonQuery();
             }
         }
-
+        private static void CheckFunctionExist(SqlConnection con,string functionName)
+        {
+            var queryCheckFunctionExist = string.Format(QueryConstants.QueryAdaptCheckFunctionExist, functionName);
+            using (SqlCommand command = new SqlCommand(queryCheckFunctionExist, con))
+            {
+                command.ExecuteNonQuery();
+            }
+        }
+        public static void Execute(SqlConnection con,string query)
+        {
+            using (SqlCommand command = new SqlCommand(query, con))
+            {
+                command.ExecuteNonQuery();
+            }
+        }
         
 
         public static List<DatabaseModel> GetListCompany(string sqlServerName, string dbName,string sqlUserLogin,
@@ -241,6 +319,28 @@ namespace SysproMigration.Utility
             }
         }
 
+        public static int UpdateQueueTable(SqlConnection conn, QueueMigrate queueMigrate)
+        {
+            using (SqlCommand cmd = new SqlCommand(QueryConstants.Update_QueueMigrate, conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@Id", SqlDbType.Int).Value = queueMigrate.Id;
+                cmd.Parameters.Add("@SourceServerName", SqlDbType.VarChar).Value = queueMigrate.SourceServerName;
+                cmd.Parameters.Add("@SourceDatabaseCompany", SqlDbType.VarChar).Value = queueMigrate.SourceDatabaseCompany;
+                cmd.Parameters.Add("@SourceTable", SqlDbType.VarChar).Value = queueMigrate.SourceTable;
+                cmd.Parameters.Add("@TargetServerName", SqlDbType.VarChar).Value = queueMigrate.TargetServerName;
+                cmd.Parameters.Add("@TargetDatabaseCompany", SqlDbType.VarChar).Value = queueMigrate.TargetDatabaseCompany;
+                cmd.Parameters.Add("@TargetTable", SqlDbType.VarChar).Value = queueMigrate.TargetTable;
+                cmd.Parameters.Add("@SqlQuery", SqlDbType.NVarChar).Value = queueMigrate.SqlQuery;
+                cmd.Parameters.Add("@IsLastRecord", SqlDbType.SmallInt).Value = queueMigrate.IsLastRecord;
+                cmd.Parameters.Add("@IsGetKeys", SqlDbType.SmallInt).Value = queueMigrate.IsGetKeys;
+                cmd.Parameters.Add("@FieldsMapId", SqlDbType.SmallInt).Value = queueMigrate.FieldsMapId;
+                cmd.Parameters.Add("@Status", SqlDbType.SmallInt).Value = queueMigrate.Status;
+                cmd.Parameters.Add("@Exception", SqlDbType.NVarChar).Value = queueMigrate.Exception;
+                return cmd.ExecuteNonQuery();
+            }
+        }
+
         public static string GetTextInQueryFixedFolder(this string fileName)
         {
             using (
@@ -256,6 +356,34 @@ namespace SysproMigration.Utility
         public static string ReplaceSpecialCharacter(this string text)
         {
             return Regex.Replace(text, "[^0-9a-zA-Z]+", "");
+        }
+
+        public static SqlConnectionStringBuilder GetObjectConnection(this string conn)
+        {
+            SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(conn);
+            return builder;
+        }
+
+        public static void CloseConnection(this SqlConnection connection)
+        {
+            if (connection != null && connection.State == ConnectionState.Open)
+            {
+                connection.Close();
+                connection.Dispose();
+                connection = null;
+            }
+        }
+        public static SqlConnection CreateAndOpenConnection(this string connectionString, string targetConnection)
+        {
+            var conn = new SqlConnection(connectionString);
+
+            Logging.PushInfo(string.Format("Connecting to {0} SQL Server", targetConnection));
+
+            conn.Open();
+
+            Logging.PushInfo("Connected");
+
+            return conn;
         }
     }
 }

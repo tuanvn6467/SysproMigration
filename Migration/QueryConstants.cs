@@ -13,6 +13,10 @@ namespace Migration
 
         public static string sec_Update_UserInfo = "[st_Security].[dbo].[sec_Update_UserInfo]";
 
+        public static string Update_QueueMigrate = "Update_QueueMigrate";
+
+        public static string Get_QueueMigrate = "Get_QueueMigrate";
+
         public static string QueryAdaptGetCompany =
             "select ROW_NUMBER() over (order by [Create_Date]) as DatabaseID,[Database_Name] as DatabaseName,'' as PhysicalName,0 as TenantID  from [{0}].[dbo].[databases]";
 
@@ -26,13 +30,30 @@ namespace Migration
 
         public static string QueryCreateTableTempDb = "QueryAdaptCreateTempTable.txt";
 
-        public static string QueryAdaptFunctionSupport = "QueryAdaptFunctionSupport.txt";
+        public static string QueryAdaptFunctionGetNewValue = "QueryAdaptFunctionGetNewValue.txt";
+
+        public static string QueryAdaptFunctionGetStateID = "QueryAdaptFunctionGetStateID.txt";
+
+        public static string QueryAdaptFunctionGetCountyID = "QueryAdaptFunctionGetCountyID.txt";
+
+        public static string QueryAdaptFunctionGetPostalCodeID = "QueryAdaptFunctionGetPostalCodeID.txt";
+
+        public static string QueryAdaptViewPref1Pivot_Required = "QueryAdaptViewPref1Pivot_Required.txt";
+
+        public static string QueryAdaptViewPref1Pivot_Default = "QueryAdaptViewPref1Pivot_Default.txt";
 
         public static string QueryAdaptCheckFunctionExist = "use tempdb " +
-                                                            "if exists (select * from sys.objects where object_id = OBJECT_ID(N'[dbo].[GetNewValue]')  " +
+                                                            "if exists (select * from sys.objects where object_id = OBJECT_ID(N'[dbo].[{0}]')  " +
                                                             "AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' )) " +
                                                             "begin " +
-                                                            "drop function [dbo].[GetNewValue] " +
+                                                            "drop function [dbo].[{0}] " +
+                                                            "end; ";
+
+        public static string QueryAdaptCheckViewExist = "use tempdb " +
+                                                            "if exists (select * from sys.objects where object_id = OBJECT_ID(N'[dbo].[{0}]')  " +
+                                                            "AND type IN ( N'V')) " +
+                                                            "begin " +
+                                                            "drop view [dbo].[{0}] " +
                                                             "end; ";
 
         public static string QueryInsertRecordTempDb =
