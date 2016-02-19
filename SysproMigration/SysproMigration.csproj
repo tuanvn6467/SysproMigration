@@ -134,6 +134,7 @@
     <Content Include="Css\main.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
+    <Content Include="QueryFixed\QueryAdaptFunctionConvertPhoneFax.txt" />
     <Content Include="QueryFixed\QueryCRMUpdatePhysicalFieldName.txt" />
     <Content Include="QueryFixed\QueryAdaptConvertFieldName.txt" />
     <Content Include="QueryFixed\QueryAdaptFunctionCompareModuleID.txt" />
@@ -171,8 +172,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="JsonMapping\fieldsMapping_Security.json" />
-    <Content Include="JsonMapping\fieldsMapping_System.json" />
+    <Content Include="JsonMapping\fieldsMapping_RecordData.json" />
     <None Include="Properties\PublishProfiles\SysproMigration.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -208,7 +208,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="JsonMapping\fieldsMapping_Company.json" />
+    <Content Include="JsonMapping\fieldsMapping_SetupData.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\jquery-1.10.2.min.map" />

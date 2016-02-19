@@ -35,8 +35,7 @@ namespace SysproMigration.Controllers
             //SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(_migrator.DestinationConnectionString);
             /*var lstDataBase = Utils.GetListDatabase(builder.DataSource, builder.UserID, builder.Password);
             ViewBag.LstDatabase = lstDataBase;*/
-            ViewBag.TableMigrateCount = _migrator.FieldsMapsCompany.Count() + _migrator.FieldsMapsSystem.Count() +
-                                        _migrator.FieldsMapsSecurity.Count();
+            ViewBag.TableMigrateCount = _migrator.FieldsMaps.Count();
             return View();
         }
 

@@ -43,17 +43,13 @@ namespace Migration
                     result =
                         "(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where TargetServer='.' and OldValTable = (select Email_Address from [adaptv3system].[dbo].[users] where User_ID = Modified_By) order by Id desc) Modified_By";
                     break;
-                case "Salesperson":
-                    result =
-                        "(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where TargetServer='.' and OldValTable = (select Email_Address from [adaptv3system].[dbo].[users] where User_ID = Salesperson) order by Id desc) Salesperson";
-                    break;
                 case "Created_Date":
                     result =
-                        "case when LEN(Created_Date) > 6 then convert(datetime,substring(Created_Date, 1, 4) + '-' + substring(Created_Date, 5, 2) + '-' + substring(Created_Date, 7, 2) + ' ' + substring(Created_Time, 1, 2) + ':' + substring(Created_Time, 3, 2) + ':' + substring(Created_Time, 5, 2)) else null end Created_Date";
+                        "case when Created_Date not like '%0000%' then convert(datetime,substring(Created_Date, 1, 4) + '-' + substring(Created_Date, 5, 2) + '-' + substring(Created_Date, 7, 2) + ' ' + substring(Created_Time, 1, 2) + ':' + substring(Created_Time, 3, 2) + ':' + substring(Created_Time, 5, 2)) else null end Created_Date";
                     break;
                 case "Modified_Date":
                     result =
-                        "case when LEN(Modified_Date) > 6 then convert(datetime,substring(Modified_Date, 1, 4) + '-' + substring(Modified_Date, 5, 2) + '-' + substring(Modified_Date, 7, 2) + ' ' + substring(Modified_Time, 1, 2) + ':' + substring(Modified_Time, 3, 2) + ':' + substring(Modified_Time, 5, 2)) else null end Modified_Date";
+                        "case when Modified_Date not like '%0000%' then convert(datetime,substring(Modified_Date, 1, 4) + '-' + substring(Modified_Date, 5, 2) + '-' + substring(Modified_Date, 7, 2) + ' ' + substring(Modified_Time, 1, 2) + ':' + substring(Modified_Time, 3, 2) + ':' + substring(Modified_Time, 5, 2)) else null end Modified_Date";
                     break;
                 /*case "Syspro_TenantID":
                     result = string.Format("convert(int, {0}) TenantID", tenantID);
@@ -67,7 +63,16 @@ namespace Migration
                 var fieldName = result.Replace("_Syspro_TF", "");
                 result = string.Format("case when {0} = 'T' then 1 else 0 end {0}", fieldName);
             }
-            
+            else if (result.Contains("_Syspro_GetUserID"))
+            {
+                var userField = result.Replace("_Syspro_GetUserID", "");
+                result = string.Format("(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where TargetServer='.' and OldValTable = (select Email_Address from [adaptv3system].[dbo].[users] where User_ID = {0}) order by Id desc) {0}", userField);
+            }
+            else if (result.Contains("_Syspro_Address"))
+            {
+                var nameField = result.Replace("_Syspro_Address", "");
+                result = string.Format("(select top 1 {0} from [dbo].[address] where Attached_To = 'A' and Account_Number = Account_Number and Address_Record_Number = Primary_Address_Record) {0}", nameField);
+            }
             return result;
         }
 

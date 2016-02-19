@@ -1,20 +1,4 @@
 ﻿[
-    /*{
-        "Source": {
-            "Tables": "act",
-            //"Where" : "restaurant_id in ({0})",
-            "OrderBy": "order by Activity_ID"
-        },
-        "Destination": "act_Activity",
-        "Map": {
-            "Activity_ID": "ActivityID",
-            "Account_Number": "AccountNumber",
-            "Contact_Number": "ContactNumber",
-            "convert(date,substring(Activity_Date, 1, 4) + '-' + substring(Activity_Date, 5, 2) + '-' + substring(Activity_Date, 7, 2)) Activity_Date": "ActivityDate",
-            //"syspro_date_Activity_Date" :  "ActivityDate"
-
-        }
-    },*/
     {
         "Id": 1,
         "Source": {
@@ -328,7 +312,7 @@
             "Territory_ID": "TerritoryID",
             "Territory_Name": "TerritoryName",
             "Accounting_System_Code": "AccountingSystemCode",
-            "Salesperson": "Salesperson",
+            "Salesperson_Syspro_GetUserID": "Salesperson",
             "Notes": "Notes",
             "Created_Date": "CreatedDate",
             "Created_By": "CreatedUserID",

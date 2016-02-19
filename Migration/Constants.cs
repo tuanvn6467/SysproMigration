@@ -20,9 +20,8 @@ namespace Migration
         public static string MigrationConnectionConfig = "SysproMigration";
         public static string BatchSizeConfig = "BatchSize";
 
-        public static string FieldMappingFileCompany = "fieldMappingFile_Company";
-        public static string FieldMappingFileSecurity = "fieldMappingFile_Security";
-        public static string FieldMappingFileSystem = "fieldMappingFile_System";
+        public static string FieldsMapping_SetupData = "fieldsMapping_SetupData";
+        public static string FieldsMapping_RecordData = "fieldsMapping_RecordData";
 
         public static string UserSqlAdapt = "userSQLAdapt";
         public static string PassSqlAdapt = "passSQLAdapt";
@@ -38,6 +37,8 @@ namespace Migration
 
         public const string PasswordQuestion = "Default password question?";
         public const string PasswordAnswer = "Default password answer";
+
+        public const string IsMigrateSetup = "IsMigrateSetup";
 
         public static List<string> ListColSupportStatic = new List<string>
         {

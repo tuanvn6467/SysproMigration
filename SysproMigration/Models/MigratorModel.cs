@@ -58,27 +58,40 @@ namespace SysproMigration.Models
 
         public MigratorStatus MigrateStatus { get; set; }
 
-        private List<FieldsMap> _fieldsMapsCompany;
+        private List<FieldsMap> _fieldsMapsSetupData;
 
-        public List<FieldsMap> FieldsMapsCompany
+        public List<FieldsMap> FieldsMapsSetupData
         {
-            get { return _fieldsMapsCompany; }
-            set { _fieldsMapsCompany = value; }
+            get { return _fieldsMapsSetupData; }
+            set { _fieldsMapsSetupData = value; }
         }
-        private List<FieldsMap> _fieldsMapsSystem;
+        private List<FieldsMap> _fieldsMapsRecordData;
 
-        public List<FieldsMap> FieldsMapsSystem
+        public List<FieldsMap> FieldsMapsRecordData
         {
-            get { return _fieldsMapsSystem; }
-            set { _fieldsMapsSystem = value; }
+            get { return _fieldsMapsRecordData; }
+            set { _fieldsMapsRecordData = value; }
         }
-        private List<FieldsMap> _fieldsMapsSecurity;
 
-        public List<FieldsMap> FieldsMapsSecurity
+        public short IsMigrateSetup { get; set; }
+
+        public List<FieldsMap> FieldsMaps
         {
-            get { return _fieldsMapsSecurity; }
-            set { _fieldsMapsSecurity = value; }
+            get
+            {
+                var result = new List<FieldsMap>();
+                if (_fieldsMapsSetupData != null && _fieldsMapsSetupData.Any() && IsMigrateSetup > 0)
+                {
+                    result.AddRange(_fieldsMapsSetupData);
+                }
+                if (_fieldsMapsRecordData != null && _fieldsMapsRecordData.Any())
+                {
+                    result.AddRange(_fieldsMapsRecordData);
+                }
+                return result;
+            }
         }
+
         private string _soureConnectionString;
 
         public string SourceConnectionString
@@ -157,6 +170,7 @@ namespace SysproMigration.Models
             //_migratedFileFolder = Path.Combine(HostingEnvironment.ApplicationPhysicalPath, ConfigurationManager.AppSettings["Server"]);
             //_migratedFilePath = Path.Combine(_migratedFileFolder, ConfigurationManager.AppSettings["sspMigratedRestFile"]);
 
+            IsMigrateSetup = ParseData.GetShort(ConfigurationManager.AppSettings[Constants.IsMigrateSetup]) ?? 0;
             SourceUserAdapt = ConfigurationManager.AppSettings[Constants.UserSqlAdapt];
             SourcePassAdapt = ConfigurationManager.AppSettings[Constants.PassSqlAdapt];
             SourceDbSystemAdapt = ConfigurationManager.AppSettings[Constants.SystemDbAdapt];
@@ -171,35 +185,25 @@ namespace SysproMigration.Models
 
         public void LoadFieldsMap()
         {
-            //read db fields map company
+            //read db fields map setup data
             using (
                 var sr =
                     new StreamReader(Path.Combine(HostingEnvironment.ApplicationPhysicalPath,
-                        ConfigurationManager.AppSettings[Constants.FieldMappingFileCompany])))
+                        ConfigurationManager.AppSettings[Constants.FieldsMapping_SetupData])))
             {
                 var mapString = sr.ReadToEnd();
-                _fieldsMapsCompany = JsonConvert.DeserializeObject<List<FieldsMap>>(mapString) ??
+                _fieldsMapsSetupData = JsonConvert.DeserializeObject<List<FieldsMap>>(mapString) ??
                                      new List<FieldsMap>();
             }
-            //read db fields map system
+            //read db fields map record data
             using (
                 var sr =
                     new StreamReader(Path.Combine(HostingEnvironment.ApplicationPhysicalPath,
-                        ConfigurationManager.AppSettings[Constants.FieldMappingFileSystem])))
+                        ConfigurationManager.AppSettings[Constants.FieldsMapping_RecordData])))
             {
                 var mapString = sr.ReadToEnd();
-                _fieldsMapsSystem = JsonConvert.DeserializeObject<List<FieldsMap>>(mapString) ??
+                _fieldsMapsRecordData = JsonConvert.DeserializeObject<List<FieldsMap>>(mapString) ??
                                     new List<FieldsMap>();
-            }
-            //read db fields map security
-            using (
-                var sr =
-                    new StreamReader(Path.Combine(HostingEnvironment.ApplicationPhysicalPath,
-                        ConfigurationManager.AppSettings[Constants.FieldMappingFileSecurity])))
-            {
-                var mapString = sr.ReadToEnd();
-                _fieldsMapsSecurity = JsonConvert.DeserializeObject<List<FieldsMap>>(mapString) ??
-                                      new List<FieldsMap>();
             }
         }
 
@@ -311,7 +315,7 @@ namespace SysproMigration.Models
 
                 migrationConn1.CloseConnection();
 
-                foreach (var fieldsMap in _fieldsMapsCompany)
+                foreach (var fieldsMap in FieldsMaps)
                 {
                     InsertQueryToQueue(fieldsMap, MigrationConnectionString);
                 }
@@ -340,7 +344,7 @@ namespace SysproMigration.Models
 
                 foreach (var queue in lstQueue)
                 {
-                    var fieldmap = _fieldsMapsCompany.FirstOrDefault(t => t.Id == queue.FieldsMapId);
+                    var fieldmap = FieldsMaps.FirstOrDefault(t => t.Id == queue.FieldsMapId);
                     MigrateFromQueue(queue, fieldmap);
                 }
 

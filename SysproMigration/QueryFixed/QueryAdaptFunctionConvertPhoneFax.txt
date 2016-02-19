@@ -1,0 +1,21 @@
+create function [dbo].[ConvertPhoneFax]
+(
+@Value varchar(255),
+@Ext varchar(4)
+)
+returns varchar(255)
+as
+begin
+	declare @Result varchar(255)
+	set @Result = ''
+	if(len(@Value) > 0)
+	begin
+		set @Result = '(' + LEFT(@Value,3) + ') ' +  SUBSTRING(@Value,3,3) + '-' + SUBSTRING(@Value,6,4)
+		if(len(@Ext) > 0)
+		begin
+			set @Result = @Result + ' Ext ' + @Ext
+		end
+	end
+
+return @Result
+end

@@ -50,7 +50,7 @@ namespace Migration
 
         public static string QueryAdaptConvertFieldName = "QueryAdaptConvertFieldName.txt";
 
-        public static string QueryCRMUpdatePhysicalFieldName = "QueryCRMUpdatePhysicalFieldName.txt";
+        public static string QueryAdaptFunctionConvertPhoneFax = "QueryAdaptFunctionConvertPhoneFax.txt";
 
         public static string QueryAdaptCheckFunctionExist = "use tempdb " +
                                                             "if exists (select * from sys.objects where object_id = OBJECT_ID(N'[dbo].[{0}]')  " +

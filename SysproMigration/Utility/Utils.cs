@@ -233,6 +233,10 @@ namespace SysproMigration.Utility
             CheckFunctionExist(con, FunctionConstants.ConvertFieldName);
             var queryFunctionConvertFieldName = QueryConstants.QueryAdaptConvertFieldName.GetTextInQueryFixedFolder();
             Execute(con, queryFunctionConvertFieldName);
+            //function convert phone fax
+            CheckFunctionExist(con, FunctionConstants.ConvertPhoneFax);
+            var queryFunctionConvertPhoneFax = QueryConstants.QueryAdaptFunctionConvertPhoneFax.GetTextInQueryFixedFolder();
+            Execute(con, queryFunctionConvertPhoneFax);
         }
 
         private static void CheckViewExist(SqlConnection con,string viewName)

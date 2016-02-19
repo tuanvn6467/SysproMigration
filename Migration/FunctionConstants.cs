@@ -20,5 +20,7 @@ namespace Migration
 
         public const string ConvertFieldName = "ConvertFieldName";
 
+        public const string ConvertPhoneFax = "ConvertPhoneFax";
+
     }
 }
