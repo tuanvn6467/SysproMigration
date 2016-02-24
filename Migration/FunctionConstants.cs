@@ -22,5 +22,15 @@ namespace Migration
 
         public const string ConvertPhoneFax = "ConvertPhoneFax";
 
+        public const string GetDate = "GetDate";
+
+        public const string GetDateTime = "GetDateTime";
+
+        public const string GetCurrencyCodeID = "GetCurrencyCodeID";
+
+        public const string ConvertValueByFieldType = "ConvertValueByFieldType";
+
+        public const string ConvertValueMultiple = "ConvertValueMultiple";
+
     }
 }

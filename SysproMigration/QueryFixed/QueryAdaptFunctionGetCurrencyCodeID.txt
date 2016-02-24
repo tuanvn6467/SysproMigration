@@ -1,0 +1,17 @@
+create function [dbo].[GetCurrencyCodeID]
+(
+@CurrencyCode varchar(40)
+)
+returns bigint
+as
+begin
+	declare @Result bigint
+
+	select top 1	@Result = CurrencyID
+		from		(	SELECT [Currency_Code]
+						,ROW_NUMBER() over(order by [Currency_Code]) CurrencyID
+						FROM [adaptv3system].[dbo].[currency_codes]
+					) currency
+	where currency.Currency_Code = @CurrencyCode
+return @Result
+end

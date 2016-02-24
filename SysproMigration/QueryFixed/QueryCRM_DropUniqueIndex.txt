@@ -52,3 +52,9 @@ if(exists (SELECT *
 	begin
 		drop index fld_Field_Ignore_Dup_Key on [{0}].[dbo].[fld_Field]
 	end
+if(exists (SELECT * 
+			FROM [{0}].sys.indexes 
+			WHERE name='tbl_Lookup_Ignore_Dup_Key' AND object_id = OBJECT_ID('[{0}].[dbo].[tbl_Lookup]')))
+	begin
+		drop index tbl_Lookup_Ignore_Dup_Key on [{0}].[dbo].[tbl_Lookup]
+	end

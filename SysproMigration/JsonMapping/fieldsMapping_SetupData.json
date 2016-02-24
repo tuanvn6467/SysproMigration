@@ -577,7 +577,7 @@
         },
 
         "Map": {
-            "1 ModuleID":  "ModuleID",
+            "1 ModuleID": "ModuleID",
             "Rownumber": "RequiredFieldID",
             "0 RequiredModeTypeID": "RequiredModeTypeID",
             "1 ModulePreferenceID": "ModulePreferenceID",
@@ -763,11 +763,11 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[fields] f",
             "OrderBy": "order by Field_ID",
-            "Where":  "f.Record_Source = 'U' and f.Record_Type  not in (4,31,116)"
+            "Where": "f.Record_Source = 'U' and f.Record_Type  not in (4,31,116)"
         },
         "Destination": {
             "Tables": "fld_Field",
-            "Script":  "QueryCRMUpdatePhysicalFieldName.txt"
+            "Script": "QueryCRMUpdatePhysicalFieldName.txt"
         },
         "NeedTruncate": false,
         "Map": {
@@ -775,7 +775,7 @@
             "[tempdb].[dbo].[CompareModuleID](Record_Type) ModuleID": "ModuleID",
             "[tempdb].[dbo].[CompareModuleID](Record_Type) TableID": "TableID",
             "[tempdb].[dbo].[ConvertFieldName](Field_Name) Field_Name": "FieldName",
-            "[tempdb].[dbo].[ConvertFieldName](Field_Name) FieldLabel":  "FieldLabel",
+            "[tempdb].[dbo].[ConvertFieldName](Field_Name) FieldLabel": "FieldLabel",
             "Field_Type": "FieldTypeID",
             "Storage": "Storage",
             "Picture": "Picture",
@@ -788,11 +788,274 @@
             "Required_Syspro_TF": "IsRequired",
             "Default_Prompt": "DefaultPrompt",
             "7 ProcessStatusID": "ProcessStatusID",
-            "Notes":  "Notes",
+            "Notes": "Notes",
             "Created_Date": "CreatedDate",
             "Created_By": "CreatedUserID",
             "Modified_Date": "UpdatedDate",
             "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[lookup] to [dbo].[tbl_Lookup]
+    //Account lookup : 1
+    {
+        "Id": 37,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[lookup] lu",
+            "OrderBy": "order by Table_ID"
+        },
+        "Destination": {
+            "Tables": "tbl_Lookup"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "Table_ID + 1000 LookupID": "LookupID",
+            "Table_Name": "LookupName",
+            "1 ModuleID": "ModuleID",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[lookup] to [dbo].[tbl_Lookup]
+    //Contact lookup : 6
+    {
+        "Id": 38,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[lookup] lu",
+            "OrderBy": "order by Table_ID"
+        },
+        "Destination": {
+            "Tables": "tbl_Lookup"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "Table_ID + 6000 LookupID": "LookupID",
+            "Table_Name": "LookupName",
+            "6 ModuleID": "ModuleID",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[lookup] to [dbo].[tbl_Lookup]
+    //Opportunity lookup : 2
+    {
+        "Id": 39,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[lookup] lu",
+            "OrderBy": "order by Table_ID"
+        },
+        "Destination": {
+            "Tables": "tbl_Lookup"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "Table_ID + 2000 LookupID": "LookupID",
+            "Table_Name": "LookupName",
+            "2 ModuleID": "ModuleID",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[lookup] to [dbo].[tbl_Lookup]
+    //Service ticket lookup : 3
+    {
+        "Id": 40,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[lookup] lu",
+            "OrderBy": "order by Table_ID"
+        },
+        "Destination": {
+            "Tables": "tbl_Lookup"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "Table_ID + 3000 LookupID": "LookupID",
+            "Table_Name": "LookupName",
+            "3 ModuleID": "ModuleID",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[lookup] to [dbo].[tbl_Lookup]
+    //Campaign lookup : 5
+    {
+        "Id": 41,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[lookup] lu",
+            "OrderBy": "order by Table_ID"
+        },
+        "Destination": {
+            "Tables": "tbl_Lookup"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "Table_ID + 5000 LookupID": "LookupID",
+            "Table_Name": "LookupName",
+            "5 ModuleID": "ModuleID",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[lookupd] to [dbo].[tbl_Lookup_Value]
+    //Account lookup : 1
+    {
+        "Id": 42,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[lookupd] lud",
+            "OrderBy": "order by Table_ID"
+        },
+        "Destination": {
+            "Tables": "tbl_Lookup_Value"
+        },
+        "Map": {
+            "ROW_NUMBER() OVER (ORDER BY (SELECT 100000)) + 1000 ValueID": "ValueID",
+            "Table_ID + 1000 LookupID": "LookupID",
+            "Value": "ValueName",
+            "Description": "Notes",
+            "0 SeqNo": "SeqNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[lookup] to [dbo].[tbl_Lookup]
+    //Contact lookup : 6
+    {
+        "Id": 43,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[lookupd] lud",
+            "OrderBy": "order by Table_ID"
+        },
+        "Destination": {
+            "Tables": "tbl_Lookup_Value"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "ROW_NUMBER() OVER (ORDER BY (SELECT 100000)) + 6000 ValueID": "ValueID",
+            "Table_ID + 6000 LookupID": "LookupID",
+            "Value": "ValueName",
+            "Description": "Notes",
+            "0 SeqNo": "SeqNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[lookup] to [dbo].[tbl_Lookup]
+    //Opportunity lookup : 2
+    {
+        "Id": 44,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[lookupd] lud",
+            "OrderBy": "order by Table_ID"
+        },
+        "Destination": {
+            "Tables": "tbl_Lookup_Value"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "ROW_NUMBER() OVER (ORDER BY (SELECT 100000)) + 2000 ValueID": "ValueID",
+            "Table_ID + 2000 LookupID": "LookupID",
+            "Value": "ValueName",
+            "Description": "Notes",
+            "0 SeqNo": "SeqNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[lookup] to [dbo].[tbl_Lookup]
+    //Service ticket lookup : 3
+    {
+        "Id": 45,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[lookupd] lud",
+            "OrderBy": "order by Table_ID"
+        },
+        "Destination": {
+            "Tables": "tbl_Lookup_Value"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "ROW_NUMBER() OVER (ORDER BY (SELECT 100000)) + 3000 ValueID": "ValueID",
+            "Table_ID + 3000 LookupID": "LookupID",
+            "Value": "ValueName",
+            "Description": "Notes",
+            "0 SeqNo": "SeqNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[lookup] to [dbo].[tbl_Lookup]
+    //Campaign lookup : 5
+    {
+        "Id": 46,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[lookupd] lud",
+            "OrderBy": "order by Table_ID"
+        },
+        "Destination": {
+            "Tables": "tbl_Lookup_Value"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "ROW_NUMBER() OVER (ORDER BY (SELECT 100000)) + 5000 ValueID":  "ValueID",
+            "Table_ID + 5000 LookupID": "LookupID",
+            "Value": "ValueName",
+            "Description": "Notes",
+            "0 SeqNo": "SeqNo"
+        }
+    } ,
+    //migrate [dbo].[fldval] to fld_Multi_FieldValue with field multiple
+    {
+        "Id": 47,
+        "Source": {
+            "Tables": "[dbo].[fldval] fv",
+            "OrderBy": "order by Parent_Record_ID",
+            "Join": "inner join  [adaptv3system].[dbo].[fields] f on fv.Field_ID = f.Field_ID",
+            "Where":  "f.Record_Source = 'U' and f.Number_of_Values = 2"
+        },
+        "Destination": {
+            "Tables": "fld_Multi_FieldValue"
+            //"Script": "QueryCRM_Update_fld_Multi_FieldValue_IsPrimary.txt"
+        },
+        "Map": {
+            "convert(bigint, Parent_Record_ID) RecID": "RecID",
+            "fv.Field_ID": "FieldID",
+            "[tempdb].[dbo].[ConvertValueMultiple](fv.Field_ID,Value) Value": "FieldVal"
+        }
+    },
+    //migrate [dbo].[fldmemo] to fld_Field_Value
+    {
+        "Id": 48,
+        "Source": {
+            "Tables": "[dbo].[fldmemo] fm",
+            "OrderBy": "order by Parent_Record_ID"
+        },
+        "Destination": {
+            "Tables": "fld_Field_Value"
+        },
+        "Map": {
+            "convert(bigint, Parent_Record_ID) RecID": "RecID",
+            "Field_ID": "FieldID",
+            "Memo_Value": "FieldMemo"
+        }
+    },
+    //migrate [dbo].[fldval] to fld_Field_Value with field single
+    {
+        "Id": 49,
+        "Source": {
+            "Tables": "[dbo].[fldval] fv",
+            "OrderBy": "order by Parent_Record_ID",
+            "Join": "inner join  [adaptv3system].[dbo].[fields] f on fv.Field_ID = f.Field_ID",
+            "Where":  "f.Record_Source = 'U' and f.Number_of_Values = 1"
+        },
+        "Destination": {
+            "Tables": "fld_Field_Value"
+        },
+        "NeedTruncate":  false,
+        "Map": {
+            "convert(bigint, Parent_Record_ID) RecID": "RecID",
+            "fv.Field_ID": "FieldID",
+            "[tempdb].[dbo].[ConvertValueByFieldType](Value,f.Field_Type) FieldVal": "FieldVal"
         }
     }
 ]

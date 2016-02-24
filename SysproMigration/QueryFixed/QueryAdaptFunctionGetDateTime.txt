@@ -1,0 +1,14 @@
+Create Function [dbo].[GetDateTime]
+(
+	@Date varchar(255),
+	@Time varchar(255)
+)
+Returns datetime
+AS
+Begin
+	declare @Result datetime
+	set @Result = case when @Date not like '%0000%' and Len(@Date) > 0
+						then convert(datetime,substring(@Date, 1, 4) + '-' + substring(@Date, 5, 2) + '-' + substring(@Date, 7, 2) 
+									+ ' ' + substring(@Time, 1, 2) + ':' + substring(@Time, 3, 2) + ':' + substring(@Time, 5, 2)) else null end 
+	return @Result
+End

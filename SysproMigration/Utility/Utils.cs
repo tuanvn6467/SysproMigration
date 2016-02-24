@@ -217,6 +217,10 @@ namespace SysproMigration.Utility
             CheckFunctionExist(con, FunctionConstants.GetPostalCodeID);
             var queryFunctionGetPostalCodeID = QueryConstants.QueryAdaptFunctionGetPostalCodeID.GetTextInQueryFixedFolder();
             Execute(con, queryFunctionGetPostalCodeID);
+            //function get currency code Id
+            CheckFunctionExist(con, FunctionConstants.GetCurrencyCodeID);
+            var queryFunctionGetCurrencyCodeID = QueryConstants.QueryAdaptFunctionGetCurrencyCodeID.GetTextInQueryFixedFolder();
+            Execute(con, queryFunctionGetCurrencyCodeID);
             //view pivot pref1 required table
             CheckViewExist(con, ViewConstants.Pref1_Pivot_Required);
             var queryViewPref1Pivot_Required = QueryConstants.QueryAdaptViewPref1Pivot_Required.GetTextInQueryFixedFolder();
@@ -237,6 +241,22 @@ namespace SysproMigration.Utility
             CheckFunctionExist(con, FunctionConstants.ConvertPhoneFax);
             var queryFunctionConvertPhoneFax = QueryConstants.QueryAdaptFunctionConvertPhoneFax.GetTextInQueryFixedFolder();
             Execute(con, queryFunctionConvertPhoneFax);
+            //function get date
+            CheckFunctionExist(con, FunctionConstants.GetDate);
+            var queryFunctionGetDate = QueryConstants.QueryAdaptFunctionGetDate.GetTextInQueryFixedFolder();
+            Execute(con, queryFunctionGetDate);
+            //function get date time
+            CheckFunctionExist(con, FunctionConstants.GetDateTime);
+            var queryFunctionGetDateTime = QueryConstants.QueryAdaptFunctionGetDateTime.GetTextInQueryFixedFolder();
+            Execute(con, queryFunctionGetDateTime);
+            //function convert value by field type
+            CheckFunctionExist(con, FunctionConstants.ConvertValueByFieldType);
+            var queryFunctionConvertValueByFieldType = QueryConstants.QueryAdaptFunctionConvertValueByFieldType.GetTextInQueryFixedFolder();
+            Execute(con, queryFunctionConvertValueByFieldType);
+            //function convert value multiple
+            CheckFunctionExist(con, FunctionConstants.ConvertValueMultiple);
+            var queryFunctionConvertValueMultiple = QueryConstants.QueryAdaptFunctionConvertValueMultiple.GetTextInQueryFixedFolder();
+            Execute(con, queryFunctionConvertValueMultiple);
         }
 
         private static void CheckViewExist(SqlConnection con,string viewName)

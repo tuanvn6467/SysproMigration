@@ -8,7 +8,7 @@ select
 from [dbo].[fld_Field] f
 inner join [dbo].[mdl_Table] mt 
 	on	mt.ModuleID		= f.ModuleID
-where f.CreatedUserID <> -1
+where (f.CreatedUserID <> -1 or f.CreatedUserID is null)
 		and mt.TableName is not null
 		and not exists(select 1 from information_schema.columns c 
 							where	c.TABLE_NAME = mt.PhysicalName

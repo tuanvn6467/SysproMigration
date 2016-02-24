@@ -1,0 +1,36 @@
+ create Function [dbo].[ConvertValueByFieldType]
+(
+	@Value varchar(255),
+	@FieldTypeID int
+)
+Returns varchar(255)
+AS
+Begin
+	declare @Result varchar(255)
+	set @Value = isnull(@Value,'')
+	set @Result = @Value
+	if(@FieldTypeID = 5) -- logical
+		begin
+			set @Result = case when @Value = 'Y' then 1 else 0 end
+		end
+	else if(@FieldTypeID = 2) -- numeric
+		begin
+			set @Result = case when Len(@Value) > 0 then RTRIM(LTRIM(@Value)) else '' end
+		end
+	else if(@FieldTypeID = 12) -- user
+		begin
+			set @Result = (select top 1 NewValTable 
+							from [tempdb].[dbo].[MigrateSupport] 
+							where TargetServer='.' and OldValTable = (select Email_Address from [adaptv3system].[dbo].[users] where User_ID = @Value) order by Id desc)
+		end
+	else if(@FieldTypeID = 3) -- date
+		begin
+			set @Result = convert(varchar(255),[tempdb].[dbo].[GetDate](@Value)) 
+		end
+	else if(@FieldTypeID = 4) -- time
+		begin
+			set @Result = case when @Value not like '%0000%' and Len(@Value) > 0
+								then substring(@Value, 1, 2) + ':' + substring(@Value, 3, 2) + ':' + substring(@Value, 5, 2) else null end 
+		end
+	return @Result
+End

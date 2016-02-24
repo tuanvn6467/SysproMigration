@@ -1,0 +1,57 @@
+CREATE Function [dbo].[ConvertValueMultiple]
+(
+	@FieldID int,
+	@Value varchar(255)
+)
+Returns varchar(MAX)
+AS
+Begin
+	declare @Result varchar(MAX),
+			@FieldTypeID int
+	set @Value = isnull(@Value,'')
+	set @Result = @Value
+	set @FieldTypeID = (select Field_Type from [adaptv3system].[dbo].[fields] where Field_ID = @FieldID)
+	if(@FieldTypeID = 1) --alphanumeric
+	begin
+		declare @LookupTable	int,
+				@ModuleID		int
+		set @LookupTable = (select Lookup_Table from [adaptv3system].[dbo].[fields] where Field_ID = @FieldID)
+		set @ModuleID = (select Record_Type from [adaptv3system].[dbo].[fields] where Field_ID = @FieldID)
+		if(@LookupTable > 0) --get value from lookup table
+		begin
+			if(@ModuleID = 1 or  --Account
+				@ModuleID = 6 or --Contact
+				@ModuleID = 2 or --Opportunity
+				@ModuleID = 3 or --Service ticket
+				@ModuleID = 5 --Campaign
+			)
+			begin
+				set @Result = (select top 1 ValueID from 
+								(select ROW_NUMBER() OVER (ORDER BY (SELECT 100000)) + 1000 * @ModuleID ValueID
+										,Table_ID
+										,Value 
+										from [adaptv3system].[dbo].[lookupd]) t where t.Table_ID = @LookupTable and t.Value = @Value)
+			end
+		end
+	end
+	else if(@FieldTypeID = 2) -- numeric
+		begin
+			set @Result = case when Len(@Value) > 0 then RTRIM(LTRIM(@Value)) else '' end
+		end
+	else if(@FieldTypeID = 12) -- user
+		begin
+			set @Result = (select top 1 NewValTable 
+							from [tempdb].[dbo].[MigrateSupport] 
+							where TargetServer='.' and OldValTable = (select Email_Address from [adaptv3system].[dbo].[users] where User_ID = @Value) order by Id desc)
+		end
+	else if(@FieldTypeID = 3) -- date
+		begin
+			set @Result = convert(varchar(255),[tempdb].[dbo].[GetDate](@Value)) 
+		end
+	else if(@FieldTypeID = 4) -- time
+		begin
+			set @Result = case when @Value not like '%0000%' and Len(@Value) > 0
+								then substring(@Value, 1, 2) + ':' + substring(@Value, 3, 2) + ':' + substring(@Value, 5, 2) else null end 
+		end
+	return @Result
+End

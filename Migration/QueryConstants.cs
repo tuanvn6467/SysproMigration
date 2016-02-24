@@ -52,6 +52,16 @@ namespace Migration
 
         public static string QueryAdaptFunctionConvertPhoneFax = "QueryAdaptFunctionConvertPhoneFax.txt";
 
+        public static string QueryAdaptFunctionGetDate = "QueryAdaptFunctionGetDate.txt";
+
+        public static string QueryAdaptFunctionGetDateTime = "QueryAdaptFunctionGetDateTime.txt";
+
+        public static string QueryAdaptFunctionGetCurrencyCodeID = "QueryAdaptFunctionGetCurrencyCodeID.txt";
+
+        public static string QueryAdaptFunctionConvertValueByFieldType = "QueryAdaptFunctionConvertValueByFieldType.txt";
+
+        public static string QueryAdaptFunctionConvertValueMultiple = "QueryAdaptFunctionConvertValueMultiple.txt";
+
         public static string QueryAdaptCheckFunctionExist = "use tempdb " +
                                                             "if exists (select * from sys.objects where object_id = OBJECT_ID(N'[dbo].[{0}]')  " +
                                                             "AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' )) " +

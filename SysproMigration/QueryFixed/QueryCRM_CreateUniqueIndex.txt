@@ -82,3 +82,15 @@ if(exists (SELECT *
 			[ModuleID],
 			[FieldLabel]
 	) with IGNORE_DUP_KEY 
+if(exists (SELECT * 
+			FROM [{0}].sys.indexes 
+			WHERE name='tbl_Lookup_Ignore_Dup_Key' AND object_id = OBJECT_ID('[{0}].[dbo].[tbl_Lookup]')))
+	begin
+		drop index tbl_Lookup_Ignore_Dup_Key on [{0}].[dbo].[tbl_Lookup]
+	end
+	create unique index tbl_Lookup_Ignore_Dup_Key on [Crm_MigrateA_200].[dbo].[tbl_Lookup](
+			[LookupID],
+			[LookupName],
+			[ModuleID],
+			PhysicalName
+	) with IGNORE_DUP_KEY 

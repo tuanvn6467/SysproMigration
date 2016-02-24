@@ -10,7 +10,7 @@ begin
 	set @Result = ''
 	if(len(@Value) > 0)
 	begin
-		set @Result = '(' + LEFT(@Value,3) + ') ' +  SUBSTRING(@Value,3,3) + '-' + SUBSTRING(@Value,6,4)
+		set @Result = '(' + LEFT(@Value,3) + ') ' +  SUBSTRING(@Value,4,3) + '-' + SUBSTRING(@Value,7,4)
 		if(len(@Ext) > 0)
 		begin
 			set @Result = @Result + ' Ext ' + @Ext

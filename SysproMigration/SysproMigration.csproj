@@ -134,6 +134,11 @@
     <Content Include="Css\main.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
+    <Content Include="QueryFixed\QueryAdaptFunctionConvertValueMultiple.txt" />
+    <Content Include="QueryFixed\QueryAdaptFunctionGetCurrencyCodeID.txt" />
+    <Content Include="QueryFixed\QueryAdaptFunctionGetDate.txt" />
+    <Content Include="QueryFixed\QueryAdaptFunctionConvertValueByFieldType.txt" />
+    <Content Include="QueryFixed\QueryAdaptFunctionGetDateTime.txt" />
     <Content Include="QueryFixed\QueryAdaptFunctionConvertPhoneFax.txt" />
     <Content Include="QueryFixed\QueryCRMUpdatePhysicalFieldName.txt" />
     <Content Include="QueryFixed\QueryAdaptConvertFieldName.txt" />
@@ -141,6 +146,8 @@
     <Content Include="QueryFixed\QueryCRM_DropUniqueIndex.txt" />
     <Content Include="QueryFixed\QueryCRM_CreateUniqueIndex.txt" />
     <Content Include="QueryFixed\QueryAdaptViewPref1Pivot_Default.txt" />
+    <Content Include="QueryFixed\QueryCRM_Update_Data_To_Custom_Field.txt" />
+    <Content Include="QueryFixed\QueryCRM_Update_fld_Multi_FieldValue_IsPrimary.txt" />
     <Content Include="QueryFixed\QueryCRM_Update_utl_Module_PreferDefault_Field.txt" />
     <Content Include="QueryFixed\QueryCRM_Update_utl_Module_PreferRequired_Field.txt" />
     <Content Include="QueryFixed\QueryAdaptViewPref1Pivot_Required.txt" />

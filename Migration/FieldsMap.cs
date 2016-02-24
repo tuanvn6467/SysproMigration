@@ -51,7 +51,15 @@ namespace Migration
                     result =
                         "case when Modified_Date not like '%0000%' then convert(datetime,substring(Modified_Date, 1, 4) + '-' + substring(Modified_Date, 5, 2) + '-' + substring(Modified_Date, 7, 2) + ' ' + substring(Modified_Time, 1, 2) + ':' + substring(Modified_Time, 3, 2) + ':' + substring(Modified_Time, 5, 2)) else null end Modified_Date";
                     break;
-                /*case "Syspro_TenantID":
+                case "Notes":
+                    result =
+                        "case when Notes is not null then RTRIM(LTRIM(Notes)) else null end Notes";
+                    break;
+                case "Notes_Text":
+                    result =
+                        "Notes";
+                    break;
+                    /*case "Syspro_TenantID":
                     result = string.Format("convert(int, {0}) TenantID", tenantID);
                     break;*/
             }
@@ -84,14 +92,10 @@ namespace Migration
             res = res.TrimEnd(',');
             res += " from " + Source.Tables;
 
-            /*if (!string.IsNullOrEmpty(Source.Join))
+            if (!string.IsNullOrEmpty(Source.Join))
             {
                 res += " " + Source.Join;
-                if (!string.IsNullOrEmpty(tenantIdList))
-                {
-                    res = string.Format(res, tenantIdList);
-                }
-            }*/
+            }
 
             if (!string.IsNullOrEmpty(Source.Where))
             {
