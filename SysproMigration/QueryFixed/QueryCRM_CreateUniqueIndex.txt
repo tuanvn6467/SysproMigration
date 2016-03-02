@@ -78,9 +78,10 @@ if(exists (SELECT *
 		drop index fld_Field_Ignore_Dup_Key on [{0}].[dbo].[fld_Field]
 	end
 	create unique index fld_Field_Ignore_Dup_Key on [{0}].[dbo].[fld_Field](
-			[FieldName],
-			[ModuleID],
-			[FieldLabel]
+			--[FieldName],
+			--[ModuleID],
+			--[FieldLabel]
+			[FieldID]
 	) with IGNORE_DUP_KEY 
 if(exists (SELECT * 
 			FROM [{0}].sys.indexes 
@@ -88,7 +89,7 @@ if(exists (SELECT *
 	begin
 		drop index tbl_Lookup_Ignore_Dup_Key on [{0}].[dbo].[tbl_Lookup]
 	end
-	create unique index tbl_Lookup_Ignore_Dup_Key on [Crm_MigrateA_200].[dbo].[tbl_Lookup](
+	create unique index tbl_Lookup_Ignore_Dup_Key on [{0}].[dbo].[tbl_Lookup](
 			[LookupID],
 			[LookupName],
 			[ModuleID],

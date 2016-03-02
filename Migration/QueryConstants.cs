@@ -21,7 +21,7 @@ namespace Migration
             "select ROW_NUMBER() over (order by [Create_Date]) as DatabaseID,[Database_Name] as DatabaseName,'' as PhysicalName,0 as TenantID  from [{0}].[dbo].[databases]";
 
         public static string QueryNewCrmGetCompany =
-            "select [DatabaseID],[DatabaseName],[PhysicalName],[TenantID],[CreatedDate] from [{0}].[dbo].[utl_Database] where SQLUserName = '{1}' and SQLPassword = '{2}'";
+            "select [DatabaseID],[DatabaseName],[PhysicalName],[TenantID],[CreatedDate] from [{0}].[dbo].[utl_Database] where SQLUserName = '{1}' and SQLPassword = '{2}' and StatusID = 1";
 
         /*public static string QueryAdaptGetUsers =
             "select 0 UserID,User_ID UserName, Email_Address Email from [adaptv3system].[dbo].[users]";*/
@@ -45,6 +45,10 @@ namespace Migration
         public static string QueryCRM_CreateUniqueIndex = "QueryCRM_CreateUniqueIndex.txt";
 
         public static string QueryCRM_DropUniqueIndex = "QueryCRM_DropUniqueIndex.txt";
+
+        public static string QueryAdapt_CreateIndexTable = "QueryAdapt_CreateIndexTable.txt";
+
+        public static string QueryAdapt_DropIndexTable = "QueryAdapt_DropIndexTable.txt";
 
         public static string QueryAdaptFunctionCompareModuleID = "QueryAdaptFunctionCompareModuleID.txt";
 

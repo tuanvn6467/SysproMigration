@@ -1,6 +1,56 @@
 create view [dbo].[Pref1_Pivot_Required] 
   as 
-  select RequiredFieldName, RequiredTypeID, ROW_NUMBER() OVER (ORDER BY (SELECT 100)) Rownumber
+  select RequiredFieldName, RequiredTypeID, 
+case	when (RequiredFieldName = 'AccountName') then 2 
+		when (RequiredFieldName = 'TelephoneNumber') then 5 
+		when (RequiredFieldName = 'FaxNumber') then 6 
+		when (RequiredFieldName = 'EmailAddress') then 7
+		when (RequiredFieldName = 'WebAddress') then 8 
+		when (RequiredFieldName = 'AddressLine1') then 9 
+		when (RequiredFieldName = 'City') then 12 
+		when (RequiredFieldName = 'County') then 13 
+		when (RequiredFieldName = 'State') then 14 
+		when (RequiredFieldName = 'PostalCode') then 15 
+		when (RequiredFieldName = 'Country') then 16 
+		when (RequiredFieldName = 'BusinessType') then 23 
+		when (RequiredFieldName = 'Territory') then 24 
+		when (RequiredFieldName = 'AccountManager') then 25 
+		when (RequiredFieldName = 'AccountType') then 26 
+		when (RequiredFieldName = 'OriginalPrimarySource') then 28 
+		when (RequiredFieldName = 'CurrencyCode') then 74 
+		when (RequiredFieldName = 'Language') then 90 end RequiredFieldID,
+
+case	when RequiredFieldName = 'AccountName' then 1
+		when  RequiredFieldName = 'TelephoneNumber' then 2
+		when  RequiredFieldName = 'FaxNumber' then 3
+		when  RequiredFieldName = 'EmailAddress' then 4
+		when  RequiredFieldName = 'WebAddress' then 5
+		when  RequiredFieldName = 'AddressLine1' then 6
+		when  RequiredFieldName = 'City' then 7
+		when  RequiredFieldName = 'County' then 8
+		when  RequiredFieldName = 'State' then 9
+		when  RequiredFieldName = 'PostalCode' then 1
+		when  RequiredFieldName = 'Country' then 2
+		when  RequiredFieldName = 'BusinessType' then 5
+		when  RequiredFieldName = 'Territory' then 6
+		when  RequiredFieldName = 'AccountManager' then 7
+		when  RequiredFieldName = 'AccountType' then 3
+		when  RequiredFieldName = 'OriginalPrimarySource' then 4
+		when  RequiredFieldName = 'CurrencyCode' then 9
+		when  RequiredFieldName = 'Language' then 8 end SeqNo,
+
+case	when RequiredFieldName = 'AccountName' 
+			or  RequiredFieldName = 'TelephoneNumber'
+			or  RequiredFieldName = 'FaxNumber'
+			or  RequiredFieldName = 'EmailAddress'
+			or  RequiredFieldName = 'WebAddress'
+			or  RequiredFieldName = 'AddressLine1' 
+			or  RequiredFieldName = 'City'
+			or  RequiredFieldName = 'County' 
+			or  RequiredFieldName = 'State' 
+			then 1
+			else 2 end ColNo,
+	  ROW_NUMBER() OVER (ORDER BY (SELECT 100)) Rownumber
 	  from
 	  (select [Account_Name_Required] AccountName
       ,[Telephone_Number_Required] TelephoneNumber

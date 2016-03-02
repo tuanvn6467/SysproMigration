@@ -19,13 +19,13 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>01/16/2016 09:59:55</publishTime>
     </File>
     <File Include="bin/Migration.dll">
-      <publishTime>02/02/2016 14:37:57</publishTime>
+      <publishTime>03/01/2016 15:47:57</publishTime>
     </File>
     <File Include="bin/Newtonsoft.Json.dll">
       <publishTime>01/18/2016 09:51:22</publishTime>
     </File>
     <File Include="bin/SysproMigration.dll">
-      <publishTime>02/02/2016 15:12:51</publishTime>
+      <publishTime>03/01/2016 15:47:57</publishTime>
     </File>
     <File Include="bin/System.Web.Helpers.dll">
       <publishTime>01/16/2016 09:59:54</publishTime>
@@ -72,23 +72,107 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="JsonMapping/fieldsMapping_Company.json">
       <publishTime>02/02/2016 14:33:00</publishTime>
     </File>
+    <File Include="JsonMapping/fieldsMapping_RecordData.json">
+      <publishTime>02/29/2016 09:26:50</publishTime>
+    </File>
     <File Include="JsonMapping/fieldsMapping_Security.json">
       <publishTime>01/21/2016 16:49:44</publishTime>
+    </File>
+    <File Include="JsonMapping/fieldsMapping_SetupData.json">
+      <publishTime>03/01/2016 15:40:22</publishTime>
     </File>
     <File Include="JsonMapping/fieldsMapping_System.json">
       <publishTime>01/21/2016 16:49:47</publishTime>
     </File>
+    <File Include="JsonMapping/fieldsMapping_UpdateLastest.json">
+      <publishTime>03/01/2016 15:44:06</publishTime>
+    </File>
     <File Include="packages.config">
       <publishTime>01/19/2016 17:47:37</publishTime>
     </File>
+    <File Include="QueryFixed/QueryAdaptConvertFieldName.txt">
+      <publishTime>02/25/2016 14:47:52</publishTime>
+    </File>
     <File Include="QueryFixed/QueryAdaptCreateTempTable.txt">
-      <publishTime>02/02/2016 11:23:57</publishTime>
+      <publishTime>02/05/2016 14:47:33</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryAdaptFunctionCompareModuleID.txt">
+      <publishTime>02/18/2016 15:28:56</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryAdaptFunctionConvertPhoneFax.txt">
+      <publishTime>02/23/2016 11:47:46</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryAdaptFunctionConvertValueByFieldType.txt">
+      <publishTime>03/01/2016 10:51:28</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryAdaptFunctionConvertValueMultiple.txt">
+      <publishTime>02/29/2016 15:34:18</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryAdaptFunctionGetCountyID.txt">
+      <publishTime>02/16/2016 10:35:26</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryAdaptFunctionGetCurrencyCodeID.txt">
+      <publishTime>02/22/2016 13:57:51</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryAdaptFunctionGetDate.txt">
+      <publishTime>02/29/2016 18:02:24</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryAdaptFunctionGetDateTime.txt">
+      <publishTime>02/29/2016 15:32:30</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryAdaptFunctionGetNewValue.txt">
+      <publishTime>02/02/2016 13:27:01</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryAdaptFunctionGetPostalCodeID.txt">
+      <publishTime>02/16/2016 10:55:22</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryAdaptFunctionGetStateID.txt">
+      <publishTime>02/16/2016 10:56:41</publishTime>
     </File>
     <File Include="QueryFixed/QueryAdaptFunctionSupport.txt">
       <publishTime>02/02/2016 13:27:01</publishTime>
     </File>
     <File Include="QueryFixed/QueryAdaptGetUsers.txt">
-      <publishTime>01/26/2016 14:18:02</publishTime>
+      <publishTime>02/15/2016 10:38:38</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryAdaptViewPref1Pivot_Default.txt">
+      <publishTime>02/26/2016 16:56:18</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryAdaptViewPref1Pivot_Required.txt">
+      <publishTime>02/26/2016 16:56:29</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryAdapt_CreateIndexTable.txt">
+      <publishTime>02/29/2016 11:10:32</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryAdapt_DropIndexTable.txt">
+      <publishTime>02/29/2016 11:07:12</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryCRMUpdatePhysicalFieldName.txt">
+      <publishTime>02/24/2016 10:15:40</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryCRM_CreatePrimaryKeyAdapt.txt">
+      <publishTime>02/29/2016 09:55:11</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryCRM_CreateUniqueIndex.txt">
+      <publishTime>02/29/2016 09:54:31</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryCRM_DropPrimaryKeyAdapt.txt">
+      <publishTime>02/29/2016 09:55:10</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryCRM_DropUniqueIndex.txt">
+      <publishTime>02/29/2016 09:43:14</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryCRM_Update_Data_To_Custom_Field.txt">
+      <publishTime>03/01/2016 14:46:46</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryCRM_Update_fld_Multi_FieldValue_IsPrimary.txt">
+      <publishTime>02/25/2016 15:45:30</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryCRM_Update_utl_Module_PreferDefault_Field.txt">
+      <publishTime>02/17/2016 16:56:18</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryCRM_Update_utl_Module_PreferRequired_Field.txt">
+      <publishTime>02/17/2016 15:45:41</publishTime>
     </File>
     <File Include="Scripts/bootstrap.js">
       <publishTime>01/16/2016 16:31:53</publishTime>
@@ -163,19 +247,19 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>01/20/2016 10:55:33</publishTime>
     </File>
     <File Include="Scripts/migrationController.js">
-      <publishTime>02/01/2016 15:28:38</publishTime>
+      <publishTime>02/05/2016 10:34:07</publishTime>
     </File>
     <File Include="Scripts/modernizr-2.6.2.js">
       <publishTime>01/16/2016 16:11:20</publishTime>
     </File>
     <File Include="Views/Migration/Index.cshtml">
-      <publishTime>02/01/2016 15:29:32</publishTime>
+      <publishTime>02/05/2016 10:34:17</publishTime>
     </File>
     <File Include="Views/Web.config">
       <publishTime>01/16/2016 09:59:35</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>02/02/2016 14:38:00</publishTime>
+      <publishTime>02/29/2016 10:21:15</publishTime>
     </File>
   </ItemGroup>
 </Project>

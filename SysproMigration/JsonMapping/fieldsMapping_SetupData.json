@@ -24,7 +24,7 @@
             "TenantID TenantID": "TenantID"
         },
         "Map": {
-            //"0 UserID": "UserID",
+            "convert(varchar(255),User_ID) UserIDAdapt": "UserIDAdapt",
             "convert(UNIQUEIDENTIFIER,(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where OldValTable = Email_Address and DatabaseID is not null)) UserGUID": "UserGUID",
             "Syspro_TenantID TenantID": "TenantID",
             "First_Name + ' ' + Last_Name UserName": "UserName",
@@ -110,7 +110,7 @@
         "Source": {
             "Tables": "[tempdb].[dbo].[MigrateSupport] ms",
             "OrderBy": "order by NewValTable",
-            "Where": "TargetServer = '.' and OldValTable in (select Email_Address from [adaptv3system].[dbo].[users] where User_ID in (select User_ID from [adaptv3system].[dbo].[urights] ur where ur.Right_ID = 'ADMIN'))"
+            "Where": "TargetServer = '.' and OldValTable in (select top 1 Email_Address from [adaptv3system].[dbo].[users] where User_ID in (select User_ID from [adaptv3system].[dbo].[urights] ur where ur.Right_ID = 'ADMIN'))"
         },
         "Destination": {
             "Tables": "[st_Security].[dbo].[sec_User_Role]"
@@ -570,20 +570,22 @@
         "Source": {
             "Tables": "[tempdb].[dbo].[Pref1_Pivot_Required] pp",
             "OrderBy": "order by Rownumber"
+            //"Script": "QueryCRM_Update_utl_Module_PreferRequired_Field.txt"
         },
         "Destination": {
-            "Tables": "utl_Module_PreferRequired_Field",
-            "Script": "QueryCRM_Update_utl_Module_PreferRequired_Field.txt"
+            "Tables": "utl_Module_PreferRequired_Field"
         },
 
         "Map": {
             "1 ModuleID": "ModuleID",
-            "Rownumber": "RequiredFieldID",
+            "RequiredFieldID": "RequiredFieldID",
             "0 RequiredModeTypeID": "RequiredModeTypeID",
             "1 ModulePreferenceID": "ModulePreferenceID",
             "RequiredFieldName": "RequiredFieldName",
             "RequiredTypeID": "RequiredTypeID",
-            "0 IsReadOnly": "IsReadOnly"
+            "0 IsReadOnly": "IsReadOnly",
+            "SeqNo": "SeqNo",
+            "ColNo": "ColNo"
         }
     },
     //migrate [adaptv3system].[dbo].[pref1] to utl_Module_PreferDefault_Field
@@ -595,15 +597,16 @@
         },
         "Destination": {
             "Tables": "utl_Module_PreferDefault_Field",
-            "Script": "QueryCRM_Update_utl_Module_PreferDefault_Field.txt"
+            //"Script": "QueryCRM_Update_utl_Module_PreferDefault_Field.txt"
         },
 
         "Map": {
             "1 ModuleID": "ModuleID",
-            "Rownumber": "DefaultFieldID",
+            "DefaultFieldID": "DefaultFieldID",
             "1 ModulePreferenceID": "ModulePreferenceID",
             "DefaultFieldName": "DefaultFieldName",
-            "DefaultValue": "DefaultValue"
+            "DefaultValue": "DefaultValue",
+            "SeqNo": "SeqNo"
         }
     },
     //migrate [adaptv3system].[dbo].[fob_terms] to opp_Fob_Terms
@@ -780,7 +783,7 @@
             "Storage": "Storage",
             "Picture": "Picture",
             "Validate_Input_Syspro_TF": "IsValidate",
-            "Lookup_Table": "TableLookUpID",
+            "(case when Lookup_Table > 0 and [tempdb].[dbo].[CompareModuleID](Record_Type) > 0 then Lookup_Table + [tempdb].[dbo].[CompareModuleID](Record_Type) * 10000 else 0 end) TableLookUpID": "TableLookUpID",
             "Min_Value": "MinValue",
             "Max_Value": "MaxValue",
             "Number_of_Values": "NumberOfValues",
@@ -808,13 +811,11 @@
         },
         "NeedTruncate": false,
         "Map": {
-            "Table_ID + 1000 LookupID": "LookupID",
+            "Table_ID + 10000 LookupID": "LookupID",
             "Table_Name": "LookupName",
             "1 ModuleID": "ModuleID",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "0 Created_By": "CreatedUserID",
+            "0 Modified_By": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[lookup] to [dbo].[tbl_Lookup]
@@ -830,13 +831,11 @@
         },
         "NeedTruncate": false,
         "Map": {
-            "Table_ID + 6000 LookupID": "LookupID",
+            "Table_ID + 60000 LookupID": "LookupID",
             "Table_Name": "LookupName",
             "6 ModuleID": "ModuleID",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "0 Created_By": "CreatedUserID",
+            "0 Modified_By": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[lookup] to [dbo].[tbl_Lookup]
@@ -852,13 +851,11 @@
         },
         "NeedTruncate": false,
         "Map": {
-            "Table_ID + 2000 LookupID": "LookupID",
+            "Table_ID + 20000 LookupID": "LookupID",
             "Table_Name": "LookupName",
             "2 ModuleID": "ModuleID",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "0 Created_By": "CreatedUserID",
+            "0 Modified_By": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[lookup] to [dbo].[tbl_Lookup]
@@ -874,13 +871,11 @@
         },
         "NeedTruncate": false,
         "Map": {
-            "Table_ID + 3000 LookupID": "LookupID",
+            "Table_ID + 30000 LookupID": "LookupID",
             "Table_Name": "LookupName",
             "3 ModuleID": "ModuleID",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "0 Created_By": "CreatedUserID",
+            "0 Modified_By": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[lookup] to [dbo].[tbl_Lookup]
@@ -896,13 +891,11 @@
         },
         "NeedTruncate": false,
         "Map": {
-            "Table_ID + 5000 LookupID": "LookupID",
+            "Table_ID + 50000 LookupID": "LookupID",
             "Table_Name": "LookupName",
             "5 ModuleID": "ModuleID",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "0 Created_By": "CreatedUserID",
+            "0 Modified_By": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[lookupd] to [dbo].[tbl_Lookup_Value]
@@ -917,14 +910,14 @@
             "Tables": "tbl_Lookup_Value"
         },
         "Map": {
-            "ROW_NUMBER() OVER (ORDER BY (SELECT 100000)) + 1000 ValueID": "ValueID",
-            "Table_ID + 1000 LookupID": "LookupID",
-            "Value": "ValueName",
+            "ROW_NUMBER() OVER (ORDER BY (SELECT 999999)) + 100000 ValueID": "ValueID",
+            "Table_ID + 10000 LookupID": "LookupID",
+            "convert(varchar(50),Value) ValueName": "ValueName",
             "Description": "Notes",
             "0 SeqNo": "SeqNo"
         }
     },
-    //migrate [adaptv3system].[dbo].[lookup] to [dbo].[tbl_Lookup]
+    //migrate [adaptv3system].[dbo].[lookupd] to [dbo].[tbl_Lookup]
     //Contact lookup : 6
     {
         "Id": 43,
@@ -937,14 +930,14 @@
         },
         "NeedTruncate": false,
         "Map": {
-            "ROW_NUMBER() OVER (ORDER BY (SELECT 100000)) + 6000 ValueID": "ValueID",
-            "Table_ID + 6000 LookupID": "LookupID",
-            "Value": "ValueName",
+            "ROW_NUMBER() OVER (ORDER BY (SELECT 999999)) + 600000 ValueID": "ValueID",
+            "Table_ID + 60000 LookupID": "LookupID",
+            "convert(varchar(50),Value) ValueName": "ValueName",
             "Description": "Notes",
             "0 SeqNo": "SeqNo"
         }
     },
-    //migrate [adaptv3system].[dbo].[lookup] to [dbo].[tbl_Lookup]
+    //migrate [adaptv3system].[dbo].[lookupd] to [dbo].[tbl_Lookup]
     //Opportunity lookup : 2
     {
         "Id": 44,
@@ -957,14 +950,14 @@
         },
         "NeedTruncate": false,
         "Map": {
-            "ROW_NUMBER() OVER (ORDER BY (SELECT 100000)) + 2000 ValueID": "ValueID",
-            "Table_ID + 2000 LookupID": "LookupID",
-            "Value": "ValueName",
+            "ROW_NUMBER() OVER (ORDER BY (SELECT 999999)) + 200000 ValueID": "ValueID",
+            "Table_ID + 20000 LookupID": "LookupID",
+            "convert(varchar(50),Value) ValueName": "ValueName",
             "Description": "Notes",
             "0 SeqNo": "SeqNo"
         }
     },
-    //migrate [adaptv3system].[dbo].[lookup] to [dbo].[tbl_Lookup]
+    //migrate [adaptv3system].[dbo].[lookupd] to [dbo].[tbl_Lookup]
     //Service ticket lookup : 3
     {
         "Id": 45,
@@ -977,14 +970,14 @@
         },
         "NeedTruncate": false,
         "Map": {
-            "ROW_NUMBER() OVER (ORDER BY (SELECT 100000)) + 3000 ValueID": "ValueID",
-            "Table_ID + 3000 LookupID": "LookupID",
-            "Value": "ValueName",
+            "ROW_NUMBER() OVER (ORDER BY (SELECT 999999)) + 300000 ValueID": "ValueID",
+            "Table_ID + 30000 LookupID": "LookupID",
+            "convert(varchar(50),Value) ValueName": "ValueName",
             "Description": "Notes",
             "0 SeqNo": "SeqNo"
         }
     },
-    //migrate [adaptv3system].[dbo].[lookup] to [dbo].[tbl_Lookup]
+    //migrate [adaptv3system].[dbo].[lookupd] to [dbo].[tbl_Lookup]
     //Campaign lookup : 5
     {
         "Id": 46,
@@ -997,65 +990,101 @@
         },
         "NeedTruncate": false,
         "Map": {
-            "ROW_NUMBER() OVER (ORDER BY (SELECT 100000)) + 5000 ValueID":  "ValueID",
-            "Table_ID + 5000 LookupID": "LookupID",
-            "Value": "ValueName",
+            "ROW_NUMBER() OVER (ORDER BY (SELECT 999999)) + 500000 ValueID": "ValueID",
+            "Table_ID + 50000 LookupID": "LookupID",
+            "convert(varchar(50),Value) ValueName": "ValueName",
             "Description": "Notes",
             "0 SeqNo": "SeqNo"
         }
-    } ,
-    //migrate [dbo].[fldval] to fld_Multi_FieldValue with field multiple
+    },
+    //migrate [adaptv3system].[dbo].[contyp] to [dbo].[con_Contact_Type]
     {
         "Id": 47,
         "Source": {
-            "Tables": "[dbo].[fldval] fv",
-            "OrderBy": "order by Parent_Record_ID",
-            "Join": "inner join  [adaptv3system].[dbo].[fields] f on fv.Field_ID = f.Field_ID",
-            "Where":  "f.Record_Source = 'U' and f.Number_of_Values = 2"
+            "Tables": "[adaptv3system].[dbo].[contyp] ctp",
+            "OrderBy": "order by Contact_Type_ID"
         },
         "Destination": {
-            "Tables": "fld_Multi_FieldValue"
-            //"Script": "QueryCRM_Update_fld_Multi_FieldValue_IsPrimary.txt"
+            "Tables": "con_Contact_Type"
         },
         "Map": {
-            "convert(bigint, Parent_Record_ID) RecID": "RecID",
-            "fv.Field_ID": "FieldID",
-            "[tempdb].[dbo].[ConvertValueMultiple](fv.Field_ID,Value) Value": "FieldVal"
+            "Contact_Type_ID": "ContactTypeID",
+            "Contact_Type_Name": "ContactTypeName",
+            "Use_Alternate_Milestones_Syspro_TF": "UseAlternateMilestones",
+            "Notes": "Notes",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
         }
     },
-    //migrate [dbo].[fldmemo] to fld_Field_Value
+    //migrate [adaptv3system].[dbo].[dept] to [dbo].[con_Department]
     {
         "Id": 48,
         "Source": {
-            "Tables": "[dbo].[fldmemo] fm",
-            "OrderBy": "order by Parent_Record_ID"
+            "Tables": "[adaptv3system].[dbo].[dept] dept",
+            "OrderBy": "order by Department_Name"
         },
         "Destination": {
-            "Tables": "fld_Field_Value"
+            "Tables": "con_Department"
         },
         "Map": {
-            "convert(bigint, Parent_Record_ID) RecID": "RecID",
-            "Field_ID": "FieldID",
-            "Memo_Value": "FieldMemo"
+            "Department_Name": "DepartmentName",
+            "Notes": "Notes",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
         }
     },
-    //migrate [dbo].[fldval] to fld_Field_Value with field single
+    //migrate [adaptv3system].[dbo].[jobtitle] to [dbo].[con_Job_Title]
     {
         "Id": 49,
         "Source": {
-            "Tables": "[dbo].[fldval] fv",
-            "OrderBy": "order by Parent_Record_ID",
-            "Join": "inner join  [adaptv3system].[dbo].[fields] f on fv.Field_ID = f.Field_ID",
-            "Where":  "f.Record_Source = 'U' and f.Number_of_Values = 1"
+            "Tables": "[adaptv3system].[dbo].[jobtitle] jt",
+            "OrderBy": "order by Job_Title"
         },
         "Destination": {
-            "Tables": "fld_Field_Value"
+            "Tables": "con_Job_Title"
         },
-        "NeedTruncate":  false,
         "Map": {
-            "convert(bigint, Parent_Record_ID) RecID": "RecID",
-            "fv.Field_ID": "FieldID",
-            "[tempdb].[dbo].[ConvertValueByFieldType](Value,f.Field_Type) FieldVal": "FieldVal"
+            "Job_Title": "Title",
+            "Notes": "Notes",
+            "Created_Date": "CreatedDate",
+            "Created_By": "CreatedUserID",
+            "Modified_Date": "UpdatedDate",
+            "Modified_By": "UpdatedUserID"
         }
-    }
+    },
+    //migrate [adaptv3system].[dbo].[name_prefixes] to [dbo].[con_Name_Prefix]
+    {
+        "Id": 50,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[name_prefixes] np",
+            "OrderBy": "order by Record_ID"
+        },
+        "Destination": {
+            "Tables": "con_Name_Prefix"
+        },
+        "Map": {
+            "Record_ID": "NamePrefixID",
+            "Name_Prefix": "NamePrefix"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[name_suffixes] to [dbo].[con_Name_Suffix]
+    {
+        "Id": 51,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[name_suffixes] ns",
+            "OrderBy": "order by Record_ID"
+        },
+        "Destination": {
+            "Tables": "con_Name_Suffix"
+        },
+        "Map": {
+            "Record_ID": "NameSuffixID",
+            "Name_Suffix": "NameSuffix"
+        }
+    },
+
 ]

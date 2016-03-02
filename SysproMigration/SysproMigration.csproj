@@ -143,11 +143,12 @@
     <Content Include="QueryFixed\QueryCRMUpdatePhysicalFieldName.txt" />
     <Content Include="QueryFixed\QueryAdaptConvertFieldName.txt" />
     <Content Include="QueryFixed\QueryAdaptFunctionCompareModuleID.txt" />
+    <Content Include="QueryFixed\QueryAdapt_DropIndexTable.txt" />
+    <Content Include="QueryFixed\QueryAdapt_CreateIndexTable.txt" />
     <Content Include="QueryFixed\QueryCRM_DropUniqueIndex.txt" />
     <Content Include="QueryFixed\QueryCRM_CreateUniqueIndex.txt" />
     <Content Include="QueryFixed\QueryAdaptViewPref1Pivot_Default.txt" />
     <Content Include="QueryFixed\QueryCRM_Update_Data_To_Custom_Field.txt" />
-    <Content Include="QueryFixed\QueryCRM_Update_fld_Multi_FieldValue_IsPrimary.txt" />
     <Content Include="QueryFixed\QueryCRM_Update_utl_Module_PreferDefault_Field.txt" />
     <Content Include="QueryFixed\QueryCRM_Update_utl_Module_PreferRequired_Field.txt" />
     <Content Include="QueryFixed\QueryAdaptViewPref1Pivot_Required.txt" />
@@ -180,6 +181,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="JsonMapping\fieldsMapping_RecordData.json" />
+    <Content Include="JsonMapping\fieldsMapping_UpdateLastest.json" />
     <None Include="Properties\PublishProfiles\SysproMigration.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />

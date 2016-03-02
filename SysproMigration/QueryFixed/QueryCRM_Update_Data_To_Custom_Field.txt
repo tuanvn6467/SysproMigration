@@ -1,38 +1,26 @@
-declare @FieldID int,
-		@CreatedUserID bigint
+Insert into [dbo].[fld_Multi_FieldValue]
+					(FieldID,
+					RecID,
+					FieldVal)
+select  ffv.FieldID,
+		ffv.RecID,
+		[dbo].[ufn_Adapt_ConvertValue](ffv.FieldID,ffv.FieldVal) FieldVal
+		from	fld_Field_Value ffv 
+		inner join fld_Field ff on ff.FieldID = ffv.FieldID and ff.NumberOfValues = 2
 
-declare Cur cursor local for
-select	
-		f.FieldID,
-		f.CreatedUserID
-from [dbo].[fld_Field] f
-inner join [dbo].[mdl_Table] mt 
-	on	mt.ModuleID		= f.ModuleID
-where (f.CreatedUserID <> -1 or f.CreatedUserID is null)
-		and mt.TableName is not null
-		and not exists(select 1 from information_schema.columns c 
-							where	c.TABLE_NAME = mt.PhysicalName
-								and c.COLUMN_NAME = f.FieldName
-							)
-open Cur
+update fld_Field_Value
+set FieldVal = [dbo].[ufn_Adapt_ConvertValue](FieldID,FieldVal)
 
-FETCH NEXT FROM Cur INTO @FieldID,@CreatedUserID
-
-while ( @@FETCH_STATUS = 0 )
-begin
-	--1. Insert Role Field when add new field
-	exec	sec_Insert_Role_Field_ByFieldID @FieldID, @CreatedUserID
-	
-	--2. Add new column into static table
-	exec	fld_Insert_FieldName_StaticTable @FieldID, @CreatedUserID, null
-	FETCH NEXT FROM Cur INTO @FieldID,@CreatedUserID
-end
-CLOSE Cur 
-DEALLOCATE Cur 
-
+--begin update transaction
 
 declare			@TableID				int,
-				@RecID					bigint
+				@RecID					bigint,
+				@CountLoop				int,
+				@TransactionSQL			nvarchar(max)
+
+set				@TransactionSQL = 'BEGIN TRANSACTION '
+set				@CountLoop		= 0
+
 declare Cur cursor local for
 select	distinct
 		f.TableID,
@@ -84,7 +72,7 @@ declare	@UpdateFields		varchar(max)  = ''
 		inner join fld_Field ff (nolock)
 			on	ff.FieldID			= fv.FieldID
 			and	ff.FieldName		not in ('CreatedDate', 'CreatedBy', 'ModifiedDate', 'ModifiedBy')
-			and ff.ModuleID			= 1
+			and ff.ModuleID			= @ModuleID
 
 		where (ff.FieldTypeID		<> 12
 			or ff.NumberOfValues	<> 2)
@@ -98,11 +86,26 @@ declare	@UpdateFields		varchar(max)  = ''
 			--select  @Sql
 			if(@UpdateFields is not null and LEN(LTRIM(RTRIM(@UpdateFields))) > 0)
 			begin
-				exec (@Sql)	
+				if(@CountLoop = 1000)
+				begin
+					set @TransactionSQL = @TransactionSQL + ' COMMIT'
+					begin try
+						exec (@TransactionSQL)	
+					end try
+					begin catch
+						--select @Sql
+					end catch
+				end
+				else begin
+					set @TransactionSQL = @TransactionSQL + @Sql + ' '
+				end
 			end
+set			@CountLoop		= @CountLoop + 1
 FETCH NEXT FROM Cur INTO @TableID, @RecID
 end
 CLOSE Cur 
 DEALLOCATE Cur 
+
+delete from [dbo].[fld_Field_Value]
 
  

@@ -72,6 +72,13 @@ namespace SysproMigration.Models
             get { return _fieldsMapsRecordData; }
             set { _fieldsMapsRecordData = value; }
         }
+        private List<FieldsMap> _fieldsMapsUpdateLastest;
+
+        public List<FieldsMap> FieldsMapsUpdateLastest
+        {
+            get { return _fieldsMapsUpdateLastest; }
+            set { _fieldsMapsUpdateLastest = value; }
+        }
 
         public short IsMigrateSetup { get; set; }
 
@@ -87,6 +94,10 @@ namespace SysproMigration.Models
                 if (_fieldsMapsRecordData != null && _fieldsMapsRecordData.Any())
                 {
                     result.AddRange(_fieldsMapsRecordData);
+                }
+                if (_fieldsMapsUpdateLastest != null && _fieldsMapsUpdateLastest.Any())
+                {
+                    result.AddRange(_fieldsMapsUpdateLastest);
                 }
                 return result;
             }
@@ -205,6 +216,16 @@ namespace SysproMigration.Models
                 _fieldsMapsRecordData = JsonConvert.DeserializeObject<List<FieldsMap>>(mapString) ??
                                     new List<FieldsMap>();
             }
+            //read db fields map update lastest data
+            using (
+                var sr =
+                    new StreamReader(Path.Combine(HostingEnvironment.ApplicationPhysicalPath,
+                        ConfigurationManager.AppSettings[Constants.FieldsMapping_UpdateLastest])))
+            {
+                var mapString = sr.ReadToEnd();
+                _fieldsMapsUpdateLastest = JsonConvert.DeserializeObject<List<FieldsMap>>(mapString) ??
+                                    new List<FieldsMap>();
+            }
         }
 
         /// <summary>
@@ -247,6 +268,8 @@ namespace SysproMigration.Models
 
                 sourceConn.Open();
 
+                Utils.CreateIndexTableAdapt(sourceConn);
+
                 Utils.CreateSupportTempDb(sourceConn);
 
 
@@ -282,6 +305,7 @@ namespace SysproMigration.Models
                                         userAdapt.Email, ParseData.GetGuid(user.ProviderUserKey), TenantID, DatabaseID);
                                     using (SqlCommand command = new SqlCommand(query, sourceConn))
                                     {
+                                        //Logging.PushInfo(query);
                                         command.ExecuteNonQuery();
                                     }
                                 }
@@ -367,6 +391,10 @@ namespace SysproMigration.Models
                 Utils.DropUniqueIndex(desConn);
                 desConn.CloseConnection();
 
+                sourceConn = SourceConnectionString.CreateAndOpenConnection("Source");
+                Utils.DropIndexTableAdapt(sourceConn);
+                sourceConn.CloseConnection();
+
                 // Enable all triggers
                 using (var conn = new SqlConnection(_destinationConnectionString))
                 {
@@ -431,72 +459,63 @@ namespace SysproMigration.Models
                 }
 
                 var p = 0;
-                var done = false;
-                while (!done)
-                {
-                    var sql = fieldsMap.CreateQueryFromSource(p, _batchSize, TenantID);
+                var sql = fieldsMap.CreateQueryFromSource(p, _batchSize, TenantID, true);
 
-                    var records = 0;
-                    using (var dr = QueryBlock(sourceConn, sql, fieldsMap.IsGetKeys, out done, out records))
+                var records = 1000;
+                Logging.PushInfo("Write query");
+                //insert query
+                Utils.UpdateQueueTable(migrateConn, new QueueMigrate
+                {
+                    SourceServerName = sourceConnObject.DataSource,
+                    SourceDatabaseCompany = sourceConnObject.InitialCatalog,
+                    SourceTable = fieldsMap.Source.Tables,
+                    TargetServerName = desConnObject.DataSource,
+                    TargetDatabaseCompany = desConnObject.InitialCatalog,
+                    TargetTable = fieldsMap.Destination.Tables,
+                    SqlQuery = sql,
+                    Status = (int) QueueStatusEnum.NotStart,
+                    IsGetKeys = 0,
+                    FieldsMapId = fieldsMap.Id,
+                    IsLastRecord = 1,
+                    Exception = ""
+                });
+
+                Logging.PushInfo("Writed");
+
+                //get keys and insert to table migrate support
+
+                if (fieldsMap.IsGetKeys)
+                {
+                    fieldsMap.Destination.Top = records.ToString(CultureInfo.InvariantCulture);
+                    var doneGetKeys = false;
+                    var sqlGetKeys = fieldsMap.CreateQueryFromDestination(TenantID);
+                    var recordGetKeys = 0;
+                    using (
+                        var drGetKeys = QueryBlock(desConn, sqlGetKeys.QueryInsertQueue(), fieldsMap.IsGetKeys,
+                            out doneGetKeys, out recordGetKeys)
+                        )
                     {
-                        Logging.PushInfo("Write query");
+                        Logging.PushInfo("Write query get keys");
+
                         //insert query
                         Utils.UpdateQueueTable(migrateConn, new QueueMigrate
                         {
-                            SourceServerName = sourceConnObject.DataSource,
-                            SourceDatabaseCompany = sourceConnObject.InitialCatalog,
-                            SourceTable = fieldsMap.Source.Tables,
-                            TargetServerName = desConnObject.DataSource,
-                            TargetDatabaseCompany = desConnObject.InitialCatalog,
-                            TargetTable = fieldsMap.Destination.Tables,
-                            SqlQuery = sql,
+                            SourceServerName = desConnObject.DataSource,
+                            SourceDatabaseCompany = desConnObject.InitialCatalog,
+                            SourceTable = fieldsMap.Destination.Tables,
+                            TargetServerName = sourceConnObject.DataSource,
+                            TargetDatabaseCompany = sourceConnObject.InitialCatalog,
+                            TargetTable = fieldsMap.Source.Tables,
+                            SqlQuery = sqlGetKeys,
                             Status = (int) QueueStatusEnum.NotStart,
-                            IsGetKeys = 0,
+                            IsGetKeys = 1,
                             FieldsMapId = fieldsMap.Id,
-                            IsLastRecord = done ? (short) 1 : (short) 0,
+                            IsLastRecord = 0,
                             Exception = ""
                         });
-
-                        dr.Close();
-
-                        Logging.PushInfo("Writed");
-
-                        //get keys and insert to table migrate support
-
-                        if (fieldsMap.IsGetKeys)
-                        {
-                            fieldsMap.Destination.Top = records.ToString(CultureInfo.InvariantCulture);
-                            var doneGetKeys = false;
-                            var sqlGetKeys = fieldsMap.CreateQueryFromDestination(TenantID);
-                            var recordGetKeys = 0;
-                            using (
-                                var drGetKeys = QueryBlock(desConn, sqlGetKeys, fieldsMap.IsGetKeys, out doneGetKeys, out recordGetKeys)
-                                )
-                            {
-                                Logging.PushInfo("Write query get keys");
-
-                                //insert query
-                                Utils.UpdateQueueTable(migrateConn, new QueueMigrate
-                                {
-                                    SourceServerName = desConnObject.DataSource,
-                                    SourceDatabaseCompany = desConnObject.InitialCatalog,
-                                    SourceTable = fieldsMap.Destination.Tables,
-                                    TargetServerName = sourceConnObject.DataSource,
-                                    TargetDatabaseCompany = sourceConnObject.InitialCatalog,
-                                    TargetTable = fieldsMap.Source.Tables,
-                                    SqlQuery = sqlGetKeys,
-                                    Status = (int) QueueStatusEnum.NotStart,
-                                    IsGetKeys = 1,
-                                    FieldsMapId = fieldsMap.Id,
-                                    IsLastRecord = 0,
-                                    Exception = ""
-                                });
-                                drGetKeys.Close();
-                                Logging.PushInfo("Writed get keys");
-                            }
-                        }
+                        drGetKeys.Close();
+                        Logging.PushInfo("Writed get keys");
                     }
-                    p++;
                 }
             }
             catch (Exception ex)
@@ -509,6 +528,7 @@ namespace SysproMigration.Models
                 sourceConn.CloseConnection();
                 desConn.CloseConnection();
                 migrateConn.CloseConnection();
+                SqlConnection.ClearAllPools();
             }
         }
 
@@ -531,7 +551,7 @@ namespace SysproMigration.Models
                     EnableStreaming = true
                 };
 
-                if (TableMigrating != null)
+                /*if (TableMigrating != null)
                 {
                     TableMigrating(this,
                         new MigrationEventArgs()
@@ -539,7 +559,7 @@ namespace SysproMigration.Models
                             Message =
                                 (queue.IsLastRecord > 0 ? "Continue migrate table" : "Begin migrate table ") + (queue.IsGetKeys > 0 ? queue.TargetTable : queue.SourceTable)
                         });
-                }
+                }*/
 
                 //migrate table            
                 sbc.DestinationTableName = queue.IsGetKeys > 0 ? Constants.MiggrateSupportTable : queue.TargetTable;
@@ -552,26 +572,37 @@ namespace SysproMigration.Models
                     sbc.ColumnMappings.Add(new SqlBulkCopyColumnMapping(i, map[i].Value));
                 }
                 var p = 0;
-                var done = false;
+                var done = false; 
 
                 var records = 0;
-
-                using (
-                    var dr = QueryBlock(queue.IsGetKeys > 0 ? desConn : sourceConn, queue.SqlQuery, false, out done,
-                        out records))
+                while (!done)
                 {
-                    Logging.PushInfo("Copying data to sqlserver");
-                    sbc.WriteToServer(dr);
-                    if (!string.IsNullOrEmpty(fieldsMap.Destination.Script))
+                    using (
+                        var dr = QueryBlock(queue.IsGetKeys > 0 ? desConn : sourceConn,
+                            queue.IsGetKeys > 0
+                                ? queue.SqlQuery
+                                : queue.SqlQuery.CreateQueryFromQueue(p, fieldsMap.Size > 0 ? fieldsMap.Size : _batchSize, fieldsMap.WhereGlobal), false,
+                            out done,
+                            out records))
                     {
-                        Utils.Execute(desConn, fieldsMap.Destination.Script.GetTextInQueryFixedFolder());
+                        done = queue.IsGetKeys > 0 || done;
+                        Logging.PushInfo("Copying data to sqlserver");
+                        sbc.WriteToServer(dr);
+                        if (!string.IsNullOrEmpty(fieldsMap.Destination.Script))
+                        {
+                            desConn.CloseConnection();
+                            desConn = DestinationConnectionString.CreateAndOpenConnection("Target With Script" + fieldsMap.Destination.Script);
+                            Utils.Execute(desConn, fieldsMap.Destination.Script.GetTextInQueryFixedFolder(), fieldsMap.Destination.TimeOut);
+                            desConn.CloseConnection();
+                        }
+                        var migrationConn = MigrationConnectionString.CreateAndOpenConnection("Syspro Migration");
+                        queue.Status = (int) QueueStatusEnum.Success;
+                        Utils.UpdateQueueTable(migrationConn, queue);
+                        migrationConn.CloseConnection();
+                        dr.Close();
+                        Logging.PushInfo("Copyied");
                     }
-                    var migrationConn = MigrationConnectionString.CreateAndOpenConnection("Syspro Migration");
-                    queue.Status = (int)QueueStatusEnum.Success;
-                    Utils.UpdateQueueTable(migrationConn, queue);
-                    migrationConn.CloseConnection();
-                    dr.Close();
-                    Logging.PushInfo("Copyied");
+                    p++;
                 }
                 //raise table migrated event
                 if (TableMigrated != null && queue.IsLastRecord > 0)

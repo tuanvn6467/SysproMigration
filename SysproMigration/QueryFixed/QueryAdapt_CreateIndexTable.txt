@@ -1,0 +1,15 @@
+if(exists (
+		SELECT
+				* 
+				FROM [{0}].sys.indexes 
+				WHERE name ='fldval_ParentRecordID_FieldID_Index' AND object_id = OBJECT_ID('fldval')
+))
+begin
+	drop index fldval_ParentRecordID_FieldID_Index on [{0}].[dbo].[fldval]
+end
+ 
+CREATE NONCLUSTERED INDEX [fldval_ParentRecordID_FieldID_Index] ON [{0}].[dbo].[fldval]
+(
+	[Field_ID] ASC,
+	[Parent_Record_ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]

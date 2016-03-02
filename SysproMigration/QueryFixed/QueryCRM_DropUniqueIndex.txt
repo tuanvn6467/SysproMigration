@@ -58,3 +58,11 @@ if(exists (SELECT *
 	begin
 		drop index tbl_Lookup_Ignore_Dup_Key on [{0}].[dbo].[tbl_Lookup]
 	end
+if(exists (SELECT
+				* 
+				FROM [{0}].INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+				WHERE CONSTRAINT_NAME ='pk_fldval_ParentRecordID_FieldID'))
+	begin
+		alter table [{0}].[dbo].[fldval]
+		drop pk_fldval_ParentRecordID_FieldID
+	end

@@ -1,0 +1,40 @@
+﻿[
+    //migrate [dbo].[fldmemo] to fld_Field_Value
+    {
+        "Id": 5000,
+        "Source": {
+            "Tables": "[dbo].[fldmemo] fm",
+            "OrderBy": "order by Parent_Record_ID"
+        },
+        "Destination": {
+            "Tables": "fld_Field_Value",
+            "Script": "QueryCRM_Update_Data_To_Custom_Field.txt",
+            "TimeOut": "600"
+        },
+        "Size":  10000,
+        "Map": {
+            "convert(bigint, Parent_Record_ID) RecID": "RecID",
+            "Field_ID": "FieldID",
+            "Memo_Value": "FieldMemo"
+        }
+    },
+    //migrate [dbo].[fldval] to fld_Field_Value with field single
+    {
+        "Id": 5001,
+        "Source": {
+            "Tables": "[dbo].[fldval] fv",
+            "OrderBy": "order by Parent_Record_ID"
+        },
+        "Destination": {
+            "Tables": "fld_Field_Value",
+            "Script": "QueryCRM_Update_Data_To_Custom_Field.txt",
+            "TimeOut": "600"
+        },
+        "Size":  10000,
+        "Map": {
+            "convert(bigint, Parent_Record_ID) RecID": "RecID",
+            "Field_ID": "FieldID",
+            "Value": "FieldVal"
+        }
+    }
+]

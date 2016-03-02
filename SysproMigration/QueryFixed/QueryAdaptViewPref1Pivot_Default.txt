@@ -1,6 +1,36 @@
 create view [dbo].[Pref1_Pivot_Default] 
   as 
-  select DefaultFieldName, DefaultValue, ROW_NUMBER() OVER (ORDER BY (SELECT 100)) Rownumber
+  select DefaultFieldName, DefaultValue,
+	  case	
+		when (DefaultFieldName = 'AddressType') then 20 
+		when (DefaultFieldName = 'BusinessType') then 23 
+		when (DefaultFieldName = 'Territory') then 24 
+		when (DefaultFieldName = 'AccountManager') then 25
+		when (DefaultFieldName = 'AccountType') then 26
+		when (DefaultFieldName = 'OriginalPrimarySource') then 28 
+		when (DefaultFieldName = 'ServiceLocation') then 44 
+		when (DefaultFieldName = 'ServiceManager') then 46 
+		when (DefaultFieldName = 'CustomerClass') then 68 
+		when (DefaultFieldName = 'PaymentTerm') then 69 
+		when (DefaultFieldName = 'ShippingMethod') then 70 
+		when (DefaultFieldName = 'TaxSchedule') then 71 
+		when (DefaultFieldName = 'FOB') then 72 end DefaultFieldID,
+	  case	
+		when  DefaultFieldName = 'AddressType' then 1
+		when  DefaultFieldName = 'BusinessType' then 5
+		when  DefaultFieldName = 'Territory' then 3
+		when  DefaultFieldName = 'AccountManager' then 4
+		when  DefaultFieldName = 'AccountType' then 2
+		when  DefaultFieldName = 'OriginalPrimarySource' then 6
+		when  DefaultFieldName = 'ServiceLocation' then 13
+		when  DefaultFieldName = 'ServiceManager' then 12
+		when  DefaultFieldName = 'CustomerClass' then 11
+		when  DefaultFieldName = 'PaymentTerm' then 8
+		when  DefaultFieldName = 'ShippingMethod' then 10
+		when  DefaultFieldName = 'TaxSchedule' then 7
+		when  DefaultFieldName = 'FOB' then 9
+		else 0 end SeqNo,
+		ROW_NUMBER() OVER (ORDER BY (SELECT 100)) Rownumber
 	  from
 	  (select 
 	  --default field
@@ -10,7 +40,7 @@ create view [dbo].[Pref1_Pivot_Default]
       ,CONVERT(varchar,(select top 1 NewValTable 
 							from [tempdb].[dbo].[MigrateSupport] 
 							where TargetServer='.' and OldValTable = 
-							(select Email_Address from [adaptv3system].[dbo].[users] where User_ID = [Default_Account_Manager]) 
+							(select top 1 Email_Address from [adaptv3system].[dbo].[users] where User_ID = [Default_Account_Manager]) 
 							order by Id desc)) AccountManager
       ,CONVERT(varchar,[Default_Account_Type]) AccountType
       ,CONVERT(varchar,[Default_Account_Source]) OriginalPrimarySource
@@ -18,7 +48,7 @@ create view [dbo].[Pref1_Pivot_Default]
       ,CONVERT(varchar,(select top 1 NewValTable 
 							from [tempdb].[dbo].[MigrateSupport] 
 							where TargetServer='.' and OldValTable = 
-							(select Email_Address from [adaptv3system].[dbo].[users] where User_ID = [Default_Service_Manager]) 
+							(select top 1 Email_Address from [adaptv3system].[dbo].[users] where User_ID = [Default_Service_Manager]) 
 							order by Id desc)) ServiceManager
       ,CONVERT(varchar,[Default_Customer_Class]) CustomerClass
       ,CONVERT(varchar,[Default_Payment_Terms]) PaymentTerm

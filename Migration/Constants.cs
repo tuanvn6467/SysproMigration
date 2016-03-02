@@ -22,6 +22,7 @@ namespace Migration
 
         public static string FieldsMapping_SetupData = "fieldsMapping_SetupData";
         public static string FieldsMapping_RecordData = "fieldsMapping_RecordData";
+        public static string FieldsMapping_UpdateLastest = "fieldsMapping_UpdateLastest";
 
         public static string UserSqlAdapt = "userSQLAdapt";
         public static string PassSqlAdapt = "passSQLAdapt";

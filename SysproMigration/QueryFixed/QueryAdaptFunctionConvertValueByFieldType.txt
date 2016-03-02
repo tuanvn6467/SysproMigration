@@ -21,7 +21,7 @@ Begin
 		begin
 			set @Result = (select top 1 NewValTable 
 							from [tempdb].[dbo].[MigrateSupport] 
-							where TargetServer='.' and OldValTable = (select Email_Address from [adaptv3system].[dbo].[users] where User_ID = @Value) order by Id desc)
+							where TargetServer='.' and OldValTable = (select top 1 Email_Address from [adaptv3system].[dbo].[users] where User_ID = @Value) order by Id desc)
 		end
 	else if(@FieldTypeID = 3) -- date
 		begin
@@ -29,7 +29,7 @@ Begin
 		end
 	else if(@FieldTypeID = 4) -- time
 		begin
-			set @Result = case when @Value not like '%0000%' and Len(@Value) > 0
+			set @Result = case when @Value not like '0%' and @Value not like '%0000' and Len(@Value) > 0
 								then substring(@Value, 1, 2) + ':' + substring(@Value, 3, 2) + ':' + substring(@Value, 5, 2) else null end 
 		end
 	return @Result

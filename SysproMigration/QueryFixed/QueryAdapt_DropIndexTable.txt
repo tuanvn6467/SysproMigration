@@ -1,0 +1,9 @@
+if(exists (
+		SELECT
+				* 
+				FROM [{0}].sys.indexes 
+				WHERE name ='fldval_ParentRecordID_FieldID_Index' AND object_id = OBJECT_ID('fldval')
+))
+begin
+	drop index fldval_ParentRecordID_FieldID_Index on [{0}].[dbo].[fldval]
+end

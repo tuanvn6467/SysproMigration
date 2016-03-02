@@ -183,10 +183,33 @@ namespace SysproMigration.Utility
             }
         }
 
+        public static void CreateIndexTableAdapt(SqlConnection con)
+        {
+            Logging.PushInfo("Create Index for Table Adapt");
+            var query = QueryConstants.QueryAdapt_CreateIndexTable.GetTextInQueryFixedFolder();
+            query = string.Format(query, con.Database);
+            using (SqlCommand command = new SqlCommand(query, con))
+            {
+                command.CommandTimeout = 600;
+                command.ExecuteNonQuery();
+            }
+        }
+
         public static void DropUniqueIndex(SqlConnection con)
         {
             Logging.PushInfo("Drop Unique Index In New CRM");
             var query = QueryConstants.QueryCRM_DropUniqueIndex.GetTextInQueryFixedFolder();
+            query = string.Format(query, con.Database);
+            using (SqlCommand command = new SqlCommand(query, con))
+            {
+                command.CommandTimeout = 600;
+                command.ExecuteNonQuery();
+            }
+        }
+        public static void DropIndexTableAdapt(SqlConnection con)
+        {
+            Logging.PushInfo("Drop Index for Table Adapt");
+            var query = QueryConstants.QueryAdapt_DropIndexTable.GetTextInQueryFixedFolder();
             query = string.Format(query, con.Database);
             using (SqlCommand command = new SqlCommand(query, con))
             {
@@ -275,10 +298,14 @@ namespace SysproMigration.Utility
                 command.ExecuteNonQuery();
             }
         }
-        public static void Execute(SqlConnection con,string query)
+        public static void Execute(SqlConnection con,string query, int timeOut = 0)
         {
             using (SqlCommand command = new SqlCommand(query, con))
             {
+                if (timeOut > 0)
+                {
+                    command.CommandTimeout = timeOut;
+                }
                 command.ExecuteNonQuery();
             }
         }
@@ -424,6 +451,7 @@ namespace SysproMigration.Utility
             {
                 connection.Close();
                 connection.Dispose();
+                SqlConnection.ClearPool(connection);
                 connection = null;
             }
         }
@@ -438,6 +466,19 @@ namespace SysproMigration.Utility
             Logging.PushInfo("Connected");
 
             return conn;
+        }
+
+        public static string QueryInsertQueue(this string query)
+        {
+            return string.Format("select 1 from ({0}) t", query);
+        }
+
+        public static string CreateQueryFromQueue(this string query, int page, int pageSize, string WhereGlobal)
+        {
+            query = string.Format("select * from({0}) t where {1} t.rownum >{2} and t.rownum <={3}", query,
+                !string.IsNullOrEmpty(WhereGlobal) ? WhereGlobal + " and " : "",
+                page * pageSize, (page + 1) * pageSize);
+            return query;
         }
     }
 }

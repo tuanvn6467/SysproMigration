@@ -30,6 +30,8 @@ namespace Migration
 
         public Dictionary<string, string> MapKeys { get; set; }
 
+        public int Size { get; set; }
+
         public string ReplaceKeySpecial(string key, int tenantID = 0)
         {
             var result = key;
@@ -37,11 +39,11 @@ namespace Migration
             {
                 case "Created_By":
                     result =
-                        "(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where TargetServer='.' and OldValTable = (select Email_Address from [adaptv3system].[dbo].[users] where User_ID = Created_By) order by Id desc) Created_By";
+                        "(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where TargetServer='.' and OldValTable = (select top 1 Email_Address from [adaptv3system].[dbo].[users] where User_ID = Created_By) order by Id desc) Created_By";
                     break;
                 case "Modified_By":
                     result =
-                        "(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where TargetServer='.' and OldValTable = (select Email_Address from [adaptv3system].[dbo].[users] where User_ID = Modified_By) order by Id desc) Modified_By";
+                        "(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where TargetServer='.' and OldValTable = (select top 1 Email_Address from [adaptv3system].[dbo].[users] where User_ID = Modified_By) order by Id desc) Modified_By";
                     break;
                 case "Created_Date":
                     result =
@@ -53,11 +55,7 @@ namespace Migration
                     break;
                 case "Notes":
                     result =
-                        "case when Notes is not null then RTRIM(LTRIM(Notes)) else null end Notes";
-                    break;
-                case "Notes_Text":
-                    result =
-                        "Notes";
+                        "RTRIM(LTRIM(convert(varchar(max),isnull(Notes,'')))) Notes";
                     break;
                     /*case "Syspro_TenantID":
                     result = string.Format("convert(int, {0}) TenantID", tenantID);
@@ -69,32 +67,36 @@ namespace Migration
             }else if (result.Contains("_Syspro_TF"))
             {
                 var fieldName = result.Replace("_Syspro_TF", "");
-                result = string.Format("case when {0} = 'T' then 1 else 0 end {0}", fieldName);
+                result = string.Format("case when {0} = 'T' then 1 else 0 end {1}", fieldName,
+                    fieldName.Replace(".", ""));
             }
             else if (result.Contains("_Syspro_GetUserID"))
             {
                 var userField = result.Replace("_Syspro_GetUserID", "");
-                result = string.Format("(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where TargetServer='.' and OldValTable = (select Email_Address from [adaptv3system].[dbo].[users] where User_ID = {0}) order by Id desc) {0}", userField);
+                result =
+                    string.Format(
+                        "(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where TargetServer='.' and OldValTable = (select top 1 Email_Address from [adaptv3system].[dbo].[users] where User_ID = {0}) order by Id desc) {1}",
+                        userField, userField.Replace(".", ""));
             }
-            else if (result.Contains("_Syspro_Address"))
+            else if (result.Contains(".Notes"))
             {
-                var nameField = result.Replace("_Syspro_Address", "");
-                result = string.Format("(select top 1 {0} from [dbo].[address] where Attached_To = 'A' and Account_Number = Account_Number and Address_Record_Number = Primary_Address_Record) {0}", nameField);
+                var nameField = result;
+                result = string.Format("RTRIM(LTRIM(convert(varchar(max),isnull({0},'')))) Notes", nameField);
             }
             return result;
         }
 
-        public string CreateQueryFromSource(int page, int pageSize, int tenantID = 0)
+        public string CreateQueryFromSource(int page, int pageSize, int tenantID = 0, bool isWriteQueue = false)
         {
-            var res = Map.Keys.Aggregate("select ", (current, key) => current + (ReplaceKeySpecial(key, tenantID) + ","));
+            var res = Map.Keys.Aggregate("select ", (current, key) => current + (ReplaceKeySpecial(key, tenantID) + ",\n"));
             res = string.Format(res + "ROW_NUMBER() over ({0}) as rownum",
                 !string.IsNullOrEmpty(Source.OrderBy) ? Source.OrderBy : "");
             res = res.TrimEnd(',');
             res += " from " + Source.Tables;
 
-            if (!string.IsNullOrEmpty(Source.Join))
+            if (!string.IsNullOrEmpty(Source.JoinTotal))
             {
-                res += " " + Source.Join;
+                res += " " + Source.JoinTotal;
             }
 
             if (!string.IsNullOrEmpty(Source.Where))
@@ -103,11 +105,16 @@ namespace Migration
                 Source.Where = Source.Where.Contains("()") ? "" : Source.Where;
                 res += Source.Where == "" ? "" : " where " + Source.Where;
             }
-            res = string.Format("select * from({0}) t where {1} t.rownum >{2} and t.rownum <={3}", res,
+            if (!isWriteQueue)
+            {
+                res = string.Format("select * from({0}) t where {1} t.rownum >{2} and t.rownum <={3}", res,
                 !string.IsNullOrEmpty(WhereGlobal) ? WhereGlobal + " and " : "",
-                page*pageSize, (page + 1)*pageSize);
+                page * pageSize, (page + 1) * pageSize);
+                return res;
+            }
             return res;
         }
+
         public string CreateQueryFromDestination(int tenantID = 0)
         {
             var res = MapKeys.Keys.Aggregate("select top " + Destination.Top + " ", (current, key) => current + (ReplaceKeySpecial(key,tenantID) + ","));
