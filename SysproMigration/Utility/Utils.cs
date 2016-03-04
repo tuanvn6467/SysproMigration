@@ -190,7 +190,7 @@ namespace SysproMigration.Utility
             query = string.Format(query, con.Database);
             using (SqlCommand command = new SqlCommand(query, con))
             {
-                command.CommandTimeout = 600;
+                command.CommandTimeout = 1000;
                 command.ExecuteNonQuery();
             }
         }
@@ -202,7 +202,7 @@ namespace SysproMigration.Utility
             query = string.Format(query, con.Database);
             using (SqlCommand command = new SqlCommand(query, con))
             {
-                command.CommandTimeout = 600;
+                command.CommandTimeout = 1000;
                 command.ExecuteNonQuery();
             }
         }
@@ -252,6 +252,14 @@ namespace SysproMigration.Utility
             CheckViewExist(con, ViewConstants.Pref1_Pivot_Default);
             var queryViewPref1Pivot_Default = QueryConstants.QueryAdaptViewPref1Pivot_Default.GetTextInQueryFixedFolder();
             Execute(con, queryViewPref1Pivot_Default);
+            //view pivot pref6 required table
+            CheckViewExist(con, ViewConstants.Pref6_Pivot_Required);
+            var queryViewPref6Pivot_Required = QueryConstants.QueryAdaptViewPref6Pivot_Required.GetTextInQueryFixedFolder();
+            Execute(con, queryViewPref6Pivot_Required);
+            //view pivot pref6 default table
+            CheckViewExist(con, ViewConstants.Pref6_Pivot_Default);
+            var queryViewPref6Pivot_Default = QueryConstants.QueryAdaptViewPref6Pivot_Default.GetTextInQueryFixedFolder();
+            Execute(con, queryViewPref6Pivot_Default);
             //function compare module
             CheckFunctionExist(con, FunctionConstants.CompareModuleID);
             var queryFunctionCompareModuleID = QueryConstants.QueryAdaptFunctionCompareModuleID.GetTextInQueryFixedFolder();

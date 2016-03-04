@@ -49,8 +49,8 @@
             "[tempdb].[dbo].[GetStateID](State) State": "State",
             "Postal_Code": "PostalCode",
             "(select top 1 Country_ID from [adaptv3system].[dbo].[country] where Country_Name = [Country]) Country": "Country",
-            "Created_Date": "CreatedDate",
-            "Modified_Date": "UpdatedDate"
+            "u.Created_Date": "CreatedDate",
+            "u.Modified_Date": "UpdatedDate"
         }
     },
     {
@@ -73,7 +73,8 @@
         "Id": 3,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[roles] r",
-            "OrderBy": "order by [Role_ID]"
+            "OrderBy": "order by [Role_ID]",
+            "JoinUser":  "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "[st_Security].[dbo].[sec_Role]",
@@ -97,11 +98,11 @@
         "Map": {
             "Role_Name": "RoleName",
             "Syspro_TenantID TenantID": "TenantID",
-            "convert(varchar,Notes) Notes": "RoleDesc",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "r.Notes": "RoleDesc",
+            "r.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "r.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[urights] table to sec_User_Role table
@@ -145,7 +146,8 @@
         "Id": 6,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[sgroup] sg",
-            "OrderBy": "order by Group_ID"
+            "OrderBy": "order by Group_ID",
+            "JoinUser":  "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "[st_Security].[dbo].[sec_Group]",
@@ -170,10 +172,10 @@
             "Syspro_TenantID TenantID": "TenantID",
             "1 GroupLevel": "GroupLevel",
             "0 IsLeaf": "IsLeaf",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "sg.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "sg.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[sgrpmem] table to sec_User_Role table
@@ -198,7 +200,8 @@
         "Id": 8,
         "Source": {
             "Tables": "adaptv3system..acctyp tat",
-            "OrderBy": "order by Account_Type_ID"
+            "OrderBy": "order by Account_Type_ID",
+            "JoinUser":  "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "acc_Account_Type"
@@ -207,11 +210,11 @@
             "Account_Type_ID": "AccountTypeID",
             "Account_Type_Name": "AccountTypeName",
             "Use_Alternate_Milestones_Syspro_TF": "UseAlternateMilestones",
-            "Notes": "Notes",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "tat.Notes": "Notes",
+            "tat.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "tat.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[customer_class] to acc_Customer_Class
@@ -219,7 +222,8 @@
         "Id": 9,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[customer_class] cc",
-            "OrderBy": "order by Customer_Class_ID"
+            "OrderBy": "order by Customer_Class_ID",
+            "JoinUser":  "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "acc_Customer_Class"
@@ -227,11 +231,11 @@
         "Map": {
             "Customer_Class_ID": "CustomerClassID",
             "Customer_Class_Name": "CustomerClassName",
-            "Notes": "Notes",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "cc.Notes": "Notes",
+            "cc.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "cc.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[bustyp] to acc_Business_Type
@@ -239,7 +243,8 @@
         "Id": 10,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[bustyp] bt",
-            "OrderBy": "order by Business_Type_ID"
+            "OrderBy": "order by Business_Type_ID",
+            "JoinUser":  "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "acc_Business_Type"
@@ -247,11 +252,11 @@
         "Map": {
             "Business_Type_ID": "BusinessTypeID",
             "Business_Type_Name": "BusinessTypeName",
-            "Notes": "Notes",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "bt.Notes": "Notes",
+            "bt.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "bt.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[source] to acc_Source
@@ -259,7 +264,8 @@
         "Id": 11,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[source] s",
-            "OrderBy": "order by Source_ID"
+            "OrderBy": "order by Source_ID",
+            "JoinUser":  "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "acc_Source"
@@ -269,11 +275,11 @@
             "Source_Name": "SourceName",
             "0 Default_Secondary_Source": "DefaultSecondarySource",
             "Secondary_Source_Count": "SecondarySourceCount",
-            "Notes": "Notes",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "s.Notes": "Notes",
+            "s.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "s.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[sourced] to acc_Source
@@ -281,7 +287,8 @@
         "Id": 12,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[sourced] sd",
-            "OrderBy": "order by Secondary_Source_ID"
+            "OrderBy": "order by Secondary_Source_ID",
+            "JoinUser":  "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "acc_Source"
@@ -291,11 +298,11 @@
             "Secondary_Source_Name": "SourceName",
             "Primary_Source_ID": "ParentID",
             "(select top 1 case when Secondary_Source_ID > 0 then 1 else 0 end from [adaptv3system].[dbo].[sourced] sdc right join [adaptv3system].[dbo].[source] s on sdc.Secondary_Source_ID = s.Default_Secondary_Source where sdc.Secondary_Source_ID = sd.Secondary_Source_ID) Default_Secondary_Source": "DefaultSecondarySource",
-            "Notes": "Notes",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "sd.Notes": "Notes",
+            "sd.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "sd.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[terr] to acc_Territories
@@ -303,7 +310,8 @@
         "Id": 13,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[terr] t",
-            "OrderBy": "order by Territory_ID"
+            "OrderBy": "order by Territory_ID",
+            "JoinUser":  "Salesperson,Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "acc_Territories"
@@ -312,12 +320,12 @@
             "Territory_ID": "TerritoryID",
             "Territory_Name": "TerritoryName",
             "Accounting_System_Code": "AccountingSystemCode",
-            "Salesperson_Syspro_GetUserID": "Salesperson",
-            "Notes": "Notes",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "ms_salesperson.NewValTable Salesperson": "Salesperson",
+            "t.Notes": "Notes",
+            "t.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "t.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[terr_boundary] to acc_Territories_Boundary
@@ -343,7 +351,8 @@
         "Id": 15,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[regions] rg",
-            "OrderBy": "order by Region_ID"
+            "OrderBy": "order by Region_ID",
+            "JoinUser":  "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "acc_Regions"
@@ -352,11 +361,11 @@
             "Region_ID": "RegionID",
             "Region_Name": "RegionName",
             "Territory_Count": "TerritoryCount",
-            "Notes": "Notes",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "rg.Notes": "Notes",
+            "rg.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "rg.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[region_terr] to acc_Region_Territory_Xref
@@ -413,7 +422,8 @@
         "Id": 19,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[addrtyp] at",
-            "OrderBy": "order by Address_Type_ID"
+            "OrderBy": "order by Address_Type_ID",
+            "JoinUser":  "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "utl_Address_Type"
@@ -421,11 +431,11 @@
         "Map": {
             "Address_Type_ID": "AddressTypeID",
             "Address_Type_Name": "AddressTypeName",
-            "Notes": "Notes",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "at.Notes": "Notes",
+            "at.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "at.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[pref1] to acc_Account_Preferences
@@ -596,7 +606,7 @@
             "OrderBy": "order by Rownumber"
         },
         "Destination": {
-            "Tables": "utl_Module_PreferDefault_Field",
+            "Tables": "utl_Module_PreferDefault_Field"
             //"Script": "QueryCRM_Update_utl_Module_PreferDefault_Field.txt"
         },
 
@@ -614,7 +624,8 @@
         "Id": 29,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[fob_terms] ft",
-            "OrderBy": "order by FOB_ID"
+            "OrderBy": "order by FOB_ID",
+            "JoinUser":  "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "opp_Fob_Terms"
@@ -623,11 +634,11 @@
             "FOB_ID": "FobID",
             "FOB_Name": "FobName",
             "Accounting_FOB_Code": "AccountingFobCode",
-            "Notes": "Notes",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "ft.Notes": "Notes",
+            "ft.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "ft.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[shipmeth] to utl_Shipping_Method
@@ -635,7 +646,8 @@
         "Id": 30,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[shipmeth] s",
-            "OrderBy": "order by Ship_Method_ID"
+            "OrderBy": "order by Ship_Method_ID",
+            "JoinUser":  "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "utl_Shipping_Method"
@@ -644,11 +656,11 @@
             "Ship_Method_ID": "ShipMethodID",
             "Ship_Method_Name": "ShipMethodName",
             "Accounting_Ship_Method_Code": "AccountingShipMethodCode",
-            "Notes": "Notes",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "s.Notes": "Notes",
+            "s.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "s.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[payment_terms] to opp_Payment_Terms
@@ -656,7 +668,8 @@
         "Id": 31,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[payment_terms] pt",
-            "OrderBy": "order by Terms_ID"
+            "OrderBy": "order by Terms_ID",
+            "JoinUser":  "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "opp_Payment_Terms"
@@ -669,11 +682,11 @@
             "Days_to_Pay": "DaysToPay",
             "Discount_Days": "DiscountDays",
             "Discount_Percent": "DiscountPercent",
-            "Notes": "Notes",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "pt.Notes": "Notes",
+            "pt.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "pt.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[tax_levels] to opp_Tax_Levels
@@ -696,7 +709,8 @@
         "Id": 33,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[tax_rate] tr",
-            "OrderBy": "order by Tax_Rate_ID"
+            "OrderBy": "order by Tax_Rate_ID",
+            "JoinUser":  "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "opp_Tax_Rate"
@@ -707,11 +721,11 @@
             "Tax_Level": "TaxLevel",
             "Tax_Rate_Name": "TaxRateName",
             "Tax_Rate": "TaxRateVal",
-            "Notes": "Notes",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "tr.Notes": "Notes",
+            "tr.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "tr.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[tax_schedule] to opp_Tax_Schedule
@@ -719,7 +733,8 @@
         "Id": 34,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[tax_schedule] ts",
-            "OrderBy": "order by Tax_Schedule_ID"
+            "OrderBy": "order by Tax_Schedule_ID",
+            "JoinUser":  "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "opp_Tax_Schedule"
@@ -733,11 +748,11 @@
             "Tax_Level_3_Rate_ID": "TaxLevel3RateID",
             "Tax_Level_4_Rate_ID": "TaxLevel4RateID",
             "Tax_Level_5_Rate_ID": "TaxLevel5RateID",
-            "convert(varchar(1000),Notes) Notes": "Notes",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "convert(varchar(1000),ts.Notes) Notes": "Notes",
+            "ts.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "ts.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[servloc] to set_Service_Location
@@ -745,7 +760,8 @@
         "Id": 35,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[servloc] sl",
-            "OrderBy": "order by Location_ID"
+            "OrderBy": "order by Location_ID",
+            "JoinUser":  "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "set_Service_Location"
@@ -753,11 +769,11 @@
         "Map": {
             "Location_ID": "LocationID",
             "Location_Name": "LocationName",
-            "Notes": "Notes",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "sl.Notes": "Notes",
+            "sl.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "sl.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[fields] to fld_Field
@@ -766,7 +782,8 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[fields] f",
             "OrderBy": "order by Field_ID",
-            "Where": "f.Record_Source = 'U' and f.Record_Type  not in (4,31,116)"
+            "Where": "f.Record_Source = 'U' and f.Record_Type  not in (4,31,116)",
+            "JoinUser":  "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "fld_Field",
@@ -791,11 +808,11 @@
             "Required_Syspro_TF": "IsRequired",
             "Default_Prompt": "DefaultPrompt",
             "7 ProcessStatusID": "ProcessStatusID",
-            "Notes": "Notes",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "f.Notes": "Notes",
+            "f.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "f.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[lookup] to [dbo].[tbl_Lookup]
@@ -1002,7 +1019,8 @@
         "Id": 47,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[contyp] ctp",
-            "OrderBy": "order by Contact_Type_ID"
+            "OrderBy": "order by Contact_Type_ID",
+            "JoinUser":  "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "con_Contact_Type"
@@ -1011,11 +1029,11 @@
             "Contact_Type_ID": "ContactTypeID",
             "Contact_Type_Name": "ContactTypeName",
             "Use_Alternate_Milestones_Syspro_TF": "UseAlternateMilestones",
-            "Notes": "Notes",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "ctp.Notes": "Notes",
+            "ctp.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "ctp.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[dept] to [dbo].[con_Department]
@@ -1023,18 +1041,19 @@
         "Id": 48,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[dept] dept",
-            "OrderBy": "order by Department_Name"
+            "OrderBy": "order by Department_Name",
+            "JoinUser":  "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "con_Department"
         },
         "Map": {
             "Department_Name": "DepartmentName",
-            "Notes": "Notes",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "dept.Notes": "Notes",
+            "dept.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "dept.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[jobtitle] to [dbo].[con_Job_Title]
@@ -1042,18 +1061,19 @@
         "Id": 49,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[jobtitle] jt",
-            "OrderBy": "order by Job_Title"
+            "OrderBy": "order by jt.Job_Title",
+            "JoinUser":  "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "con_Job_Title"
         },
         "Map": {
-            "Job_Title": "Title",
-            "Notes": "Notes",
-            "Created_Date": "CreatedDate",
-            "Created_By": "CreatedUserID",
-            "Modified_Date": "UpdatedDate",
-            "Modified_By": "UpdatedUserID"
+            "jt.Job_Title": "Title",
+            "jt.Notes": "Notes",
+            "jt.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "jt.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
     //migrate [adaptv3system].[dbo].[name_prefixes] to [dbo].[con_Name_Prefix]
@@ -1086,5 +1106,176 @@
             "Name_Suffix": "NameSuffix"
         }
     },
+    //migrate [adaptv3system].[dbo].[pref6] to con_Contact_Preferences
+    {
+        "Id": 52,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[pref6] p",
+            "OrderBy": "order by One"
+        },
+        "Destination": {
+            "Tables": "con_Contact_Preferences"
+        },
+        "Map": {
+            "One": "ContactPreferenceID",
+            "Report_Duplicate_Errors_Syspro_TF": "IsReportDuplicateErrors",
+            "Report_Duplicate_Warnings_Syspro_TF": "IsReportDuplicateWarnings",
+            "Do_Not_Auto_Skip_Milestones_Syspro_TF": "IsDoNotAutoSkipMilestones",
+            "Validate_Department_Syspro_TF": "IsValidateDepartment",
+            "Validate_Job_Title_Syspro_TF": "IsValidateJobTitle",
+            "Allow_Print_Preview_Syspro_TF": "IsAllowPrintPreview",
+            "Allow_Printer_Select_Syspro_TF":  "IsAllowPrinterSelect"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref6] to con_Contact_PreferPrevent_Field
+    {
+        "Id": 53,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[pref6] p",
+            "OrderBy": "order by One"
+        },
+        "Destination": {
+            "Tables": "con_Contact_PreferPrevent_Field"
+        },
+        "Map": {
+            "One": "ContactPreferenceID",
+            "Dupe_Error_Set_1_Field_1": "DuplicateTypeID1",
+            "Dupe_Error_Set_1_Field_2": "DuplicateTypeID2",
+            "Dupe_Error_Set_1_Field_3": "DuplicateTypeID3",
+            "1 SeqNo": "SeqNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref6] to con_Contact_PreferPrevent_Field
+    {
+        "Id": 54,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[pref6] p",
+            "OrderBy": "order by One"
+        },
+        "Destination": {
+            "Tables": "con_Contact_PreferPrevent_Field"
+        },
+        "Map": {
+            "One": "ContactPreferenceID",
+            "Dupe_Error_Set_2_Field_1": "DuplicateTypeID1",
+            "Dupe_Error_Set_2_Field_2": "DuplicateTypeID2",
+            "Dupe_Error_Set_2_Field_3": "DuplicateTypeID3",
+            "2 SeqNo": "SeqNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref6] to con_Contact_PreferPrevent_Field
+    {
+        "Id": 55,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[pref6] p",
+            "OrderBy": "order by One"
+        },
+        "Destination": {
+            "Tables": "con_Contact_PreferPrevent_Field"
+        },
+        "Map": {
+            "One": "ContactPreferenceID",
+            "Dupe_Error_Set_3_Field_1": "DuplicateTypeID1",
+            "Dupe_Error_Set_3_Field_2": "DuplicateTypeID2",
+            "Dupe_Error_Set_3_Field_3": "DuplicateTypeID3",
+            "3 SeqNo": "SeqNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref6] to con_Contact_PreferWarning_Field
+    {
+        "Id": 56,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[pref6] p",
+            "OrderBy": "order by One"
+        },
+        "Destination": {
+            "Tables": "con_Contact_PreferWarning_Field"
+        },
+        "Map": {
+            "One": "ContactPreferenceID",
+            "Dupe_Warning_Set_1_Field_1": "DuplicateTypeID1",
+            "Dupe_Warning_Set_1_Field_2": "DuplicateTypeID2",
+            "Dupe_Warning_Set_1_Field_3": "DuplicateTypeID3",
+            "1 SeqNo": "SeqNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref6] to con_Contact_PreferWarning_Field
+    {
+        "Id": 57,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[pref6] p",
+            "OrderBy": "order by One"
+        },
+        "Destination": {
+            "Tables": "con_Contact_PreferWarning_Field"
+        },
+        "Map": {
+            "One": "ContactPreferenceID",
+            "Dupe_Warning_Set_2_Field_1": "DuplicateTypeID1",
+            "Dupe_Warning_Set_2_Field_2": "DuplicateTypeID2",
+            "Dupe_Warning_Set_2_Field_3": "DuplicateTypeID3",
+            "2 SeqNo": "SeqNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref6] to con_Contact_PreferWarning_Field
+    {
+        "Id": 58,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[pref6] p",
+            "OrderBy": "order by One"
+        },
+        "Destination": {
+            "Tables": "con_Contact_PreferWarning_Field"
+        },
+        "Map": {
+            "One": "ContactPreferenceID",
+            "Dupe_Warning_Set_3_Field_1": "DuplicateTypeID1",
+            "Dupe_Warning_Set_3_Field_2": "DuplicateTypeID2",
+            "Dupe_Warning_Set_3_Field_3": "DuplicateTypeID3",
+            "3 SeqNo": "SeqNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref6] to utl_Module_PreferRequired_Field
+    {
+        "Id": 59,
+        "Source": {
+            "Tables": "[tempdb].[dbo].[Pref6_Pivot_Required] pp",
+            "OrderBy": "order by Rownumber"
+        },
+        "Destination": {
+            "Tables": "utl_Module_PreferRequired_Field"
+        },
 
+        "Map": {
+            "6 ModuleID": "ModuleID",
+            "RequiredFieldID": "RequiredFieldID",
+            "0 RequiredModeTypeID": "RequiredModeTypeID",
+            "1 ModulePreferenceID": "ModulePreferenceID",
+            "RequiredFieldName": "RequiredFieldName",
+            "RequiredTypeID": "RequiredTypeID",
+            "case when RequiredFieldID = 94 then 1 else 0 end IsReadOnly": "IsReadOnly",
+            "SeqNo": "SeqNo",
+            "ColNo": "ColNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref6] to utl_Module_PreferDefault_Field
+    {
+        "Id": 60,
+        "Source": {
+            "Tables": "[tempdb].[dbo].[Pref6_Pivot_Default] pp",
+            "OrderBy": "order by Rownumber"
+        },
+        "Destination": {
+            "Tables": "utl_Module_PreferDefault_Field"
+        },
+
+        "Map": {
+            "6 ModuleID": "ModuleID",
+            "DefaultFieldID": "DefaultFieldID",
+            "1 ModulePreferenceID": "ModulePreferenceID",
+            "DefaultFieldName": "DefaultFieldName",
+            "DefaultValue": "DefaultValue",
+            "SeqNo": "SeqNo"
+        }
+    }
 ]

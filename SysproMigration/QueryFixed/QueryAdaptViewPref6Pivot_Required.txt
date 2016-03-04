@@ -1,0 +1,95 @@
+create view [dbo].[Pref6_Pivot_Required] 
+  as 
+  select RequiredFieldName, RequiredTypeID, 
+case	when (RequiredFieldName = 'ContactPhoneNumber') then 63 
+		when (RequiredFieldName = 'ContactEmailAddress') then 67 
+		when (RequiredFieldName = 'AccountNumber') then 94 
+		when (RequiredFieldName = 'FirstName') then 101
+		when (RequiredFieldName = 'LastName') then 102 
+		when (RequiredFieldName = 'JobTitle') then 104 
+		when (RequiredFieldName = 'Department') then 105 
+		when (RequiredFieldName = 'Salutation') then 106 
+		when (RequiredFieldName = 'ContactTypeID') then 107 
+		when (RequiredFieldName = 'ContactFaxNumber') then 111 
+		when (RequiredFieldName = 'AddressLine1') then 113 
+		when (RequiredFieldName = 'City') then 116 
+		when (RequiredFieldName = 'County') then 117 
+		when (RequiredFieldName = 'State') then 118 
+		when (RequiredFieldName = 'PostalCode') then 119 
+		when (RequiredFieldName = 'Country') then 120 
+		when (RequiredFieldName = 'OriginalPrimarySourceID') then 125 
+		end RequiredFieldID,
+
+case	when (RequiredFieldName = 'ContactPhoneNumber') then 7 
+		when (RequiredFieldName = 'ContactEmailAddress') then 9 
+		when (RequiredFieldName = 'AccountNumber') then 1 
+		when (RequiredFieldName = 'FirstName') then 2
+		when (RequiredFieldName = 'LastName') then 3 
+		when (RequiredFieldName = 'JobTitle') then 5 
+		when (RequiredFieldName = 'Department') then 6 
+		when (RequiredFieldName = 'Salutation') then 4 
+		when (RequiredFieldName = 'ContactTypeID') then 7 
+		when (RequiredFieldName = 'ContactFaxNumber') then 8 
+		when (RequiredFieldName = 'AddressLine1') then 1 
+		when (RequiredFieldName = 'City') then 2 
+		when (RequiredFieldName = 'County') then 3 
+		when (RequiredFieldName = 'State') then 4 
+		when (RequiredFieldName = 'PostalCode') then 5 
+		when (RequiredFieldName = 'Country') then 6 
+		when (RequiredFieldName = 'OriginalPrimarySourceID') then 8 
+		end SeqNo,
+
+case	when RequiredFieldName = 'ContactPhoneNumber' 
+			or  RequiredFieldName = 'ContactEmailAddress'
+			or  RequiredFieldName = 'AccountNumber'
+			or  RequiredFieldName = 'FirstName'
+			or  RequiredFieldName = 'LastName'
+			or  RequiredFieldName = 'JobTitle' 
+			or  RequiredFieldName = 'Department'
+			or  RequiredFieldName = 'Salutation'
+			or  RequiredFieldName = 'ContactFaxNumber' 
+			then 1
+			else 2 end ColNo,
+	  ROW_NUMBER() OVER (ORDER BY (SELECT 100)) Rownumber
+	  from
+	  (select [Phone_Number_Required] ContactPhoneNumber
+      ,[Email_Address_Required] ContactEmailAddress
+      ,convert(smallint,1) AccountNumber
+      ,[Email_Address_Required] FirstName
+      ,[Last_Name_Required] LastName
+      ,[Job_Title_Required] JobTitle
+      ,[Department_Required] Department
+      ,[Salutation_Required] Salutation
+      ,[Contact_Type_Required] ContactTypeID
+      ,[Fax_Number_Required] ContactFaxNumber
+      ,[Street_Address_Required] AddressLine1
+	  ,[City_Required] City
+      ,[County_Required] County
+      ,[State_Required] State 
+      ,[Postal_Code_Required] PostalCode
+      ,[Country_Required] Country
+      ,[Source_Required] OriginalPrimarySourceID
+	  from [adaptv3system].[dbo].[pref6]
+	  ) p 
+	  unpivot
+	  (
+		RequiredTypeID for 
+		RequiredFieldName in (ContactPhoneNumber
+							  ,ContactEmailAddress
+							  ,AccountNumber
+							  ,FirstName
+							  ,LastName
+							  ,JobTitle
+							  ,Department
+							  ,Salutation
+							  ,ContactTypeID
+							  ,ContactFaxNumber
+							  ,AddressLine1
+							  ,City
+							  ,County
+							  ,State
+							  ,PostalCode
+							  ,Country
+							  ,OriginalPrimarySourceID
+							  )
+	  ) as RequiredFieldName 

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Xml;
+using Migration.Common;
 
 namespace Migration
 {
@@ -35,32 +37,7 @@ namespace Migration
         public string ReplaceKeySpecial(string key, int tenantID = 0)
         {
             var result = key;
-            switch (key)
-            {
-                case "Created_By":
-                    result =
-                        "(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where TargetServer='.' and OldValTable = (select top 1 Email_Address from [adaptv3system].[dbo].[users] where User_ID = Created_By) order by Id desc) Created_By";
-                    break;
-                case "Modified_By":
-                    result =
-                        "(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where TargetServer='.' and OldValTable = (select top 1 Email_Address from [adaptv3system].[dbo].[users] where User_ID = Modified_By) order by Id desc) Modified_By";
-                    break;
-                case "Created_Date":
-                    result =
-                        "case when Created_Date not like '%0000%' then convert(datetime,substring(Created_Date, 1, 4) + '-' + substring(Created_Date, 5, 2) + '-' + substring(Created_Date, 7, 2) + ' ' + substring(Created_Time, 1, 2) + ':' + substring(Created_Time, 3, 2) + ':' + substring(Created_Time, 5, 2)) else null end Created_Date";
-                    break;
-                case "Modified_Date":
-                    result =
-                        "case when Modified_Date not like '%0000%' then convert(datetime,substring(Modified_Date, 1, 4) + '-' + substring(Modified_Date, 5, 2) + '-' + substring(Modified_Date, 7, 2) + ' ' + substring(Modified_Time, 1, 2) + ':' + substring(Modified_Time, 3, 2) + ':' + substring(Modified_Time, 5, 2)) else null end Modified_Date";
-                    break;
-                case "Notes":
-                    result =
-                        "RTRIM(LTRIM(convert(varchar(max),isnull(Notes,'')))) Notes";
-                    break;
-                    /*case "Syspro_TenantID":
-                    result = string.Format("convert(int, {0}) TenantID", tenantID);
-                    break;*/
-            }
+            
             if (result.Contains("Syspro_TenantID"))
             {
                 result = result.Replace("Syspro_TenantID", string.Format("convert(int, {0})", tenantID));
@@ -70,18 +47,28 @@ namespace Migration
                 result = string.Format("case when {0} = 'T' then 1 else 0 end {1}", fieldName,
                     fieldName.Replace(".", ""));
             }
-            else if (result.Contains("_Syspro_GetUserID"))
-            {
-                var userField = result.Replace("_Syspro_GetUserID", "");
-                result =
-                    string.Format(
-                        "(select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] where TargetServer='.' and OldValTable = (select top 1 Email_Address from [adaptv3system].[dbo].[users] where User_ID = {0}) order by Id desc) {1}",
-                        userField, userField.Replace(".", ""));
-            }
-            else if (result.Contains(".Notes"))
+            else if (result.Contains(".Notes") && !result.Contains(".Notes)") && !result.Contains(".Notes,"))
             {
                 var nameField = result;
                 result = string.Format("RTRIM(LTRIM(convert(varchar(max),isnull({0},'')))) Notes", nameField);
+            }
+            else if (result.Contains(".Created_Date") && !result.Contains(".Created_Date)") && !result.Contains(".Created_Date,"))
+            {
+                var nameField = result.Replace(".Created_Date","");
+                result = string.Format(
+                    "case when {0}.Created_Date not like '%0000%' " +
+                    "then convert(datetime,substring({0}.Created_Date, 1, 4) + '-' + substring({0}.Created_Date, 5, 2) + '-' + substring({0}.Created_Date, 7, 2) " +
+                    "+ ' ' + substring({0}.Created_Time, 1, 2) + ':' + substring({0}.Created_Time, 3, 2) + ':' + substring({0}.Created_Time, 5, 2)) else null end Created_Date",
+                    nameField);
+            }
+            else if (result.Contains(".Modified_Date") && !result.Contains(".Modified_Date)") && !result.Contains(".Modified_Date,"))
+            {
+                var nameField = result.Replace(".Modified_Date", "");
+                result = string.Format(
+                    "case when {0}.Modified_Date not like '%0000%' " +
+                    "then convert(datetime,substring({0}.Modified_Date, 1, 4) + '-' + substring({0}.Modified_Date, 5, 2) + '-' + substring({0}.Modified_Date, 7, 2) " +
+                    "+ ' ' + substring({0}.Modified_Time, 1, 2) + ':' + substring({0}.Modified_Time, 3, 2) + ':' + substring({0}.Modified_Time, 5, 2)) else null end Modified_Date",
+                    nameField);
             }
             return result;
         }
@@ -94,9 +81,25 @@ namespace Migration
             res = res.TrimEnd(',');
             res += " from " + Source.Tables;
 
+            var acronymTable = Source.Tables.Split(' ').LastOrDefault() ?? Guid.NewGuid().ToString();
+
             if (!string.IsNullOrEmpty(Source.JoinTotal))
             {
                 res += " " + Source.JoinTotal;
+            }
+            //JoinUser example: Contact_Manager,Created_By,Modified_By
+            if (!string.IsNullOrEmpty(Source.JoinUser))
+            {
+                var lstFieldUser = Source.JoinUser.Split(',').ToList();
+                foreach (var fieldUser in lstFieldUser)
+                {
+                    res += string.Format("\nleft join [adaptv3system].[dbo].[users] {0} on {0}.User_ID = {1}.{2}",
+                        ParseData.GetAcronymString(fieldUser), acronymTable, fieldUser);
+                    res +=
+                        string.Format(
+                            "\nleft join  [tempdb].[dbo].[MigrateSupport] ms_{0} on ms_{0}.TargetServer='.' and ms_{0}.OldValTable = {0}.Email_Address",
+                            ParseData.GetAcronymString(fieldUser));
+                }
             }
 
             if (!string.IsNullOrEmpty(Source.Where))

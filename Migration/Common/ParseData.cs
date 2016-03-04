@@ -252,5 +252,16 @@ namespace Migration.Common
                 return null;
             }
         }
+
+        public static string GetAcronymString(string text)
+        {
+            return text.Replace("_", "").ToLower();
+        }
+        //replace acc.UserId = UserId
+        /*public static string GetRealField(string text)
+        {
+            var indexCham = text.LastIndexOf(".");
+            return text.Substring(indexCham >= 0 ? indexCham + 1 : 0, text.Length - indexCham - 1);
+        }*/
     }
 }

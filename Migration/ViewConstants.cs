@@ -10,6 +10,8 @@ namespace Migration
     {
         public const string Pref1_Pivot_Required = "Pref1_Pivot_Required";
         public const string Pref1_Pivot_Default = "Pref1_Pivot_Default";
+        public const string Pref6_Pivot_Required = "Pref6_Pivot_Required";
+        public const string Pref6_Pivot_Default = "Pref6_Pivot_Default";
 
     }
 }

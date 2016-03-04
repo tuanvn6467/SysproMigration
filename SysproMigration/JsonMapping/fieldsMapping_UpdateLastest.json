@@ -9,7 +9,7 @@
         "Destination": {
             "Tables": "fld_Field_Value",
             "Script": "QueryCRM_Update_Data_To_Custom_Field.txt",
-            "TimeOut": "600"
+            "TimeOut": "1000"
         },
         "Size":  10000,
         "Map": {
@@ -28,7 +28,7 @@
         "Destination": {
             "Tables": "fld_Field_Value",
             "Script": "QueryCRM_Update_Data_To_Custom_Field.txt",
-            "TimeOut": "600"
+            "TimeOut": "1000"
         },
         "Size":  10000,
         "Map": {

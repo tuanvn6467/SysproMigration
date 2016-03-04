@@ -1,0 +1,42 @@
+create view [dbo].[Pref6_Pivot_Default] 
+  as 
+  select DefaultFieldName, DefaultValue,
+	  case	
+		when (DefaultFieldName = 'JobTitle') then 104 
+		when (DefaultFieldName = 'Department') then 105 
+		when (DefaultFieldName = 'ContactTypeID') then 107 
+		when (DefaultFieldName = 'DecisionAuthorityID') then 112 
+		end DefaultFieldID,
+	  case	
+		when (DefaultFieldName = 'JobTitle') then 2 
+		when (DefaultFieldName = 'Department') then 3 
+		when (DefaultFieldName = 'ContactTypeID') then 1 
+		when (DefaultFieldName = 'DecisionAuthorityID') then 4 
+		else 0 end SeqNo,
+		ROW_NUMBER() OVER (ORDER BY (SELECT 100)) Rownumber
+	  from
+	  (select 
+	  --default field
+       CONVERT(varchar,jt.JobTitleID) JobTitle
+      ,CONVERT(varchar,ct.DepartmentID) Department
+      ,CONVERT(varchar,[Default_Contact_Type]) ContactTypeID
+      ,CONVERT(varchar,[Default_Decision_Authority]) DecisionAuthorityID
+	  from [adaptv3system].[dbo].[pref6] p
+	  left join 
+			(select ROW_NUMBER() over (order by (Select 1000)) JobTitleID
+				,*  from [adaptv3system].[dbo].jobtitle) 
+			as jt on jt.Job_Title = p.Default_Job_Title
+	  left join 
+			(select ROW_NUMBER() over (order by (Select 1000)) DepartmentID
+				,*  from [adaptv3system].[dbo].dept) 
+			as ct on ct.Department_Name = p.Default_Department
+	  ) p 
+	  unpivot
+	  (
+		DefaultValue for 
+		DefaultFieldName in (JobTitle
+							  ,Department
+							  ,ContactTypeID
+							  ,DecisionAuthorityID
+							  )
+	  ) as DefaultFieldName 

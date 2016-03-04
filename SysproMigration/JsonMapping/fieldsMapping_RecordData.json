@@ -101,17 +101,18 @@
             "n.Notes": "Notes"
         }
     },
-    //migrate [adaptv3SAMPLE].[dbo].[account] to acc_Account
+    //migrate [dbo].[account] to acc_Account
     {
         "Id": 1004,
         "Source": {
             "Tables": "[dbo].[account] acc",
             "OrderBy": "order by acc.Account_Number",
             "Join": "left join [dbo].[address] ad on ad.Account_Number = acc.Account_Number and ad.Address_Record_Number = acc.Primary_Address_Record and ad.Attached_To = 'A'",
-            "Join1": "left join [dbo].[phone] phone on phone.Account_Number = acc.Account_Number and phone.Phone_Record_Number = acc.Primary_Phone_Record and phone.Phone_Medium = 'V' and phone.Attached_To = 'A'",
-            "Join2": "left join [dbo].[phone] fax on fax.Account_Number = acc.Account_Number and fax.Phone_Record_Number = acc.Primary_Fax_Record and fax.Phone_Medium = 'F' and fax.Attached_To = 'A'",
-            "Join3": "left join [dbo].[net] email on email.Account_Number = acc.Account_Number and email.Attached_Record_Number = acc.Primary_Email_Record and email.Address_Type = 'E' and email.Attached_To = 'A'",
-            "Join4": "left join [dbo].[net] web on web.Account_Number = acc.Account_Number and web.Attached_Record_Number = acc.Primary_Web_Record and web.Address_Type = 'W' and web.Attached_To = 'A'"
+            "Join1": "left join [dbo].[phone] phone on phone.Attached_Record_Number = acc.Account_Number and phone.Phone_Record_Number = acc.Primary_Phone_Record and phone.Phone_Medium = 'V' and phone.Attached_To = 'A'",
+            "Join2": "left join [dbo].[phone] fax on fax.Attached_Record_Number = acc.Account_Number and fax.Phone_Record_Number = acc.Primary_Fax_Record and fax.Phone_Medium = 'F' and fax.Attached_To = 'A'",
+            "Join3": "left join [dbo].[net] email on email.Attached_Record_Number = acc.Account_Number and email.Net_Record_Number = acc.Primary_Email_Record and email.Address_Type = 'E' and email.Attached_To = 'A'",
+            "Join4": "left join [dbo].[net] web on web.Attached_Record_Number = acc.Account_Number and web.Net_Record_Number = acc.Primary_Web_Record and web.Address_Type = 'W' and web.Attached_To = 'A'",
+            "JoinUser":  "Account_Manager,Service_Manager,Create_User,Modified_User"
         },
         "Destination": {
             "Tables": "acc_Account"
@@ -134,8 +135,8 @@
             "convert(int, acc.Original_Marketing_Event) OriginalMarketingEventID": "OriginalMarketingEventID",
             "convert(varchar(255),acc.Territory_ID) TerritoryID": "TerritoryID",
             "Business_Type": "BusinessTypeID",
-            "Account_Manager_Syspro_GetUserID": "AccountManager",
-            "Service_Manager_Syspro_GetUserID": "ServiceManagerID",
+            "ms_accountmanager.NewValTable AccountManager": "AccountManager",
+            "ms_servicemanager.NewValTable ServiceManagerID": "ServiceManagerID",
             //"Service_Contract_Number":  "",
             //"Last_Technician": "",
             //"Last_Service_Date": "",
@@ -214,9 +215,152 @@
             //"(select top 1 ([tempdb].[dbo].[GetDateTime](Start_Date,Start_Time)) from [dbo].[appt] where Account_Number = acc.Account_Number and Completed = 'F' ORDER BY Account_Number ASC ,Completed ASC ,Start_Date ASC ,Start_Time ASC ,Appointment_ID ASC) NextActivityDate": "NextActivityDate",
             "acc.Notes": "Notes",
             "[tempdb].[dbo].[GetDateTime](acc.Create_Date,acc.Created_Time) Created_Date": "CreatedDate",
-            "acc.Create_User_Syspro_GetUserID": "CreatedBy",
+            "ms_createuser.NewValTable CreatedBy": "CreatedBy",
             "[tempdb].[dbo].[GetDateTime](acc.Modified_Date,acc.Modified_Time) ModifiedDate": "ModifiedDate",
-            "acc.Modified_User_Syspro_GetUserID": "ModifiedBy"
+            "ms_modifieduser.NewValTable ModifiedBy": "ModifiedBy"
+        }
+    },
+    //migrate [dbo].[phone] to [dbo].[fld_Multi_FieldValue]
+    {
+        "Id": 1005,
+        "Source": {
+            "Tables": "[dbo].[phone] p",
+            "OrderBy": "order by p.Account_Number",
+            "Join": "left join [dbo].[contact] ct on ct.Contact_Number = p.Attached_Record_Number and p.Attached_To = 'C'"
+        },
+        "Destination": {
+            "Tables": "fld_Multi_FieldValue"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "(case when Phone_Medium = 'V' then 63 when Phone_Medium = 'F' then 111 when Phone_Medium = 'M' then 62 else 0 end) FieldID": "FieldID",
+            "convert(bigint,p.Attached_Record_Number) RecID": "RecID",
+            "[tempdb].[dbo].[ConvertPhoneFax](Phone_Number,'') FieldVal": "FieldVal",
+            "Extension": "Ext",
+            "(case when ((p.Phone_Record_Number = ct.Default_Phone_Record and p.Phone_Medium = 'V') or (p.Phone_Record_Number = ct.Default_Fax_Record and p.Phone_Medium = 'F') or (p.Phone_Record_Number = ct.Default_Mobile_Record and p.Phone_Medium = 'M')) then 1 else 0 end) IsPrimary": "IsPrimary",
+            "p.Notes": "Notes"
+        }
+    },
+    //migrate [dbo].[net] to [dbo].[fld_Multi_FieldValue]
+    {
+        "Id": 1006,
+        "Source": {
+            "Tables": "[dbo].[net] n",
+            "OrderBy": "order by n.Account_Number",
+            "Join": "left join [dbo].[contact] ct on ct.Contact_Number = n.Attached_Record_Number and n.Attached_To = 'C'"
+        },
+        "Destination": {
+            "Tables": "fld_Multi_FieldValue"
+        },
+        "NeedTruncate": false,
+        "Map": {
+            "(case when Address_Type = 'E' then 67 else 0 end) FieldID": "FieldID",
+            "convert(bigint,n.Attached_Record_Number) RecID": "RecID",
+            "Net_Address": "FieldVal",
+            "(case when ((n.Net_Record_Number = ct.Default_Email_Record and n.Address_Type = 'E')) then 1 else 0 end) IsPrimary": "IsPrimary",
+            "n.Notes": "Notes"
+        }
+    },
+    //migrate [dbo].[contact] to [dbo].[con_Contact]
+    {
+        "Id": 1007,
+        "Source": {
+            "Tables": "[dbo].[contact] ct",
+            "OrderBy": "order by ct.Contact_Number",
+            "Join": "left join [adaptv3system].[dbo].[name_prefixes] np on np.Name_Prefix = ct.Name_Prefix",
+            "Join1": "left join [adaptv3system].[dbo].[name_suffixes] ns on ns.Name_Suffix = ct.Name_Suffix",
+            "Join2": "left join (select ROW_NUMBER() over (order by (Select 1000)) JobTitleID ,*  from [adaptv3system].[dbo].jobtitle) as jt on jt.Job_Title = ct.Job_Title",
+            "Join3": "left join (select ROW_NUMBER() over (order by (Select 1000)) DepartmentID,*  from [adaptv3system].[dbo].dept) as dept on dept.Department_Name = ct.Department",
+            "Join4": "left join [dbo].[phone] phone on phone.Attached_Record_Number = ct.Contact_Number and phone.Phone_Record_Number = ct.Default_Phone_Record and phone.Phone_Medium = 'V' and phone.Attached_To = 'C'",
+            "Join5": "left join [dbo].[phone] fax on fax.Attached_Record_Number = ct.Contact_Number and fax.Phone_Record_Number = ct.Default_Fax_Record and fax.Phone_Medium = 'F' and fax.Attached_To = 'C'",
+            "Join6": "left join [dbo].[phone] mobile on mobile.Attached_Record_Number = ct.Contact_Number and mobile.Phone_Record_Number = ct.Default_Mobile_Record and mobile.Phone_Medium = 'M' and mobile.Attached_To = 'C'",
+            "Join7": "left join [dbo].[net] email on email.Attached_Record_Number = ct.Contact_Number and email.Net_Record_Number = ct.Default_Email_Record and email.Address_Type = 'E' and email.Attached_To = 'C'",
+            "Join8": "left join [dbo].[account] acc on acc.Account_Number = ct.Account_Number",
+            "Join9": "left join [dbo].[address] ad on ad.Account_Number = ct.Account_Number and ad.Address_Record_Number = acc.Primary_Address_Record and ad.Attached_To = 'A'",
+            "JoinUser":  "Contact_Manager,Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "con_Contact"
+        },
+        "Map": {
+            "convert(bigint, Contact_Number) ContactNumber": "ContactNumber",
+            "convert(bigint, ct.Account_Number) AccountNumber": "AccountNumber",
+            "ct.First_Name": "FirstName",
+            "ct.Last_Name": "LastName",
+            "ct.Middle_Name": "MiddleName",
+            //"[Last_Name_Soundex]"
+            "np.Record_ID ContactNamePrefixID": "ContactNamePrefixID",
+            "ns.Record_ID ContactNameSuffixID": "ContactNameSuffixID",
+            "Contact_Name": "ContactName",
+            "Contact_Type": "ContactTypeID",
+            //Account_Type
+            //Contact_Territory
+            "ms_contactmanager.NewValTable ContactManagerID": "ContactManagerID",
+            "ct.Original_Primary_Source": "OriginalPrimarySourceID",
+            "ct.Original_Secondary_Source": "OriginalSecondarySourceID",
+            "ct.Original_Marketing_Campaign": "OriginalMarketingCampaignID",
+            "ct.Original_Marketing_Event": "OriginalMarketingEventID",
+            "ct.Last_Primary_Source": "LastPrimarySourceID",
+            "ct.Last_Secondary_Source": "LastSecondarySourceID",
+            "ct.Last_Marketing_Campaign": "LastMarketingCampaignID",
+            "ct.Last_Marketing_Event": "LastMarketingEventID",
+            "Active_Contact_Syspro_TF": "IsActiveContact",
+            "ct.Do_Not_Call_Syspro_TF": "IsDoNotCall",
+            "ct.Do_Not_Fax_Syspro_TF": "IsDoNotFax",
+            "ct.Do_Not_Email_Syspro_TF": "IsDoNotEmail",
+            "ct.Do_Not_Mail_Syspro_TF": "IsDoNotMail",
+            "jt.JobTitleID": "JobTitle",
+            "dept.DepartmentID": "Department",
+            "Salutation": "Salutation",
+            "([tempdb].[dbo].[ConvertPhoneFax](phone.Phone_Number,phone.Extension)) ContactPhoneNumber": "ContactPhoneNumber",
+            "([tempdb].[dbo].[ConvertPhoneFax](fax.Phone_Number,fax.Extension)) ContactFaxNumber": "ContactFaxNumber",
+            "([tempdb].[dbo].[ConvertPhoneFax](mobile.Phone_Number,mobile.Extension)) MobileNumber": "MobileNumber",
+            "email.Net_Address ContactEmailAddress": "ContactEmailAddress",
+            "ad.Location_Name": "AddressLocationName",
+            "ad.Street_Line_1": "AddressLine1",
+            "ad.Street_Line_2": "AddressLine2",
+            "ad.Street_Line_3": "AddressLine3",
+            "ad.City": "City",
+            "ad.County": "County",
+            "ad.State": "State",
+            "ad.Postal_Code": "PostalCode",
+            "ad.Country": "Country",
+            "ad.Address_Type": "AddressTypeID",
+            "ad.Address_Notes": "AddressNotes",
+            "case when acc.Primary_Sales_Contact = ct.Contact_Number then 1 else 0 end IsPrimarySalesContact": "IsPrimarySalesContact",
+            "case when acc.Primary_Service_Contact = ct.Contact_Number then 1 else 0 end IsPrimaryServiceContact": "IsPrimaryServiceContact",
+            "case when acc.Primary_Collections_Contact = ct.Contact_Number then 1 else 0 end IsPrimaryCollectionsContact": "IsPrimaryCollectionsContact",
+            "case when acc.Primary_Customer_Contact = ct.Contact_Number then 1 else 0 end IsPrimaryCustomerContact": "IsPrimaryCustomerContact",
+            "case when acc.Secondary_Customer_Contact = ct.Contact_Number then 1 else 0 end IsSecondaryCustomerContact": "IsSecondaryCustomerContact",
+            "case when acc.Primary_Vendor_Contact = ct.Contact_Number then 1 else 0 end IsPrimaryVendorContact": "IsPrimaryVendorContact",
+            "case when acc.Secondary_Vendor_Contact = ct.Contact_Number then 1 else 0 end IsSecondaryVendorContact": "IsSecondaryVendorContact",
+            "Contact_Address_ID": "PrimaryAddressID",
+            "ct.Language": "LanguageID",
+            //Parent_Contact
+            "Decision_Making_Authority": "DecisionAuthorityID",
+            //TotalActivities
+            //TotalOpenOpportunities
+            //TotalWonOpportunities
+            //TotalLostOpportunities
+            //TotalPostedOpportunities
+            //TotalCanceledOpportunities
+            //TotalOpenServiceTicket
+            //TotalClosedServiceTicket
+            //IsWriteToOutLook
+            //ContactedByMarketingCampaignID
+            //ContactedByMarketingEventID
+            //AccountingContactNumber
+            "ct.Notes": "Notes",
+            "ct.Last_Milestone": "LastMilestoneID",
+            "[tempdb].[dbo].[GetDate](ct.Last_Milestone_Date) LastMilestoneDate": "LastMilestoneDate",
+            "ct.Next_Milestone": "NextMilestoneID",
+            //Service_Portal_Access_Level
+            //LastActivityDate
+            //NextActivityDate
+            "[tempdb].[dbo].[GetDateTime](ct.Created_Date,ct.Created_Time) Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedBy": "CreatedBy",
+            "[tempdb].[dbo].[GetDateTime](ct.Modified_Date,ct.Modified_Time) ModifiedDate": "ModifiedDate",
+            "ms_modifiedby.NewValTable ModifiedBy": "ModifiedBy"
         }
     }
 

@@ -19,13 +19,13 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>01/16/2016 09:59:55</publishTime>
     </File>
     <File Include="bin/Migration.dll">
-      <publishTime>03/01/2016 15:47:57</publishTime>
+      <publishTime>03/04/2016 11:36:06</publishTime>
     </File>
     <File Include="bin/Newtonsoft.Json.dll">
       <publishTime>01/18/2016 09:51:22</publishTime>
     </File>
     <File Include="bin/SysproMigration.dll">
-      <publishTime>03/01/2016 15:47:57</publishTime>
+      <publishTime>03/04/2016 11:36:06</publishTime>
     </File>
     <File Include="bin/System.Web.Helpers.dll">
       <publishTime>01/16/2016 09:59:54</publishTime>
@@ -73,19 +73,19 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/02/2016 14:33:00</publishTime>
     </File>
     <File Include="JsonMapping/fieldsMapping_RecordData.json">
-      <publishTime>02/29/2016 09:26:50</publishTime>
+      <publishTime>03/04/2016 11:35:42</publishTime>
     </File>
     <File Include="JsonMapping/fieldsMapping_Security.json">
       <publishTime>01/21/2016 16:49:44</publishTime>
     </File>
     <File Include="JsonMapping/fieldsMapping_SetupData.json">
-      <publishTime>03/01/2016 15:40:22</publishTime>
+      <publishTime>03/04/2016 11:34:57</publishTime>
     </File>
     <File Include="JsonMapping/fieldsMapping_System.json">
       <publishTime>01/21/2016 16:49:47</publishTime>
     </File>
     <File Include="JsonMapping/fieldsMapping_UpdateLastest.json">
-      <publishTime>03/01/2016 15:44:06</publishTime>
+      <publishTime>03/04/2016 11:34:39</publishTime>
     </File>
     <File Include="packages.config">
       <publishTime>01/19/2016 17:47:37</publishTime>
@@ -141,11 +141,17 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="QueryFixed/QueryAdaptViewPref1Pivot_Required.txt">
       <publishTime>02/26/2016 16:56:29</publishTime>
     </File>
+    <File Include="QueryFixed/QueryAdaptViewPref6Pivot_Default.txt">
+      <publishTime>03/02/2016 17:39:47</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryAdaptViewPref6Pivot_Required.txt">
+      <publishTime>03/02/2016 16:21:11</publishTime>
+    </File>
     <File Include="QueryFixed/QueryAdapt_CreateIndexTable.txt">
-      <publishTime>02/29/2016 11:10:32</publishTime>
+      <publishTime>03/04/2016 10:07:30</publishTime>
     </File>
     <File Include="QueryFixed/QueryAdapt_DropIndexTable.txt">
-      <publishTime>02/29/2016 11:07:12</publishTime>
+      <publishTime>03/04/2016 10:07:01</publishTime>
     </File>
     <File Include="QueryFixed/QueryCRMUpdatePhysicalFieldName.txt">
       <publishTime>02/24/2016 10:15:40</publishTime>
@@ -163,7 +169,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/29/2016 09:43:14</publishTime>
     </File>
     <File Include="QueryFixed/QueryCRM_Update_Data_To_Custom_Field.txt">
-      <publishTime>03/01/2016 14:46:46</publishTime>
+      <publishTime>03/03/2016 10:37:01</publishTime>
     </File>
     <File Include="QueryFixed/QueryCRM_Update_fld_Multi_FieldValue_IsPrimary.txt">
       <publishTime>02/25/2016 15:45:30</publishTime>

@@ -12,4 +12,90 @@ CREATE NONCLUSTERED INDEX [fldval_ParentRecordID_FieldID_Index] ON [{0}].[dbo].[
 (
 	[Field_ID] ASC,
 	[Parent_Record_ID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)
+
+if(exists (
+		SELECT
+				* 
+				FROM [{0}].sys.indexes 
+				WHERE name ='account_AccountNumber_Index' AND object_id = OBJECT_ID('account')
+))
+begin
+	drop index account_AccountNumber_Index on [{0}].[dbo].[account]
+end
+ 
+CREATE NONCLUSTERED INDEX [account_AccountNumber_Index] ON [{0}].[dbo].[account]
+(
+	[Account_Number] ASC
+)
+
+
+if(exists (
+		SELECT
+				* 
+				FROM [{0}].sys.indexes 
+				WHERE name ='contact_ContactNumber_Index' AND object_id = OBJECT_ID('contact')
+))
+begin
+	drop index contact_ContactNumber_Index on [{0}].[dbo].contact
+end
+ 
+CREATE NONCLUSTERED INDEX [contact_ContactNumber_Index] ON [{0}].[dbo].contact
+(
+	[Contact_Number] ASC
+) 
+
+if(exists (
+		SELECT
+				* 
+				FROM [{0}].sys.indexes 
+				WHERE name ='address_AccountNumber_AddressRecordNumber_AttachedTo_Index' AND object_id = OBJECT_ID('address')
+))
+begin
+	drop index address_AccountNumber_AddressRecordNumber_AttachedTo_Index on [{0}].[dbo].[address]
+end
+
+CREATE NONCLUSTERED INDEX [address_AccountNumber_AddressRecordNumber_AttachedTo_Index] ON [{0}].[dbo].[address]
+(
+	[Account_Number] ASC,
+	[Address_Record_Number] ASC,
+	[Attached_To] ASC
+)
+
+if(exists (
+		SELECT
+				* 
+				FROM [{0}].sys.indexes 
+				WHERE name ='phone_AttachedRecordNumber_PhoneRecordNumber_PhoneMedium_AttachedTo_Index' AND object_id = OBJECT_ID('phone')
+))
+begin
+	drop index phone_AttachedRecordNumber_PhoneRecordNumber_PhoneMedium_AttachedTo_Index on [{0}].[dbo].[phone]
+end
+ 
+CREATE NONCLUSTERED INDEX [phone_AttachedRecordNumber_PhoneRecordNumber_PhoneMedium_AttachedTo_Index] ON [{0}].[dbo].[phone]
+(
+	[Attached_Record_Number] ASC,
+	[Phone_Record_Number] ASC,
+	[Phone_Medium] ASC,
+	[Attached_To] ASC
+)
+
+if(exists (
+		SELECT
+				* 
+				FROM [{0}].sys.indexes 
+				WHERE name ='net_AttachedRecordNumber_NetRecordNumber_AddressType_AttachedTo_Index' AND object_id = OBJECT_ID('net')
+))
+begin
+	drop index net_AttachedRecordNumber_NetRecordNumber_AddressType_AttachedTo_Index on [{0}].[dbo].[net]
+end
+ 
+CREATE NONCLUSTERED INDEX [net_AttachedRecordNumber_NetRecordNumber_AddressType_AttachedTo_Index] ON [{0}].[dbo].[net]
+(
+	[Attached_Record_Number] ASC,
+	[Net_Record_Number] ASC,
+	[Address_Type] ASC,
+	[Attached_To] ASC
+)
+
+

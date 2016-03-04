@@ -7,3 +7,43 @@ if(exists (
 begin
 	drop index fldval_ParentRecordID_FieldID_Index on [{0}].[dbo].[fldval]
 end
+
+if(exists (
+		SELECT
+				* 
+				FROM [{0}].sys.indexes 
+				WHERE name ='account_AccountNumber_Index' AND object_id = OBJECT_ID('account')
+))
+begin
+	drop index account_AccountNumber_Index on [{0}].[dbo].[account]
+end
+
+if(exists (
+		SELECT
+				* 
+				FROM [{0}].sys.indexes 
+				WHERE name ='address_AccountNumber_AddressRecordNumber_AttachedTo_Index' AND object_id = OBJECT_ID('address')
+))
+begin
+	drop index address_AccountNumber_AddressRecordNumber_AttachedTo_Index on [{0}].[dbo].[address]
+end
+
+if(exists (
+		SELECT
+				* 
+				FROM [{0}].sys.indexes 
+				WHERE name ='phone_AttachedRecordNumber_PhoneRecordNumber_PhoneMedium_AttachedTo_Index' AND object_id = OBJECT_ID('phone')
+))
+begin
+	drop index phone_AttachedRecordNumber_PhoneRecordNumber_PhoneMedium_AttachedTo_Index on [{0}].[dbo].[phone]
+end
+
+if(exists (
+		SELECT
+				* 
+				FROM [{0}].sys.indexes 
+				WHERE name ='net_AttachedRecordNumber_NetRecordNumber_AddressType_AttachedTo_Index' AND object_id = OBJECT_ID('net')
+))
+begin
+	drop index net_AttachedRecordNumber_NetRecordNumber_AddressType_AttachedTo_Index on [{0}].[dbo].[net]
+end

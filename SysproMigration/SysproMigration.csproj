@@ -140,6 +140,8 @@
     <Content Include="QueryFixed\QueryAdaptFunctionConvertValueByFieldType.txt" />
     <Content Include="QueryFixed\QueryAdaptFunctionGetDateTime.txt" />
     <Content Include="QueryFixed\QueryAdaptFunctionConvertPhoneFax.txt" />
+    <Content Include="QueryFixed\QueryAdaptViewPref6Pivot_Default.txt" />
+    <Content Include="QueryFixed\QueryAdaptViewPref6Pivot_Required.txt" />
     <Content Include="QueryFixed\QueryCRMUpdatePhysicalFieldName.txt" />
     <Content Include="QueryFixed\QueryAdaptConvertFieldName.txt" />
     <Content Include="QueryFixed\QueryAdaptFunctionCompareModuleID.txt" />

@@ -91,9 +91,13 @@ declare	@UpdateFields		varchar(max)  = ''
 					set @TransactionSQL = @TransactionSQL + ' COMMIT'
 					begin try
 						exec (@TransactionSQL)	
+						set		@CountLoop		= 0
+						set		@TransactionSQL = 'BEGIN TRANSACTION '
 					end try
 					begin catch
 						--select @Sql
+						set		@CountLoop		= 0
+						set		@TransactionSQL = 'BEGIN TRANSACTION '
 					end catch
 				end
 				else begin
@@ -105,6 +109,15 @@ FETCH NEXT FROM Cur INTO @TableID, @RecID
 end
 CLOSE Cur 
 DEALLOCATE Cur 
+
+if(@TransactionSQL <> 'BEGIN TRANSACTION ')
+begin try
+	set @TransactionSQL = @TransactionSQL + ' COMMIT'
+	exec (@TransactionSQL)	
+end try
+begin catch
+	--select @TransactionSQL
+end catch
 
 delete from [dbo].[fld_Field_Value]
 

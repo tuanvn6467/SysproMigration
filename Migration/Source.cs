@@ -81,6 +81,8 @@
             }
         }
 
+        public string JoinUser { get; set; }
+
         public string Where { get; set; }
 
         public string OrderBy { get; set; }

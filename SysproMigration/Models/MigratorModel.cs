@@ -462,7 +462,7 @@ namespace SysproMigration.Models
                 var sql = fieldsMap.CreateQueryFromSource(p, _batchSize, TenantID, true);
 
                 var records = 1000;
-                Logging.PushInfo("Write query");
+                Logging.PushInfo("Write query from source table " + fieldsMap.Source.Tables);
                 //insert query
                 Utils.UpdateQueueTable(migrateConn, new QueueMigrate
                 {
