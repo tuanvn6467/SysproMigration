@@ -224,6 +224,18 @@ namespace SysproMigration.Utility
             {
                 command.ExecuteNonQuery();
             }
+            //function get user id new crm
+            CheckFunctionExist(con, FunctionConstants.GetUserIDNewCRM);
+            var queryFunctionGetUserIDNewCRM = QueryConstants.QueryAdaptFunctionGetUserIDNewCRM.GetTextInQueryFixedFolder();
+            Execute(con, queryFunctionGetUserIDNewCRM);
+            //function get group id new crm
+            CheckFunctionExist(con, FunctionConstants.GetGroupIDNewCRM);
+            var queryFunctionGetGroupIDNewCRM = QueryConstants.QueryAdaptFunctionGetGroupIDNewCRM.GetTextInQueryFixedFolder();
+            Execute(con, queryFunctionGetGroupIDNewCRM);
+            //function get role id new crm
+            CheckFunctionExist(con, FunctionConstants.GetRoleIDNewCRM);
+            var queryFunctionGetRoleIDNewCRM = QueryConstants.QueryAdaptFunctionGetRoleIDNewCRM.GetTextInQueryFixedFolder();
+            Execute(con, queryFunctionGetRoleIDNewCRM);
             //function get new value
             CheckFunctionExist(con, FunctionConstants.GetNewValue);
             var queryFunctionGetNewValue = QueryConstants.QueryAdaptFunctionGetNewValue.GetTextInQueryFixedFolder();
@@ -260,6 +272,14 @@ namespace SysproMigration.Utility
             CheckViewExist(con, ViewConstants.Pref6_Pivot_Default);
             var queryViewPref6Pivot_Default = QueryConstants.QueryAdaptViewPref6Pivot_Default.GetTextInQueryFixedFolder();
             Execute(con, queryViewPref6Pivot_Default);
+            //view pivot pref3 required table
+            CheckViewExist(con, ViewConstants.Pref3_Pivot_Required);
+            var queryViewPref3Pivot_Required = QueryConstants.QueryAdaptViewPref3Pivot_Required.GetTextInQueryFixedFolder();
+            Execute(con, queryViewPref3Pivot_Required);
+            //view pivot pref3 default table
+            CheckViewExist(con, ViewConstants.Pref3_Pivot_Default);
+            var queryViewPref3Pivot_Default = QueryConstants.QueryAdaptViewPref3Pivot_Default.GetTextInQueryFixedFolder();
+            Execute(con, queryViewPref3Pivot_Default);
             //function compare module
             CheckFunctionExist(con, FunctionConstants.CompareModuleID);
             var queryFunctionCompareModuleID = QueryConstants.QueryAdaptFunctionCompareModuleID.GetTextInQueryFixedFolder();
@@ -276,6 +296,10 @@ namespace SysproMigration.Utility
             CheckFunctionExist(con, FunctionConstants.GetDate);
             var queryFunctionGetDate = QueryConstants.QueryAdaptFunctionGetDate.GetTextInQueryFixedFolder();
             Execute(con, queryFunctionGetDate);
+            //function get time
+            CheckFunctionExist(con, FunctionConstants.GetTime);
+            var queryFunctionGetTime = QueryConstants.QueryAdaptFunctionGetTime.GetTextInQueryFixedFolder();
+            Execute(con, queryFunctionGetTime);
             //function get date time
             CheckFunctionExist(con, FunctionConstants.GetDateTime);
             var queryFunctionGetDateTime = QueryConstants.QueryAdaptFunctionGetDateTime.GetTextInQueryFixedFolder();

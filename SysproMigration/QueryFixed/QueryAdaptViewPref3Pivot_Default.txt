@@ -1,0 +1,50 @@
+create view [dbo].[Pref3_Pivot_Default] 
+  as 
+  select DefaultFieldName, DefaultValue,
+	  case	
+		when (DefaultFieldName = 'ItemNumber') then 303 
+		when (DefaultFieldName = 'ProblemClass') then 305 
+		when (DefaultFieldName = 'Severity') then 307 
+		when (DefaultFieldName = 'Priority') then 308 
+		when (DefaultFieldName = 'HoldReason') then 347 
+		when (DefaultFieldName = 'ActivityTypeID') then 351 
+		when (DefaultFieldName = 'JobTypeID') then 352 
+		end DefaultFieldID,
+	  case	
+		when (DefaultFieldName = 'ItemNumber') then 1 
+		when (DefaultFieldName = 'ProblemClass') then 2 
+		when (DefaultFieldName = 'Severity') then 3 
+		when (DefaultFieldName = 'Priority') then 4 
+		when (DefaultFieldName = 'HoldReason') then 7 
+		when (DefaultFieldName = 'ActivityTypeID') then 5 
+		when (DefaultFieldName = 'JobTypeID') then 6 
+		else 0 end SeqNo,
+		ROW_NUMBER() OVER (ORDER BY (SELECT 100)) Rownumber
+	  from
+	  (select 
+	  --default field
+       CONVERT(varchar,p.Default_Item_Number) ItemNumber
+      ,CONVERT(varchar,p.[Default_Problem_Class]) ProblemClass
+      ,CONVERT(varchar,[Default_Severity]) Severity
+      ,CONVERT(varchar,[Default_Priority]) Priority
+	  ,CONVERT(varchar,[Default_Hold_Reason]) HoldReason
+      ,CONVERT(varchar,[Default_Reported_Via]) ActivityTypeID
+	  ,CONVERT(varchar,[Default_Job_Type]) JobTypeID
+	  from [adaptv3system].[dbo].[pref3] p
+	  --left join 
+		--	(select ROW_NUMBER() over (order by (Select 10000)) ItemID, 
+		--		* from [adaptv3system].[dbo].[item]) as itm 
+		--		on itm.Item_Number = p.Default_Item_Number
+	  ) p 
+	  unpivot
+	  (
+		DefaultValue for 
+		DefaultFieldName in (ItemNumber
+							  ,ProblemClass
+							  ,Severity
+							  ,Priority
+							  ,HoldReason
+							  ,ActivityTypeID
+							  ,JobTypeID
+							  )
+	  ) as DefaultFieldName 

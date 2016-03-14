@@ -1,0 +1,23 @@
+create Function [dbo].[GetTime]
+(
+	@Time varchar(255)
+)
+Returns time
+AS
+Begin
+	declare @Result time
+	declare @Text varchar(255)
+	set @Text = 
+			case when Len(@Time) > 0 
+				 then substring(@Time, 1, 2) + ':' + substring(@Time, 3, 2) + ':' + substring(@Time, 5, 2)
+				 else '' end
+	if(Len(@Text) > 0)
+	begin
+		set @Result = convert(time,@Text)
+	end
+	else
+	begin
+		set @Result = null
+	end
+	return @Result
+End

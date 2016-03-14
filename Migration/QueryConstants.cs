@@ -46,6 +46,10 @@ namespace Migration
 
         public static string QueryAdaptViewPref6Pivot_Default = "QueryAdaptViewPref6Pivot_Default.txt";
 
+        public static string QueryAdaptViewPref3Pivot_Required = "QueryAdaptViewPref3Pivot_Required.txt";
+
+        public static string QueryAdaptViewPref3Pivot_Default = "QueryAdaptViewPref3Pivot_Default.txt";
+
         public static string QueryCRM_CreateUniqueIndex = "QueryCRM_CreateUniqueIndex.txt";
 
         public static string QueryCRM_DropUniqueIndex = "QueryCRM_DropUniqueIndex.txt";
@@ -64,11 +68,19 @@ namespace Migration
 
         public static string QueryAdaptFunctionGetDateTime = "QueryAdaptFunctionGetDateTime.txt";
 
+        public static string QueryAdaptFunctionGetTime = "QueryAdaptFunctionGetTime.txt";
+
         public static string QueryAdaptFunctionGetCurrencyCodeID = "QueryAdaptFunctionGetCurrencyCodeID.txt";
 
         public static string QueryAdaptFunctionConvertValueByFieldType = "QueryAdaptFunctionConvertValueByFieldType.txt";
 
         public static string QueryAdaptFunctionConvertValueMultiple = "QueryAdaptFunctionConvertValueMultiple.txt";
+
+        public static string QueryAdaptFunctionGetUserIDNewCRM = "QueryAdaptFunctionGetUserIDNewCRM.txt";
+
+        public static string QueryAdaptFunctionGetRoleIDNewCRM = "QueryAdaptFunctionGetRoleIDNewCRM.txt";
+
+        public static string QueryAdaptFunctionGetGroupIDNewCRM = "QueryAdaptFunctionGetGroupIDNewCRM.txt";
 
         public static string QueryAdaptCheckFunctionExist = "use tempdb " +
                                                             "if exists (select * from sys.objects where object_id = OBJECT_ID(N'[dbo].[{0}]')  " +

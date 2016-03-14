@@ -1,0 +1,19 @@
+
+CREATE function [dbo].[GetUserIDNewCRM]
+	(
+	@UserID varchar(255)
+	)
+	returns bigint
+as
+begin
+	declare @Result		bigint	
+	
+	set @Result = (
+					select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] 
+						where TargetServer='.' 
+						and OldValTable = 
+							(select Email_Address from [adaptv3system].[dbo].[users] where User_ID = @UserID) 
+							order by Id desc
+					)
+	return @Result
+end

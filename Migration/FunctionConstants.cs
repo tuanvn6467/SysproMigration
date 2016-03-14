@@ -26,11 +26,19 @@ namespace Migration
 
         public const string GetDateTime = "GetDateTime";
 
+        public const string GetTime = "GetTime";
+
         public const string GetCurrencyCodeID = "GetCurrencyCodeID";
 
         public const string ConvertValueByFieldType = "ConvertValueByFieldType";
 
         public const string ConvertValueMultiple = "ConvertValueMultiple";
+
+        public const string GetUserIDNewCRM = "GetUserIDNewCRM";
+
+        public const string GetGroupIDNewCRM = "GetGroupIDNewCRM";
+
+        public const string GetRoleIDNewCRM = "GetRoleIDNewCRM";
 
     }
 }

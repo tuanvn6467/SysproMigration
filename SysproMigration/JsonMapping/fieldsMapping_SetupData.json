@@ -74,14 +74,15 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[roles] r",
             "OrderBy": "order by [Role_ID]",
-            "JoinUser":  "Created_By,Modified_By"
+            "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "[st_Security].[dbo].[sec_Role]",
             "OrderBy": "order by [RoleID] desc",
             //"Top": "{0}"
             "Top": "1000",
-            "Where": "TenantID = {0} and (RoleName = 'Administrator' or RoleName = 'Service' or RoleName = 'Marketing' or RoleName = 'Sales')"
+            //"Where": "TenantID = {0} and (RoleName = 'Administrator' or RoleName = 'Service' or RoleName = 'Marketing' or RoleName = 'Sales')"
+            "Where": "TenantID = {0}"
         },
         "NeedTruncate": false,
         "IsGetKeys": true,
@@ -147,7 +148,7 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[sgroup] sg",
             "OrderBy": "order by Group_ID",
-            "JoinUser":  "Created_By,Modified_By"
+            "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "[st_Security].[dbo].[sec_Group]",
@@ -201,7 +202,7 @@
         "Source": {
             "Tables": "adaptv3system..acctyp tat",
             "OrderBy": "order by Account_Type_ID",
-            "JoinUser":  "Created_By,Modified_By"
+            "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "acc_Account_Type"
@@ -223,7 +224,7 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[customer_class] cc",
             "OrderBy": "order by Customer_Class_ID",
-            "JoinUser":  "Created_By,Modified_By"
+            "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "acc_Customer_Class"
@@ -244,7 +245,7 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[bustyp] bt",
             "OrderBy": "order by Business_Type_ID",
-            "JoinUser":  "Created_By,Modified_By"
+            "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "acc_Business_Type"
@@ -265,7 +266,7 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[source] s",
             "OrderBy": "order by Source_ID",
-            "JoinUser":  "Created_By,Modified_By"
+            "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "acc_Source"
@@ -288,7 +289,7 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[sourced] sd",
             "OrderBy": "order by Secondary_Source_ID",
-            "JoinUser":  "Created_By,Modified_By"
+            "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "acc_Source"
@@ -311,7 +312,7 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[terr] t",
             "OrderBy": "order by Territory_ID",
-            "JoinUser":  "Salesperson,Created_By,Modified_By"
+            "JoinUser": "Salesperson,Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "acc_Territories"
@@ -352,7 +353,7 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[regions] rg",
             "OrderBy": "order by Region_ID",
-            "JoinUser":  "Created_By,Modified_By"
+            "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "acc_Regions"
@@ -423,7 +424,7 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[addrtyp] at",
             "OrderBy": "order by Address_Type_ID",
-            "JoinUser":  "Created_By,Modified_By"
+            "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "utl_Address_Type"
@@ -625,7 +626,7 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[fob_terms] ft",
             "OrderBy": "order by FOB_ID",
-            "JoinUser":  "Created_By,Modified_By"
+            "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "opp_Fob_Terms"
@@ -647,7 +648,7 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[shipmeth] s",
             "OrderBy": "order by Ship_Method_ID",
-            "JoinUser":  "Created_By,Modified_By"
+            "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "utl_Shipping_Method"
@@ -669,7 +670,7 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[payment_terms] pt",
             "OrderBy": "order by Terms_ID",
-            "JoinUser":  "Created_By,Modified_By"
+            "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "opp_Payment_Terms"
@@ -710,7 +711,7 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[tax_rate] tr",
             "OrderBy": "order by Tax_Rate_ID",
-            "JoinUser":  "Created_By,Modified_By"
+            "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "opp_Tax_Rate"
@@ -734,7 +735,7 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[tax_schedule] ts",
             "OrderBy": "order by Tax_Schedule_ID",
-            "JoinUser":  "Created_By,Modified_By"
+            "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "opp_Tax_Schedule"
@@ -761,7 +762,7 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[servloc] sl",
             "OrderBy": "order by Location_ID",
-            "JoinUser":  "Created_By,Modified_By"
+            "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "set_Service_Location"
@@ -783,7 +784,7 @@
             "Tables": "[adaptv3system].[dbo].[fields] f",
             "OrderBy": "order by Field_ID",
             "Where": "f.Record_Source = 'U' and f.Record_Type  not in (4,31,116)",
-            "JoinUser":  "Created_By,Modified_By"
+            "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "fld_Field",
@@ -1020,7 +1021,7 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[contyp] ctp",
             "OrderBy": "order by Contact_Type_ID",
-            "JoinUser":  "Created_By,Modified_By"
+            "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "con_Contact_Type"
@@ -1042,7 +1043,7 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[dept] dept",
             "OrderBy": "order by Department_Name",
-            "JoinUser":  "Created_By,Modified_By"
+            "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "con_Department"
@@ -1062,7 +1063,7 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[jobtitle] jt",
             "OrderBy": "order by jt.Job_Title",
-            "JoinUser":  "Created_By,Modified_By"
+            "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "con_Job_Title"
@@ -1124,7 +1125,7 @@
             "Validate_Department_Syspro_TF": "IsValidateDepartment",
             "Validate_Job_Title_Syspro_TF": "IsValidateJobTitle",
             "Allow_Print_Preview_Syspro_TF": "IsAllowPrintPreview",
-            "Allow_Printer_Select_Syspro_TF":  "IsAllowPrinterSelect"
+            "Allow_Printer_Select_Syspro_TF": "IsAllowPrinterSelect"
         }
     },
     //migrate [adaptv3system].[dbo].[pref6] to con_Contact_PreferPrevent_Field
@@ -1276,6 +1277,576 @@
             "DefaultFieldName": "DefaultFieldName",
             "DefaultValue": "DefaultValue",
             "SeqNo": "SeqNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[servtyp] to set_Service_Ticket_Type
+    {
+        "Id": 61,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[servtyp] st",
+            "OrderBy": "order by Service_Ticket_Type_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "set_Service_Ticket_Type"
+        },
+
+        "Map": {
+            "Service_Ticket_Type_ID": "ServiceTicketTypeID",
+            "Service_Ticket_Type_Name": "ServiceTicketTypeName",
+            "Use_Alternate_Milestones_Syspro_TF": "IsUseAlternateMilestone",
+            "Item_Number": "ItemNumber",
+            "Opportunity_Type": "OpportunityTypeID",
+            "No_Contract_Required_Syspro_TF": "IsNoContractRequired",
+            "Use_System_Items_Syspro_TF": "IsUseSystemItem",
+            "st.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "st.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[opptyp] to opp_Opportunity_Type
+    {
+        "Id": 62,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[opptyp] opptyp",
+            "OrderBy": "order by Opportunity_Type_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "opp_Opportunity_Type"
+        },
+
+        "Map": {
+            "Opportunity_Type_ID": "OpportunityTypeID",
+            "Opportunity_Type_Name": "OpportunityTypeName",
+            "Use_Alternate_Milestones_Syspro_TF": "IsUseAlternateMilestone",
+            "opptyp.Notes": "Notes",
+            "opptyp.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "opptyp.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[item] to itm_Item
+    {
+        "Id": 63,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[item] itm",
+            "OrderBy": "order by (SELECT 100000)",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "itm_Item"
+        },
+
+        "Map": {
+            "Item_Number": "ItemNumber",
+            "Item_Description": "ItemDesc",
+            "Long_Description": "ItemLongDesc",
+            "Item_Class": "ItemClassID",
+            "convert(decimal(15,4), Unit_Price) UnitPrice": "UnitPrice",
+            "convert(decimal(15,4), Unit_Cost) UnitCost": "UnitCost",
+            "Accounting_Item_Number": "AccountingItemNumber",
+            "Tracking_Level": "TrackingLevel",
+            "Inventory_Item_Syspro_TF": "IsInventoryItem",
+            "Sellable_Item_Syspro_TF": "IsSellableItem",
+            "Serviced_Item_Syspro_TF": "IsServicedItem",
+            "Default_Problem_Class": "ProblemClassID",
+            "Covered_By_Warranty_Syspro_TF": "IsCoveredByWarranty",
+            "Default_Warranty": "DefaultWarranty",
+            "Taxable_Syspro_TF": "IsTaxable",
+            "Default_Tax_Schedule": "DefaultTaxSchedule",
+            "Contains_Components_Syspro_TF": "IsContainsComponents",
+            "Explode_Components_Syspro_TF": "IsExplodeComponents",
+            "Kit_Price_Method": "KitPriceMethod",
+            "Has_Picture_Syspro_TF": "IsHasPicture",
+            "itm.Notes": "Notes",
+            "itm.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "itm.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[probtyp] to set_Problem_Type
+    {
+        "Id": 64,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[probtyp] probtyp",
+            "OrderBy": "order by Problem_Type_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "set_Problem_Type"
+        },
+
+        "Map": {
+            "Problem_Type_ID": "ProblemTypeID",
+            "Problem_Type_Name": "ProblemTypeName",
+            "Problem_Class": "ProblemClassID",
+            "Knowledge_Base_Category": "KnowledgeBaseCategoryID",
+            "Default_Subtype": "DefaultSubTypeID",
+            "Subtype_Count": "SubTypeCount",
+            "probtyp.Notes": "Notes",
+            "probtyp.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "probtyp.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[probcls] to set_Problem_Class
+    {
+        "Id": 65,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[probcls] probcls",
+            "OrderBy": "order by Class_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "set_Problem_Class"
+        },
+        "Map": {
+            "Class_ID": "ProblemClassID",
+            "Class_Name": "ProblemClassName",
+            "Knowledge_Base_Category": "KnowledgeBaseCategoryID",
+            "Default_Problem_Type": "DefaultProblemTypeID",
+            "Problem_Type_Count": "ProblemTypeCount",
+            "probcls.Notes": "Notes",
+            "probcls.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "probcls.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[restyp] to set_Resolution_Type
+    {
+        "Id": 66,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[restyp] restyp",
+            "OrderBy": "order by Type_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "set_Resolution_Type"
+        },
+        "Map": {
+            "Type_ID": "ResolutionTypeID",
+            "Type_Name": "ResolutionTypeName",
+            "restyp.Notes": "Notes",
+            "restyp.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "restyp.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[queue] to set_Queue
+    {
+        "Id": 67,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[queue] queue",
+            "OrderBy": "order by Queue_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "set_Queue"
+        },
+        "Map": {
+            "Queue_ID": "QueueID",
+            "Queue_Name": "QueueName",
+            "Queue_Type": "QueueTypeID",
+            "Last_Member_ID": "LastMemberID",
+            "Member_Count": "MemberCount",
+            "Skip_Logged_Out_Users_Syspro_TF": "IsSkipLoggedOutUsers",
+            "queue.Notes": "Notes",
+            "queue.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "queue.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[queue_members] to set_Queue_Member
+    {
+        "Id": 68,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[queue_members] qm",
+            "OrderBy": "order by Queue_ID",
+            "JoinUser": "User_ID"
+        },
+        "Destination": {
+            "Tables": "set_Queue_Member"
+        },
+        "Map": {
+            "Queue_ID": "QueueID",
+            "Member_Record_ID": "MemberRecordID",
+            "ms_userid.NewValTable UserID ": "UserID",
+            "Limit_Open_Items_Syspro_TF": "IsLimitOpenItem",
+            "Maximum_Open_Items": "MaximumOpenItem",
+            "Routing_Sequence_Number": "RoutingSeqNo",
+            "Fill_to_Maximum_Syspro_TF": "IsFillToMaximum"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[servrout] to set_Routing_Rule
+    {
+        "Id": 69,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[servrout] servrout",
+            "OrderBy": "order by Routing_Record_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "set_Routing_Rule"
+        },
+        "Map": {
+            "Routing_Record_ID": "RoutingID",
+            "Criterion_Type": "RoutingCriterionTypeID",
+            "Problem_Class": "ProblemClassID",
+            "Problem_Type": "ProblemTypeID",
+            "Problem_Subtype": "ProblemSubTypeID",
+            "Account_Location": "AccountLocationID",
+            "Minimum_Severity": "MinimumSeverityTypeID",
+            "Day_From": "DayFrom",
+            "Day_To": "DayTo",
+            "Time_From": "TimeFrom",
+            "Time_To": "TimeTo",
+            "Limit_Language_Flag_Syspro_TF": "IsLimitLanguage",
+            "Language_ID": "LanguageID",
+            "Assign_To_Type": "AssignToTypeID",
+            "case when Assign_To_Type = 1 then [tempdb].[dbo].GetUserIDNewCRM(Assign_To_ID) when Assign_To_Type = 2 then [tempdb].[dbo].GetRoleIDNewCRM(Assign_To_ID) else Assign_To_ID end AssignToValue": "AssignToValue",
+            //"Assign_To_ID": "AssignToValue",
+            "Escalation_Levels": "EscalationLevel",
+            "0 AssignToRole": "AssignToRole",
+            "servrout.Notes": "Notes",
+            "servrout.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "servrout.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    }, //migrate [adaptv3system].[dbo].[rtchain] to set_Routing_Chain
+    {
+        "Id": 70,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[rtchain] rc",
+            "OrderBy": "order by Routing_Record"
+        },
+        "Destination": {
+            "Tables": "set_Routing_Chain"
+        },
+        "Map": {
+            "Routing_Record": "RoutingID",
+            "Escalation_Level": "EscalationLevel",
+            "Routing_Assign_To": "AssignToTypeID",
+            "case when Routing_Assign_To = 1 then [tempdb].[dbo].GetUserIDNewCRM(Assign_To_ID) when Routing_Assign_To = 2 then [tempdb].[dbo].GetRoleIDNewCRM(Assign_To_ID) else Assign_To_ID end AssignToValue": "AssignToValue",
+            "0 AssignToRole": "AssignToRole"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[job_class] to set_Ticket_Job_Class
+    {
+        "Id": 71,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[job_class] jc",
+            "OrderBy": "order by Job_Class_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "set_Ticket_Job_Class"
+        },
+        "Map": {
+            "Job_Class_ID": "TicketJobClassID",
+            "Job_Class_Name": "TicketJobClassName",
+            "jc.Notes": "Notes",
+            "jc.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "jc.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[tickescp] to set_Escalation_Pattern
+    {
+        "Id": 72,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[tickescp] tickescp",
+            "OrderBy": "order by Escalation_Pattern_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "set_Escalation_Pattern"
+        },
+        "Map": {
+            "Escalation_Pattern_ID": "EscalationPatternID",
+            "Pattern_Name": "PatternName",
+            "Service_Calendar_ID": "ServiceCalendarID",
+            "Last_Escalation_Level": "LastEscalationLevel",
+            "(case when exists (select 1 from adaptv3system..pref3 where Default_Escalation_Pattern = Escalation_Pattern_ID) then 1 else 0 end) IsPrimary": "IsPrimary",
+            "tickescp.Notes": "Notes",
+            "tickescp.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "tickescp.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[tickescl] to set_Escalation_Level
+    {
+        "Id": 73,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[tickescl] tickescl",
+            "OrderBy": "order by Escalation_Pattern_ID"
+        },
+        "Destination": {
+            "Tables": "set_Escalation_Level"
+        },
+        "Map": {
+            "Escalation_Pattern_ID": "EscalationPatternID",
+            "Level_Number": "LevelNumber",
+            "Escalation_Trigger": "EscalationTriggerID",
+            "Elapsed_Time": "ElapsedTime",
+            "Time_Units": "TimeUnitTypeID",
+            "Triggered_Process": "TriggeredProcessID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[tickesct] to set_Escalation_Trigger
+    {
+        "Id": 74,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[tickesct] tickesct",
+            "OrderBy": "order by Escalation_Trigger_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "set_Escalation_Trigger"
+        },
+        "Map": {
+            "Escalation_Trigger_ID": "EscalationTriggerID",
+            "Service_Contract_Type": "ServiceContractTypeID",
+            "Minimum_Severity": "MinimumSeverityTypeID",
+            "Minimum_Priority": "MinimumPriorityTypeID",
+            "Escalation_Pattern": "EscalationPatternID",
+            "tickesct.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "tickesct.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[job_type] to set_Ticket_Job_Type
+    {
+        "Id": 75,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[job_type] jt",
+            "OrderBy": "order by Job_Type_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "set_Ticket_Job_Type"
+        },
+        "Map": {
+            "Job_Type_ID": "TicketJobTypeID",
+            "Job_Type_Name": "TicketJobTypeName",
+            "Job_Class_ID": "TicketJobClassID",
+            "Item_Number": "ItemNumber",
+            "convert(decimal(15,4),Default_Standard_Fee) DefaultStandardFee": "DefaultStandardFee",
+            "convert(decimal(15,4),Default_Overtime_Fee) DefaultOvertimeFee": "DefaultOvertimeFee",
+            "convert(decimal(15,4),Default_Other_Time_Fee) DefaultOtherTimeFee": "DefaultOtherTimeFee",
+            "convert(decimal(15,4),Default_Standard_Cost) DefaultStandardCost": "DefaultStandardCost",
+            "convert(decimal(15,4),Default_Overtime_Cost) DefaultOvertimeCost": "DefaultOvertimeCost",
+            "convert(decimal(15,4),Default_Other_Time_Cost) DefaultOtherTimeCost": "DefaultOtherTimeCost",
+            "convert(decimal(15,4),Default_Time_Units) TimeUnitTypeID": "TimeUnitTypeID",
+            "Default_Description": "DefaultDescription",
+            "convert(decimal(15,4),Default_Duration) DefaultDuration": "DefaultDuration",
+            "jt.Notes": "Notes",
+            "jt.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "jt.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[ticket_hold_reason] to set_Hold_Reason
+    {
+        "Id": 76,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[ticket_hold_reason] thr",
+            "OrderBy": "order by Reason_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "set_Hold_Reason"
+        },
+        "Map": {
+            "Reason_ID": "HoldReasonID",
+            "Reason_Name": "HoldReasonName",
+            "Waiting_For": "WaitingTypeID",
+            "thr.Notes": "Notes",
+            "thr.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "thr.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[expcat] to utl_Expense_Category
+    {
+        "Id": 77,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[expcat] expcat",
+            "OrderBy": "order by Record_ID",
+            "Join": "left join (select ROW_NUMBER() over (order by (Select 10000)) ItemID, * from [adaptv3system].[dbo].[item]) as itm on itm.Item_Number = expcat.Item_Number",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "utl_Expense_Category"
+        },
+        "Map": {
+            "Record_ID": "ExpenseCategoryID",
+            "Category_Name": "CategoryName",
+            "G_L_Expense_Account": "GLExpenseAccount",
+            "itm.ItemID": "ItemID",
+            "Mileage_Syspro_TF": "Mileage",
+            "Cost_Per_Mile": "CostPerMile",
+            "expcat.Notes": "Notes",
+            "expcat.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "expcat.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref3] to set_Service_Ticket_Preferences
+    {
+        "Id": 78,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[pref3] p",
+            "OrderBy": "order by One"
+        },
+        "Destination": {
+            "Tables": "set_Service_Ticket_Preferences"
+        },
+        "Map": {
+            "One": "ServiecTicketPreferID",
+            "Assign_to_Last_Technician_Syspro_TF": "IsAssignToLastTechnician",
+            "Limit_Technicial_Days_Syspro_TF": "IsLimitTechnicialDay",
+            "Technician_Days": "TechnicianDay",
+            "Assign_to_Service_Manager_Syspro_TF": "IsAssignToServiceManager",
+            //"Assign_to_Dispatcher": ""
+            //Dispatcher
+            "Assign_to_Creator_Syspro_TF": "IsAssignToCreator",
+            "Assign_Based_on_Rules_Syspro_TF": "IsAssignBasedOnRule",
+            "Enable_Escalation_Syspro_TF": "IsEnableEscalation",
+            "Enable_Contracts_Syspro_TF": "IsEnableContract",
+            "No_Contract_Action": "ContractAdminLevelTypeID",
+            "No_Contract_Password": "NoContractPassword",
+            "Labor_Fee_Basis": "ServiceFeeTypeID",
+            "convert(decimal(15,4),Fixed_Labor_Fee_Amount) FixedLaborFeeAmount": "FixedLaborFeeAmount",
+            //"Fixed_Labor_Fee_Time_Increment": ""
+            "Fixed_Labor_Fee_Time_Units": "TimeUnitTypeID",
+            "Approval_Method": "ApprovalTypeID",
+
+            "Skip_Client_Acceptance_Flag_Syspro_TF": "IsSkipClientAcceptance",
+            "Skip_Client_Acceptance_Days": "SkipClientAcceptanceDay",
+            "Require_Signature_to_Report_Syspro_TF": "IsRequireSignatureToReport",
+            "Require_Signature_to_Start_Syspro_TF": "IsRequireSignatureStart",
+            "Require_Signature_to_Hold_Syspro_TF": "IsRequireSignaturePutHold",
+            "Require_Signature_to_Release_Syspro_TF": "IsRequireSignatureRelease",
+            "Require_Signature_to_Accept_Syspro_TF": "IsRequireSignatureAccept",
+            "Require_Signature_to_Complete_Syspro_TF": "IsRequireSignatureComplete",
+            "Require_Signature_to_Cancel_Syspro_TF": "IsRequireSignatureCancel",
+            "Require_Signature_to_Approve_Syspro_TF": "IsRequireSignatureApprove",
+            "Require_Signature_to_Re_Open_Syspro_TF": "IsRequireSignatureReOpen",
+            "Confirm_Status_Change_Syspro_TF": "IsConfirmStatusChange",
+            "Posting_Method": "PostingMethodTypeID",
+            "Distribution_Method": "DistributionMethodTypeID",
+            "Service_Opportunity_Type": "ServiceOpportunityTypeID",
+            "Service_Default_Item_Number": "ServiceDefaultItemNumber",
+            "Labor_Consolidation_Method": "LaborConsolidationMethodTypeID",
+            "Default_Labor_Item": "DefaultLaborItemNumber",
+            "Parts_Consolidation_Method": "PartConsolidationMethodTypeID",
+            "Default_Parts_Item": "DefaultPartItemNumber",
+            "Expenses_Consolidation_Method": "ExpenseConsolidationMethodTypeID",
+            "Default_Expenses_Item": "DefaultExpenseItemNumber",
+            "Do_Not_Auto_Skip_Milestones_Syspro_TF": "IsDoNotAutoSkipMilestone",
+            "Allow_Print_Preview_Syspro_TF": "IsAllowPrintPreview",
+            "Allow_Printer_Select_Syspro_TF": "IsAllowPrinterSelect",
+            "(case when (SELECT [Property_Value] FROM [adaptv3system].[dbo].[user_interface_prefs] where Property_Key='ST#SUBJE') = 'Y' then 1 else 0 end) IsIncludeTicketNumber": "IsIncludeTicketNumber",
+            "(case when (SELECT [Property_Value] FROM [adaptv3system].[dbo].[user_interface_prefs] where Property_Key='STCRHOLD') = 'Y' then 1 else 0 end) IsAllowCreattion": "IsAllowCreattion",
+            "(case when (SELECT [Property_Value] FROM [adaptv3system].[dbo].[user_interface_prefs] where Property_Key='CGITMOWN') = 'Y' then 1 else 0 end) AllowChangeItemNumber": "AllowChangeItemNumber"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref3] to utl_Module_PreferRequired_Field
+    {
+        "Id": 79,
+        "Source": {
+            "Tables": "[tempdb].[dbo].[Pref3_Pivot_Required] pp",
+            "OrderBy": "order by Rownumber"
+        },
+        "Destination": {
+            "Tables": "utl_Module_PreferRequired_Field"
+        },
+
+        "Map": {
+            "3 ModuleID": "ModuleID",
+            "RequiredFieldID": "RequiredFieldID",
+            "RequiredModeTypeID": "RequiredModeTypeID",
+            "1 ModulePreferenceID": "ModulePreferenceID",
+            "RequiredFieldName": "RequiredFieldName",
+            "RequiredTypeID": "RequiredTypeID",
+            "case when RequiredFieldID = 302 then 1 else 0 end IsReadOnly": "IsReadOnly",
+            "SeqNo": "SeqNo",
+            "ColNo": "ColNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref3] to utl_Module_PreferDefault_Field
+    {
+        "Id": 80,
+        "Source": {
+            "Tables": "[tempdb].[dbo].[Pref3_Pivot_Default] pp",
+            "OrderBy": "order by Rownumber"
+        },
+        "Destination": {
+            "Tables": "utl_Module_PreferDefault_Field"
+        },
+
+        "Map": {
+            "3 ModuleID": "ModuleID",
+            "DefaultFieldID": "DefaultFieldID",
+            "1 ModulePreferenceID": "ModulePreferenceID",
+            "DefaultFieldName": "DefaultFieldName",
+            "DefaultValue": "DefaultValue",
+            "SeqNo": "SeqNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[itemcl] to itm_Item_Class
+    {
+        "Id": 81,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[itemcl] itemcl",
+            "OrderBy": "order by Item_Class_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "itm_Item_Class"
+        },
+
+        "Map": {
+            "Item_Class_ID": "ItemClassID",
+            "Item_Class_Name": "ItemClassName",
+            "itemcl.Notes": "Notes",
+            "itemcl.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "itemcl.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[formobj] to itm_Item_Class_Attribute
+    {
+        "Id": 82,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[formobj] formobj",
+            "OrderBy": "order by Form_ID",
+            "Where": "Form_ID > 10000000"
+        },
+        "Destination": {
+            "Tables": "itm_Item_Class_Attribute"
+        },
+
+        "Map": {
+            "(Form_ID - 10000000) Form_ID": "ItemClassID",
+            "Sequence_Number": "SeqNo",
+            "Field_Number": "FieldID"
         }
     }
 ]

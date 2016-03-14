@@ -1,0 +1,80 @@
+create view [dbo].[Pref3_Pivot_Required] 
+  as 
+  select RequiredFieldName, RequiredTypeID, 
+case	
+		when (RequiredFieldName = 'Account') then 302 
+		when (RequiredFieldName = 'ItemNumber') then 303 
+		when (RequiredFieldName = 'ProblemClass') then 305 
+		when (RequiredFieldName = 'ProblemType') then 306
+		when (RequiredFieldName = 'ResolutionType') then 309 
+		when (RequiredFieldName = 'ProblemDesctiption') then 321 
+		when (RequiredFieldName = 'ResolutionDescription') then 322 
+		when (RequiredFieldName = 'CustomerRating') then 323 
+		when (RequiredFieldName = 'Subject') then 327 
+		when (RequiredFieldName = 'Contact') then 335 
+		when (RequiredFieldName = 'ServiceTicketTypeCreate') then 346 
+		when (RequiredFieldName = 'ServiceTicketTypeComplete') then 346 
+		end RequiredFieldID,
+		
+case	
+		when (RequiredFieldName = 'Account') then 1 
+		when (RequiredFieldName = 'ItemNumber') then 4 
+		when (RequiredFieldName = 'ProblemClass') then 5 
+		when (RequiredFieldName = 'ProblemType') then 6
+		when (RequiredFieldName = 'ResolutionType') then 2 
+		when (RequiredFieldName = 'ProblemDesctiption') then 7 
+		when (RequiredFieldName = 'ResolutionDescription') then 1 
+		when (RequiredFieldName = 'CustomerRating') then 3 
+		when (RequiredFieldName = 'Subject') then 3 
+		when (RequiredFieldName = 'Contact') then 2 
+		when (RequiredFieldName = 'ServiceTicketTypeCreate') then 1 
+		when (RequiredFieldName = 'ServiceTicketTypeComplete') then 1 
+		end SeqNo,
+
+case	
+		when	RequiredFieldName = 'ResolutionType' or
+				RequiredFieldName = 'ResolutionDescription' or
+				RequiredFieldName = 'CustomerRating' or
+				RequiredFieldName = 'ServiceTicketTypeComplete'
+		then	1
+		else	0
+		end RequiredModeTypeID,
+
+case	when RequiredFieldName = 'ServiceTicketTypeCreate' 
+			or  RequiredFieldName = 'ServiceTicketTypeComplete'
+			then 2
+			else 1 end ColNo,
+	  ROW_NUMBER() OVER (ORDER BY (SELECT 100)) Rownumber
+	  from
+
+	  (select Account_Required Account
+      ,[Item_Number_Required] ItemNumber
+      ,[Problem_Type_Required] ProblemClass
+	  ,convert(smallint,(SELECT [Property_Value] FROM [adaptv3system].[dbo].[user_interface_prefs] where Property_Key='PROBTYPR')) ProblemType 
+	  ,[Resolution_Type_Required] ResolutionType
+	  ,[Problem_Description_Required] ProblemDesctiption
+	  ,[Resolution_Description_Required] ResolutionDescription
+	  ,[Customer_Feedback_Required] CustomerRating
+	  ,[Subject_Required] Subject
+	  ,[Contact_Required] Contact
+      ,[Service_Ticket_Type_Required] ServiceTicketTypeCreate
+      ,[Service_Ticket_Type_Complete_Rq] ServiceTicketTypeComplete
+	  from [adaptv3system].[dbo].[pref3]
+	  ) p 
+	  unpivot
+	  (
+		RequiredTypeID for 
+		RequiredFieldName in (Account
+							  ,ItemNumber
+							  ,ProblemClass
+							  ,ProblemType
+							  ,ResolutionType
+							  ,ProblemDesctiption
+							  ,ResolutionDescription
+							  ,CustomerRating
+							  ,Subject
+							  ,Contact
+							  ,ServiceTicketTypeCreate
+							  ,ServiceTicketTypeComplete
+							  )
+	  ) as RequiredFieldName 

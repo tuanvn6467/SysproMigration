@@ -93,7 +93,7 @@ namespace Migration
                 var lstFieldUser = Source.JoinUser.Split(',').ToList();
                 foreach (var fieldUser in lstFieldUser)
                 {
-                    res += string.Format("\nleft join [adaptv3system].[dbo].[users] {0} on {0}.User_ID = {1}.{2}",
+                    res += string.Format("\nleft join [adaptv3system].[dbo].[users] {0} on {0}.User_ID = {1}.{2}", 
                         ParseData.GetAcronymString(fieldUser), acronymTable, fieldUser);
                     res +=
                         string.Format(

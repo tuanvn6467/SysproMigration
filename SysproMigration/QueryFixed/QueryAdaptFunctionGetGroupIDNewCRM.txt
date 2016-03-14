@@ -1,0 +1,19 @@
+
+CREATE function [dbo].[GetGroupIDNewCRM]
+	(
+	@GroupID varchar(255)
+	)
+	returns bigint
+as
+begin
+	declare @Result		bigint	
+	
+	set @Result = (
+					select top 1 NewValTable from [tempdb].[dbo].[MigrateSupport] 
+						where TargetServer='.' 
+						and OldValTable = 
+							(select top 1 Group_Name from [adaptv3system].[dbo].[sgroup] where Group_ID = @GroupID) 
+							order by Id desc
+					)
+	return @Result
+end

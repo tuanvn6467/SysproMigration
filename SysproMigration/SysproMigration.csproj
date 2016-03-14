@@ -136,11 +136,17 @@
     <Content Include="Global.asax" />
     <Content Include="QueryFixed\QueryAdaptFunctionConvertValueMultiple.txt" />
     <Content Include="QueryFixed\QueryAdaptFunctionGetCurrencyCodeID.txt" />
+    <Content Include="QueryFixed\QueryAdaptFunctionGetTime.txt" />
     <Content Include="QueryFixed\QueryAdaptFunctionGetDate.txt" />
     <Content Include="QueryFixed\QueryAdaptFunctionConvertValueByFieldType.txt" />
     <Content Include="QueryFixed\QueryAdaptFunctionGetDateTime.txt" />
     <Content Include="QueryFixed\QueryAdaptFunctionConvertPhoneFax.txt" />
+    <Content Include="QueryFixed\QueryAdaptFunctionGetRoleIDNewCRM.txt" />
+    <Content Include="QueryFixed\QueryAdaptFunctionGetGroupIDNewCRM.txt" />
+    <Content Include="QueryFixed\QueryAdaptFunctionGetUserIDNewCRM.txt" />
+    <Content Include="QueryFixed\QueryAdaptViewPref3Pivot_Default.txt" />
     <Content Include="QueryFixed\QueryAdaptViewPref6Pivot_Default.txt" />
+    <Content Include="QueryFixed\QueryAdaptViewPref3Pivot_Required.txt" />
     <Content Include="QueryFixed\QueryAdaptViewPref6Pivot_Required.txt" />
     <Content Include="QueryFixed\QueryCRMUpdatePhysicalFieldName.txt" />
     <Content Include="QueryFixed\QueryAdaptConvertFieldName.txt" />

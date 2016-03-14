@@ -1,15 +1,27 @@
+update fld_Field_Value
+set FieldVal = [dbo].[ufn_Adapt_ConvertValue](FieldID,FieldVal)
+
 Insert into [dbo].[fld_Multi_FieldValue]
 					(FieldID,
 					RecID,
 					FieldVal)
 select  ffv.FieldID,
 		ffv.RecID,
-		[dbo].[ufn_Adapt_ConvertValue](ffv.FieldID,ffv.FieldVal) FieldVal
+		ffv.FieldVal
 		from	fld_Field_Value ffv 
 		inner join fld_Field ff on ff.FieldID = ffv.FieldID and ff.NumberOfValues = 2
 
-update fld_Field_Value
-set FieldVal = [dbo].[ufn_Adapt_ConvertValue](FieldID,FieldVal)
+--insert value for item class attributes
+Insert into [dbo].itm_Item_Field_Value
+			(FieldID,
+			ItemOwnedID,
+			FieldVal
+			)
+select  ffv.FieldID,
+		ffv.RecID,
+		ffv.FieldVal
+		from	fld_Field_Value ffv 
+		inner join fld_Field ff on ff.FieldID = ffv.FieldID and ff.ModuleID = 13
 
 --begin update transaction
 

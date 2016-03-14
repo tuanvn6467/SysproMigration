@@ -112,7 +112,8 @@
             "Join2": "left join [dbo].[phone] fax on fax.Attached_Record_Number = acc.Account_Number and fax.Phone_Record_Number = acc.Primary_Fax_Record and fax.Phone_Medium = 'F' and fax.Attached_To = 'A'",
             "Join3": "left join [dbo].[net] email on email.Attached_Record_Number = acc.Account_Number and email.Net_Record_Number = acc.Primary_Email_Record and email.Address_Type = 'E' and email.Attached_To = 'A'",
             "Join4": "left join [dbo].[net] web on web.Attached_Record_Number = acc.Account_Number and web.Net_Record_Number = acc.Primary_Web_Record and web.Address_Type = 'W' and web.Attached_To = 'A'",
-            "JoinUser":  "Account_Manager,Service_Manager,Create_User,Modified_User"
+            "Join5": "left join (select *,ROW_NUMBER() over(order by [Currency_Code]) CurrencyID from [adaptv3system].[dbo].[currency_codes]) curc on curc.Currency_Code = acc.Currency_Code",
+            "JoinUser": "Account_Manager,Service_Manager,Create_User,Modified_User"
         },
         "Destination": {
             "Tables": "acc_Account"
@@ -196,7 +197,7 @@
             //"Credit_Hold_Date": "",
             "convert(varchar(255),Shipping_Method) ShippingMethodID": "ShippingMethodID",
             "convert(varchar(255),FOB) FOBID": "FOBID",
-            "convert(varchar(255),[tempdb].[dbo].[GetCurrencyCodeID](acc.Currency_Code)) CurrencyCodeID": "CurrencyCodeID",
+            "convert(varchar(255),curc.CurrencyID) CurrencyCodeID": "CurrencyCodeID",
             "convert(varchar(255),Customer_Class) CustomerClassID": "CustomerClassID",
             "acc.Do_Not_Call_Syspro_TF": "IsDoNotCall",
             "acc.Do_Not_Fax_Syspro_TF": "IsDoNotFax",
@@ -277,7 +278,7 @@
             "Join7": "left join [dbo].[net] email on email.Attached_Record_Number = ct.Contact_Number and email.Net_Record_Number = ct.Default_Email_Record and email.Address_Type = 'E' and email.Attached_To = 'C'",
             "Join8": "left join [dbo].[account] acc on acc.Account_Number = ct.Account_Number",
             "Join9": "left join [dbo].[address] ad on ad.Account_Number = ct.Account_Number and ad.Address_Record_Number = acc.Primary_Address_Record and ad.Attached_To = 'A'",
-            "JoinUser":  "Contact_Manager,Created_By,Modified_By"
+            "JoinUser": "Contact_Manager,Created_By,Modified_By"
         },
         "Destination": {
             "Tables": "con_Contact"
@@ -362,6 +363,259 @@
             "[tempdb].[dbo].[GetDateTime](ct.Modified_Date,ct.Modified_Time) ModifiedDate": "ModifiedDate",
             "ms_modifiedby.NewValTable ModifiedBy": "ModifiedBy"
         }
-    }
-
+    },
+    //migrate [dbo].[acctitem] to [dbo].[acc_Account_Item_Owned]
+    {
+        "Id": 1008,
+        "Source": {
+            "Tables": "[dbo].[acctitem] accit",
+            "OrderBy": "order by accit.Item_Owned_Record_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "acc_Account_Item_Owned"
+        },
+        "Map": {
+            "convert(bigint,Item_Owned_Record_ID) AccountItemOwnID": "AccountItemOwnID",
+            "convert(bigint,Parent_Record_ID) ParentID": "ParentID",
+            "BOM_Level": "BOMLevel",
+            "convert(bigint,accit.Account_Number) AccountNumber": "AccountNumber",
+            "Item_Number": "ItemNumber",
+            "Serial_Number": "SerialLotNumber",
+            "Item_Class": "ItemClassID",
+            "convert(decimal(15,4), Unit_Price_Paid) UnitPricePaid": "UnitPricePaid",
+            "convert(decimal(15,4), Total_Quantity) TotalQuantity": "TotalQuantity",
+            "Covered_By_Warranty_Syspro_TF": "IsCoveredByWarranty",
+            "Warranty_Type": "WarrantyTypeID",
+            "Warranty_Number": "WarrantyNumber",
+            //"Warranty_Starts": ""
+            "[tempdb].[dbo].[GetDateTime](Warranty_Starts,Warranty_Ends) WarrantyEnd": "WarrantyEnd",
+            "[tempdb].[dbo].[GetDateTime](Free_Support_Ends,'000000') FreeSupportEnd": "FreeSupportEnd",
+            "[tempdb].[dbo].[GetDateTime](Last_Service_Date,'000000') LastServiceDate": "LastServiceDate",
+            "convert(bigint,Last_Ticket_Number) LastTicketNumber": "LastTicketNumber",
+            "[tempdb].[dbo].[GetDateTime](Next_Scheduled_Service,'000000') NextScheduledService": "NextScheduledService",
+            "convert(bigint,Contact_Number) ContactNumber": "ContactNumber",
+            "Invoice_Number": "InvoiceNumber",
+            "Order_Number": "OrderNumber",
+            "Contains_Components_Syspro_TF": "IsContainComp",
+            "accit.Notes": "Notes",
+            "accit.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "accit.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [dbo].[item_history] to [dbo].[acc_Account_Item_Owned_History]
+    {
+        "Id": 1009,
+        "Source": {
+            "Tables": "[dbo].[item_history] ith",
+            "OrderBy": "order by ith.Transaction_Number",
+            "Join": "left join [adaptv3SAMPLE].[dbo].[acctitem] accit on accit.Item_Owned_Record_ID = ith.Item_Record_ID",
+            "JoinUser": "Transferred_By"
+        },
+        "Destination": {
+            "Tables": "acc_Account_Item_Owned_History"
+        },
+        "Map": {
+            "convert(bigint,Transaction_Number) HistID": "HistID",
+            "convert(bigint,Item_Record_ID) AccountItemOwnID": "AccountItemOwnID",
+            "ms_transferredby.NewValTable TranUserID": "TranUserID",
+            "[tempdb].[dbo].[GetDateTime](ith.Transfer_Date,ith.Transfer_Time) TranDate": "TranDate",
+            "convert(bigint,ith.Account_Number) AccountNumber": "AccountNumber",
+            "accit.Item_Number": "ItemNumber",
+            "accit.Contact_Number": "ContactNumber",
+            "accit.Serial_Number": "SerialLotNumber",
+            "accit.Item_Class": "ItemClassID",
+            "convert(decimal(15,4),accit.Unit_Price_Paid) UnitPricePaid": "UnitPricePaid",
+            "convert(decimal(15,4),accit.Total_Quantity) TotalQuantity": "TotalQuantity",
+            "accit.Covered_By_Warranty_Syspro_TF": "IsCoveredByWarranty",
+            "accit.Warranty_Type": "WarrantyTypeID",
+            "accit.Warranty_Number": "WarrantyNumber",
+            "[tempdb].[dbo].[GetDateTime](accit.Warranty_Starts,accit.Warranty_Ends) WarrantyEnd": "WarrantyEnd",
+            "[tempdb].[dbo].[GetDateTime](accit.Free_Support_Ends,'000000') FreeSupportEnd": "FreeSupportEnd",
+            "[tempdb].[dbo].[GetDateTime](accit.Last_Service_Date,'000000') LastServiceDate": "LastServiceDate",
+            "convert(bigint,accit.Last_Ticket_Number) LastTicketNumber": "LastTicketNumber",
+            "[tempdb].[dbo].[GetDateTime](accit.Next_Scheduled_Service,'000000') NextScheduledService": "NextScheduledService",
+            "accit.Invoice_Number": "InvoiceNumber",
+            "accit.Order_Number": "OrderNumber",
+            "accit.Contains_Components_Syspro_TF": "IsContainComp",
+            "'Insert' TranType": "TranType",
+            "accit.Notes": "Notes",
+            "convert(decimal(15,4),0) CurrentUnitPrice": "CurrentUnitPrice"
+        }
+    }/*,
+    //migrate ticket to set_Service_Ticket
+    {
+        "Id": 1010,
+        "Source": {
+            "Tables": "[dbo].[ticket] st",
+            "OrderBy": "order by st.Ticket_Number",
+            "Join": "left join (select *,ROW_NUMBER() over(order by [Currency_Code]) CurrencyID from [adaptv3system].[dbo].[currency_codes]) curc on curc.Currency_Code = st.Currency_Code",
+            "JoinUser": "Last_Escalation_User,Posted_By,Closed_By_User,Approved_Declined_By,Submitted_for_Approval_By,Acceptance_Entered_By,Submitted_to_Client_By,Hold_Waiting_for_User,Hold_Placed_By_User,Started_By,Reported_By,Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "set_Service_Ticket"
+        },
+        "Map": {
+            "convert(bigint, st.Ticket_Number) ServiceTicketNumber": "ServiceTicketNumber",
+            "convert(bigint, st.Account_Number) AccountNumber": "AccountNumber",
+            "convert(bigint, st.Contact_Number) ContactNumber": "ContactNumber",
+            "convert(bigint, st.Related_Account_Number) RelatedAccountNumber": "RelatedAccountNumber",
+            "convert(varchar, st.Related_Contact_Number) RelatedContactNumber": "RelatedContactNumber",
+            "Reference_Number": "ReferenceNumber",
+            "Service_Ticket_Type": "ServiceTicketTypeID",
+            "Subject": "Subject",
+            "Ticket_Status": "TicketStatusTypeID",
+            //"Open_Flag"
+            //Skip_Client_Approval_Job
+            "[tempdb].[dbo].[GetDateTime](st.Reported_Date,'000000') ReportedDate": "ReportedDate",
+            "[tempdb].[dbo].[GetTime](st.Reported_Time) ReportedTime": "ReportedTime",
+            "ms_reportedby.NewValTable ReportedBy": "ReportedBy",
+            "Ticket_Source": "SourceID",
+            "[tempdb].[dbo].[GetDateTime](st.Started_Date,'000000') StartedDate": "StartedDate",
+            "[tempdb].[dbo].[GetTime](st.Started_Time) StartedTime": "StartedTime",
+            "ms_startedby.NewValTable StartedBy": "StartedBy",
+            "[tempdb].[dbo].[GetDateTime](st.Must_Respond_By_Date,'000000') RespondedDate": "RespondedDate",
+            "[tempdb].[dbo].[GetTime](st.Must_Respond_By_Time) RespondedTime": "RespondedTime",
+            "[tempdb].[dbo].[GetDateTime](st.On_Hold_Date,'000000') OnHoldDate": "OnHoldDate",
+            "[tempdb].[dbo].[GetTime](st.On_Hold_Time) OnHoldTime": "OnHoldTime",
+            "ms_holdplacedbyuser.NewValTable HoldPlacedByUserID": "HoldPlacedByUserID",
+            "convert(varchar, On_Hold_Reason_ID) HoldReasonID": "HoldReasonID",
+            "Hold_Waiting_For": "HoldWaitingForTypeID",
+            "ms_holdwaitingforuser.NewValTable HoldWaitingForUserID": "HoldWaitingForUserID",
+            "convert(bigint, st.Hold_Waiting_for_Account) HoldWaitingForAccountNumber": "HoldWaitingForAccountNumber",
+            "[tempdb].[dbo].[GetDateTime](st.Submitted_to_Client_Date,'000000') SubmittedToClientDate": "SubmittedToClientDate",
+            "[tempdb].[dbo].[GetTime](st.Submitted_to_Client_Time) SubmittedToClientTime": "SubmittedToClientTime",
+            "ms_submittedtoclientby.NewValTable SubmittedToClientBy": "SubmittedToClientBy",
+            //"Accepted_By_Client"
+            "[tempdb].[dbo].[GetDateTime](st.Accepted_Date,'000000') AcceptedDate": "AcceptedDate",
+            "[tempdb].[dbo].[GetTime](st.Accepted_Time) AcceptedTime": "AcceptedTime",
+            "ms_acceptanceenteredby.NewValTable AcceptedBy": "AcceptedBy",
+            //"Accepted_By_Contact_Number"
+            "[tempdb].[dbo].[GetDateTime](st.Submitted_for_Approval_Date,'000000') SubmittedForApprovalDate": "SubmittedForApprovalDate",
+            "[tempdb].[dbo].[GetTime](st.Submitted_for_Approval_Time) SubmittedForApprovalTime": "SubmittedForApprovalTime",
+            "ms_submittedforapprovalby.NewValTable SubmittedForApprovalBy": "SubmittedForApprovalBy",
+            "Approval_Status": "ApprovalStatusID",
+            "[tempdb].[dbo].[GetDateTime](st.Approved_Declined_Date,'000000') ApprovedDeclinedDate": "ApprovedDeclinedDate",
+            "[tempdb].[dbo].[GetTime](st.Approved_Declined_Time) ApprovedDeclinedTime": "ApprovedDeclinedTime",
+            "ms_approveddeclinedby.NewValTable ApprovedDeclinedBy": "ApprovedDeclinedBy",
+            "[tempdb].[dbo].[GetDateTime](st.Closed_Date,'000000') ClosedDate": "ClosedDate",
+            "[tempdb].[dbo].[GetTime](st.Closed_Time) ClosedTime": "ClosedTime",
+            "ms_closedbyuser.NewValTable ClosedBy": "ClosedBy",
+            "[tempdb].[dbo].[GetDateTime](st.Posted_Date,'000000') PostedDate": "PostedDate",
+            "[tempdb].[dbo].[GetTime](st.Posted_Time) PostedTime": "PostedTime",
+            "ms_postedby.NewValTable PostedBy": "PostedBy",
+            //Printed
+            //Printed_Date
+            //Printed_Time
+            //Printed_By
+            //Printed_Version_Number
+            "Item_Number": "ItemNumber",
+            "Serial_Number": "SerialNumber",
+            "convert(bigint,Item_Owned_Record_ID) AccountItemOwnedID": "AccountItemOwnedID",
+            //[Item_Check_Overridden]
+            //"[Contract_Check_Overridden]"
+            "convert(varchar,Problem_Class) ProblemClassID": "ProblemClassID",
+            "convert(varchar,Problem_Type) ProblemTypeID": "ProblemTypeID",
+            "convert(varchar,Problem_Subtype) ProblemSubTypeID": "ProblemSubTypeID",
+            "convert(varchar,Resolution_Type)": "ResolutionTypeID",
+            //[Customer_Rating]
+            "convert(varchar,Priority)": "PriorityTypeID",
+            "convert(varchar,Severity)": "SeverityTypeID",
+            "Assigned_To": "AssignedTo",
+            "(case when Assigned_To = 2 then [tempdb].[dbo].GetUserIDNewCRM(Assigned_To_ID) else 0 end) AssignedToUser": "AssignedToUser",
+            "convert(int,case when Assigned_To = 3 then Assigned_To_ID else NULL end) AssignedToQueue": "AssignedToQueue",
+            "[tempdb].[dbo].[GetDateTime](st.Assigned_Date,'000000') AssignedDate": "AssignedDate",
+            "[tempdb].[dbo].[GetTime](st.Assigned_Time) AssignedTime": "AssignedTime",
+            //"[Original_Assigned_To]"
+            //"[Original_Assigned_To_ID]"
+            //"[Original_Assigned_Date]"
+            //"[Original_Assigned_Time]"
+            "convert(varchar,Escalation_Level)": "EscalationLevelID",
+            "[tempdb].[dbo].[GetDateTime](st.Last_Escalation_Date,'000000') LastEscalationDate": "LastEscalationDate",
+            "[tempdb].[dbo].[GetTime](st.Last_Escalation_Time) LastEscalationTime": "LastEscalationTime",
+            "ms_lastescalationuser.NewValTable LastEscalationBy": "LastEscalationBy",
+            "Escalation_Pattern_ID": "EscalationPatternID",
+            "Routing_ID": "RoutingID",
+            "[tempdb].[dbo].[GetDateTime](st.Next_Escalation_Date,'000000') NextEscalationDate": "NextEscalationDate",
+            "[tempdb].[dbo].[GetTime](st.Next_Escalation_Time) NextEscalationTime": "NextEscalationTime",
+            "Next_Escalation_Trigger": "NextEscalationTrigger",
+            //Last_Activity_Date
+            //Last_Activity_ID
+            //Next_Activity_Date
+            //Next_Activity_ID
+            "Response_Given_Syspro_TF": "IsResponseGiven",
+            "[tempdb].[dbo].[GetDateTime](st.Response_Date,'000000') ResponseRequiredByDate": "ResponseRequiredByDate",
+            "[tempdb].[dbo].[GetTime](st.Response_Time) ResponseRequiredByTime": "ResponseRequiredByTime",
+            //Response_User
+            "Total_Activity_Duration": "TotalActivityDurationMinutes",
+            //"Override_Duration"
+            //Manual_Duration
+            "convert(bigint,Service_Ticket_Contract_Number) ContractNumber": "ContractNumber",
+            "Labor_Fee_Basis": "LaborFeeBasisTypeID",
+            "convert(decimal(15,4),Fixed_Labor_Fee_Amount) FixedLaborFeeAmount": "FixedLaborFeeAmount",
+            "Fixed_Labor_Fee_Time_Increment": "FixedLaborFeeTimeIncrement",
+            "Fixed_Labor_Fee_Time_Units": "FixedLaborFeeTimeUnit",
+            //Override_Fee
+            //Manual_Fee
+            //Number_of_Web_Messages
+            //Number_of_Read_Web_Messages
+            "convert(varchar,Last_Milestone) LastMilestone": "LastMilestone",
+            "[tempdb].[dbo].[GetDateTime](st.Last_Milestone_Date,'000000') LastMilestoneDate": "LastMilestoneDate",
+            "convert(varchar,Next_Milestone) NextMilestone": "NextMilestone",
+            "RMA_Number": "RMANumber",
+            //"Bill_To_Attention": "BillToAttention"
+            "0 BillToAttention": "BillToAttention",
+            "Bill_To_Street_Line_1": "BillToAddressLine1",
+            "Bill_To_Street_Line_2": "BillToAddressLine2",
+            "Bill_To_Street_Line_3": "BillToAddressLine3",
+            "Bill_To_City": "BillToCity",
+            "Bill_To_County": "BillToCounty",
+            "Bill_To_State": "BillToState",
+            "Bill_To_Postal_Code": "BillToPostalCode",
+            "Bill_To_Country": "BillToCountry",
+            //"Ship_To_Attention": "ShipToAttention"
+            "0 ShipToAttention": "ShipToAttention",
+            "Ship_To_Street_Line_1": "ShipToAddressLine1",
+            "Ship_To_Street_Line_2": "ShipToAddressLine2",
+            "Ship_To_Street_Line_3": "ShipToAddressLine3",
+            "Ship_To_City": "ShipToCity",
+            "Ship_To_County": "ShipToCounty",
+            "Ship_To_State": "ShipToState",
+            "Ship_To_Postal_Code": "ShipToPostalCode",
+            "Ship_To_Country": "ShipToCountry",
+            //Printed_Comments_ID
+            "curc.CurrencyID": "Currency",
+            //Printed_Format_ID
+            "Tax_Schedule_ID": "TaxScheduleID",
+            "Tax_Rate": "TaxRate",
+            "convert(decimal(15,4),Total_Standard_Fee) TotalFee": "TotalFee",
+            //"Total_Overtime_Labor_Fee"
+            //Total_Other_Time_Labor_Fee
+            "convert(decimal(15,4),Total_Parts_Fee) TotalPartsFee": "TotalPartsFee",
+            "convert(decimal(15,4),Total_Expenses_Cost) TotalExpensesCost": "TotalExpensesCost",
+            "convert(decimal(15,4),Total_Billed_Expenses_Fee) TotalBilledExpensesFee": "TotalBilledExpensesFee",
+            "convert(decimal(15,4),Total_Tax) TotalTax": "TotalTax",
+            "convert(decimal(15,4),Total_Expenses_Cost) TotalExpensesCost": "TotalExpensesCost",
+            //Total_Parts_Cost
+            //Total_Standard_Labor_Cost
+            //Total_Overtime_Labor_Cost
+            //Total_Other_Time_Labor_Cost
+            //Total_Non_Billed_Labor_Cost
+            //Total_Standard_Time_Minutes
+            //Total_Over_Time_Minutes
+            //Total_Other_Time_Minutes
+            //Total_Non_Billed_Time_Minutes
+            //Last_Labor_Record_ID
+            //Last_Parts_Record_ID
+            //Last_Expense_Record_ID
+            //Last_Job_Type_ID
+            "st.Reason_for_Hold_Notes ReasonForHoldNotes": "ReasonForHoldNotes",
+            "[tempdb].[dbo].[GetDateTime](st.Created_Date,st.Created_Time) Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedBy": "CreatedBy",
+            "[tempdb].[dbo].[GetDateTime](st.Modified_Date,st.Modified_Time) ModifiedDate": "ModifiedDate",
+            "ms_modifiedby.NewValTable ModifiedBy": "ModifiedBy"
+        }
+    },*/
 ]
