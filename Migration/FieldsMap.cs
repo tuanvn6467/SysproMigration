@@ -46,6 +46,10 @@ namespace Migration
                 var fieldName = result.Replace("_Syspro_TF", "");
                 result = string.Format("case when {0} = 'T' then 1 else 0 end {1}", fieldName,
                     fieldName.Replace(".", ""));
+            }else if (result.Contains("_Syspro_FD")) //convert float to decimal(15,4)
+            {
+                var fieldName = result.Replace("_Syspro_FD", "");
+                result = string.Format("convert(decimal(15,4),{0}) {1}", fieldName,fieldName.Replace(".", ""));
             }
             else if (result.Contains(".Notes") && !result.Contains(".Notes)") && !result.Contains(".Notes,"))
             {

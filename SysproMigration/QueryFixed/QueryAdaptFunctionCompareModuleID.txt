@@ -1,6 +1,7 @@
 create function [dbo].[CompareModuleID]
 (
-@OldModuleID smallint
+@OldModuleID smallint,
+@RecordSource varchar(10)
 )
 returns int
 as
@@ -26,6 +27,8 @@ begin
 	*/
 	declare @Result int
 
+	set @RecordSource = isnull(@RecordSource,'')
+
 	select @Result = (
 		case when @OldModuleID = 1 then 1
 				when @OldModuleID = 2 then 2
@@ -39,7 +42,8 @@ begin
 				when @OldModuleID = 36 then 10
 				when @OldModuleID = 61 then 11
 				--when @OldModuleID = 116 then 2
-				when @OldModuleID = 119 then 13
+				when @OldModuleID = 119 and @RecordSource = 'S' then 13
+				when @OldModuleID = 119 and @RecordSource = 'U' then 17
 				when @OldModuleID = 120 then 14
 				when @OldModuleID = 151 then 15
 				when @OldModuleID = 205 then 16

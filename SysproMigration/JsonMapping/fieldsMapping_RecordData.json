@@ -270,8 +270,8 @@
             "OrderBy": "order by ct.Contact_Number",
             "Join": "left join [adaptv3system].[dbo].[name_prefixes] np on np.Name_Prefix = ct.Name_Prefix",
             "Join1": "left join [adaptv3system].[dbo].[name_suffixes] ns on ns.Name_Suffix = ct.Name_Suffix",
-            "Join2": "left join (select ROW_NUMBER() over (order by (Select 1000)) JobTitleID ,*  from [adaptv3system].[dbo].jobtitle) as jt on jt.Job_Title = ct.Job_Title",
-            "Join3": "left join (select ROW_NUMBER() over (order by (Select 1000)) DepartmentID,*  from [adaptv3system].[dbo].dept) as dept on dept.Department_Name = ct.Department",
+            "Join2": "left join (select ROW_NUMBER() over (order by Job_Title) JobTitleID ,*  from [adaptv3system].[dbo].jobtitle) as jt on jt.Job_Title = ct.Job_Title",
+            "Join3": "left join (select ROW_NUMBER() over (order by Department_Name) DepartmentID,*  from [adaptv3system].[dbo].dept) as dept on dept.Department_Name = ct.Department",
             "Join4": "left join [dbo].[phone] phone on phone.Attached_Record_Number = ct.Contact_Number and phone.Phone_Record_Number = ct.Default_Phone_Record and phone.Phone_Medium = 'V' and phone.Attached_To = 'C'",
             "Join5": "left join [dbo].[phone] fax on fax.Attached_Record_Number = ct.Contact_Number and fax.Phone_Record_Number = ct.Default_Fax_Record and fax.Phone_Medium = 'F' and fax.Attached_To = 'C'",
             "Join6": "left join [dbo].[phone] mobile on mobile.Attached_Record_Number = ct.Contact_Number and mobile.Phone_Record_Number = ct.Default_Mobile_Record and mobile.Phone_Medium = 'M' and mobile.Attached_To = 'C'",
@@ -444,7 +444,7 @@
             "accit.Notes": "Notes",
             "convert(decimal(15,4),0) CurrentUnitPrice": "CurrentUnitPrice"
         }
-    }/*,
+    },
     //migrate ticket to set_Service_Ticket
     {
         "Id": 1010,
@@ -464,15 +464,15 @@
             "convert(bigint, st.Related_Account_Number) RelatedAccountNumber": "RelatedAccountNumber",
             "convert(varchar, st.Related_Contact_Number) RelatedContactNumber": "RelatedContactNumber",
             "Reference_Number": "ReferenceNumber",
-            "Service_Ticket_Type": "ServiceTicketTypeID",
+            "convert(varchar,Service_Ticket_Type) ServiceTicketTypeID": "ServiceTicketTypeID",
             "Subject": "Subject",
-            "Ticket_Status": "TicketStatusTypeID",
+            "convert(varchar, Ticket_Status) TicketStatusTypeID": "TicketStatusTypeID",
             //"Open_Flag"
             //Skip_Client_Approval_Job
             "[tempdb].[dbo].[GetDateTime](st.Reported_Date,'000000') ReportedDate": "ReportedDate",
             "[tempdb].[dbo].[GetTime](st.Reported_Time) ReportedTime": "ReportedTime",
             "ms_reportedby.NewValTable ReportedBy": "ReportedBy",
-            "Ticket_Source": "SourceID",
+            "convert(varchar,Ticket_Source) SourceID": "SourceID",
             "[tempdb].[dbo].[GetDateTime](st.Started_Date,'000000') StartedDate": "StartedDate",
             "[tempdb].[dbo].[GetTime](st.Started_Time) StartedTime": "StartedTime",
             "ms_startedby.NewValTable StartedBy": "StartedBy",
@@ -519,10 +519,10 @@
             "convert(varchar,Problem_Class) ProblemClassID": "ProblemClassID",
             "convert(varchar,Problem_Type) ProblemTypeID": "ProblemTypeID",
             "convert(varchar,Problem_Subtype) ProblemSubTypeID": "ProblemSubTypeID",
-            "convert(varchar,Resolution_Type)": "ResolutionTypeID",
+            "convert(varchar,Resolution_Type) ResolutionTypeID": "ResolutionTypeID",
             //[Customer_Rating]
-            "convert(varchar,Priority)": "PriorityTypeID",
-            "convert(varchar,Severity)": "SeverityTypeID",
+            "convert(varchar,Priority) PriorityTypeID": "PriorityTypeID",
+            "convert(varchar,Severity) SeverityTypeID": "SeverityTypeID",
             "Assigned_To": "AssignedTo",
             "(case when Assigned_To = 2 then [tempdb].[dbo].GetUserIDNewCRM(Assigned_To_ID) else 0 end) AssignedToUser": "AssignedToUser",
             "convert(int,case when Assigned_To = 3 then Assigned_To_ID else NULL end) AssignedToQueue": "AssignedToQueue",
@@ -532,7 +532,7 @@
             //"[Original_Assigned_To_ID]"
             //"[Original_Assigned_Date]"
             //"[Original_Assigned_Time]"
-            "convert(varchar,Escalation_Level)": "EscalationLevelID",
+            "convert(varchar,Escalation_Level) EscalationLevelID": "EscalationLevelID",
             "[tempdb].[dbo].[GetDateTime](st.Last_Escalation_Date,'000000') LastEscalationDate": "LastEscalationDate",
             "[tempdb].[dbo].[GetTime](st.Last_Escalation_Time) LastEscalationTime": "LastEscalationTime",
             "ms_lastescalationuser.NewValTable LastEscalationBy": "LastEscalationBy",
@@ -617,5 +617,5 @@
             "[tempdb].[dbo].[GetDateTime](st.Modified_Date,st.Modified_Time) ModifiedDate": "ModifiedDate",
             "ms_modifiedby.NewValTable ModifiedBy": "ModifiedBy"
         }
-    },*/
+    }
 ]

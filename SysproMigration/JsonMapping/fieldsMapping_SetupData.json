@@ -793,15 +793,15 @@
         "NeedTruncate": false,
         "Map": {
             "Field_ID": "FieldID",
-            "[tempdb].[dbo].[CompareModuleID](Record_Type) ModuleID": "ModuleID",
-            "[tempdb].[dbo].[CompareModuleID](Record_Type) TableID": "TableID",
+            "[tempdb].[dbo].[CompareModuleID](Record_Type,Record_Source) ModuleID": "ModuleID",
+            "[tempdb].[dbo].[CompareModuleID](Record_Type,Record_Source) TableID": "TableID",
             "[tempdb].[dbo].[ConvertFieldName](Field_Name) Field_Name": "FieldName",
             "[tempdb].[dbo].[ConvertFieldName](Field_Name) FieldLabel": "FieldLabel",
             "Field_Type": "FieldTypeID",
             "Storage": "Storage",
             "Picture": "Picture",
             "Validate_Input_Syspro_TF": "IsValidate",
-            "(case when Lookup_Table > 0 and [tempdb].[dbo].[CompareModuleID](Record_Type) > 0 then Lookup_Table + [tempdb].[dbo].[CompareModuleID](Record_Type) * 10000 else 0 end) TableLookUpID": "TableLookUpID",
+            "(case when Lookup_Table > 0 and [tempdb].[dbo].[CompareModuleID](Record_Type,Record_Source) > 0 then Lookup_Table + [tempdb].[dbo].[CompareModuleID](Record_Type,Record_Source) * 10000 else 0 end) TableLookUpID": "TableLookUpID",
             "Min_Value": "MinValue",
             "Max_Value": "MaxValue",
             "Number_of_Values": "NumberOfValues",
@@ -1333,7 +1333,7 @@
         "Id": 63,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[item] itm",
-            "OrderBy": "order by (SELECT 100000)",
+            "OrderBy": "order by Item_Number",
             "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
@@ -1348,7 +1348,7 @@
             "convert(decimal(15,4), Unit_Price) UnitPrice": "UnitPrice",
             "convert(decimal(15,4), Unit_Cost) UnitCost": "UnitCost",
             "Accounting_Item_Number": "AccountingItemNumber",
-            "Tracking_Level": "TrackingLevel",
+            "(Tracking_Level - 1) TrackingLevel": "TrackingLevel",
             "Inventory_Item_Syspro_TF": "IsInventoryItem",
             "Sellable_Item_Syspro_TF": "IsSellableItem",
             "Serviced_Item_Syspro_TF": "IsServicedItem",
@@ -1686,7 +1686,7 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[expcat] expcat",
             "OrderBy": "order by Record_ID",
-            "Join": "left join (select ROW_NUMBER() over (order by (Select 10000)) ItemID, * from [adaptv3system].[dbo].[item]) as itm on itm.Item_Number = expcat.Item_Number",
+            "Join": "left join (select ROW_NUMBER() over (order by Item_Number) ItemID, * from [adaptv3system].[dbo].[item]) as itm on itm.Item_Number = expcat.Item_Number",
             "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
@@ -1763,7 +1763,7 @@
             "Allow_Printer_Select_Syspro_TF": "IsAllowPrinterSelect",
             "(case when (SELECT [Property_Value] FROM [adaptv3system].[dbo].[user_interface_prefs] where Property_Key='ST#SUBJE') = 'Y' then 1 else 0 end) IsIncludeTicketNumber": "IsIncludeTicketNumber",
             "(case when (SELECT [Property_Value] FROM [adaptv3system].[dbo].[user_interface_prefs] where Property_Key='STCRHOLD') = 'Y' then 1 else 0 end) IsAllowCreattion": "IsAllowCreattion",
-            "(case when (SELECT [Property_Value] FROM [adaptv3system].[dbo].[user_interface_prefs] where Property_Key='CGITMOWN') = 'Y' then 1 else 0 end) AllowChangeItemNumber": "AllowChangeItemNumber"
+            "(case when (SELECT [Property_Value] FROM [adaptv3system].[dbo].[user_interface_prefs] where Property_Key='CGITMOWN') = 'Y' then 1 else 0 end) AllowChangeItemNumber": "IsAllowChangeItemNumber"
         }
     },
     //migrate [adaptv3system].[dbo].[pref3] to utl_Module_PreferRequired_Field
@@ -1848,5 +1848,212 @@
             "Sequence_Number": "SeqNo",
             "Field_Number": "FieldID"
         }
+    },
+    //migrate [adaptv3system].[dbo].[item_components] to itm_Item_Component
+    {
+        "Id": 83,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[item_components] itc",
+            "OrderBy": "order by Parent_Item_Number",
+            "Join": "left join (select *, ROW_NUMBER() over (order by Item_Number) ItemID from [adaptv3system].[dbo].[item]) it_p on it_p.Item_Number = itc.Parent_Item_Number",
+            "Join1": "left join (select *, ROW_NUMBER() over (order by Item_Number) ItemID from [adaptv3system].[dbo].[item]) it_c on it_c.Item_Number = itc.Component_Item_Number"
+        },
+        "Destination": {
+            "Tables": "itm_Item_Component"
+        },
+        "Map": {
+            "it_p.ItemID ParentItemID": "ParentItemID",
+            "it_c.ItemID CompItemID": "CompItemID",
+            "Sequence_Number": "SeqNo",
+            "convert(decimal(15,4),itc.Unit_Price) UnitPrice": "UnitPrice",
+            "convert(decimal(15,4),itc.Quantity) Quantity": "Quantity",
+            "Discount_Method": "DiscountMethodTypeID",
+            "convert(decimal(15,4),itc.Discount_Amount) DiscountAmount": "DiscountAmount"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[item_contract] to itm_Item_ContractType_Xref
+    {
+        "Id": 84,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[item_contract] itc",
+            "OrderBy": "order by itc.Item_Number",
+            "Join": "left join (select *, ROW_NUMBER() over (order by Item_Number) ItemID from [adaptv3system].[dbo].[item]) it_c on it_c.Item_Number = itc.Item_Number"
+        },
+        "Destination": {
+            "Tables": "itm_Item_ContractType_Xref"
+        },
+        "Map": {
+            "it_c.ItemID ItemID": "ItemID",
+            "convert(decimal(15,4),itc.Fee) Fee": "Fee"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[item_currency_prices] to itm_Item_Currency_Price
+    {
+        "Id": 85,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[item_currency_prices] itcp",
+            "OrderBy": "order by itcp.Item_Number",
+            "Join": "left join (select *, ROW_NUMBER() over (order by Item_Number) ItemID from [adaptv3system].[dbo].[item]) it on it.Item_Number = itcp.Item_Number",
+            "Join1": "left join (select *,ROW_NUMBER() over(order by [Currency_Code]) CurrencyID from [adaptv3system].[dbo].[currency_codes]) curc on curc.Currency_Code = itcp.Currency_Code"
+        },
+        "Destination": {
+            "Tables": "itm_Item_Currency_Price"
+        },
+        "Map": {
+            "it.ItemID ItemID": "ItemID",
+            "curc.CurrencyID": "CurrencyID",
+            "convert(decimal(15,4),itcp.Unit_Price) UnitPrice": "UnitPrice"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[price_tables] to itm_Price_Table
+    {
+        "Id": 86,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[price_tables] pt",
+            "OrderBy": "order by Record_ID",
+            "Join": "left join (select *, ROW_NUMBER() over (order by Item_Number) ItemID from [adaptv3system].[dbo].[item]) it on it.Item_Number = pt.Item_Number",
+            "Join1": "left join (select *,ROW_NUMBER() over(order by [Currency_Code]) CurrencyID from [adaptv3system].[dbo].[currency_codes]) curc on curc.Currency_Code = pt.Currency_Code"
+        },
+        "Destination": {
+            "Tables": "itm_Price_Table"
+        },
+        "Map": {
+            "Record_ID": "PriceTableID",
+            "Price_Selection_Criteria": "CriteriaTypeID",
+            "pt.Item_Class": "ItemClassID",
+            "it.ItemID": "ItemID",
+            "Customer_Class": "CustomerClassID",
+            "convert(bigint,Account_Number) AccountNumber": "AccountNumber",
+            "curc.CurrencyID": "CurrencyID",
+            "convert(decimal(15,4),Minimum_Quantity) MinimumQuantity": "MinimumQuantity",
+            "Price_Basis": "PriceBasisTypeID",
+            "convert(decimal(15,4),Amount) Amount": "Amount",
+            "Start_Date_Filter_Syspro_TF": "IsStartDateFilter",
+            "End_Date_Filter_Syspro_TF": "IsEndDateFilter",
+            "[tempdb].[dbo].[GetDateTime](pt.Start_Date,'000000') StartDate": "StartDate",
+            "[tempdb].[dbo].[GetDateTime](pt.End_Date,'000000') EndDate": "EndDate"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[contract_type] to [dbo].[set_Contract_Type]
+    {
+        "Id": 87,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[contract_type] ct",
+            "OrderBy": "order by ct.Contract_Type_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "set_Contract_Type"
+        },
+        "Map": {
+            "Contract_Type_ID": "ContractTypeID",
+            "Contract_Type_Name": "ContractTypeName",
+            "Selling_Item_Number": "ItemNumber",
+            "Fee_Basis": "FeeBasisTypeID",
+            "Fee_Amount_Syspro_FD": "FeeAmount",
+            "Covered_Items": "CoveredItemTypeID",
+            "Covered_Labor": "LaborCalculationTypeID",
+            "Covered_Parts": "PartCalculationTypeID",
+            "Covered_Expenses": "ExpenseCalculationTypeID",
+            "Limit_to_Authorized_Contacts_Syspro_TF": "IsLimitToAuthorizedContact",
+            //Usage_Fee_Basis
+            "Maximum_Authorized_Contacts": "MaximumAuthorizedContact",
+            "Usage_Limit_Flag_Syspro_TF": "IsUsageLimitFlag",
+            "Usage_Limit_Amount": "UsageLimitAmount",
+            "Usage_Limit_Units": "UsageLimitUnit",
+            "Fixed_Labor_Rate_Amount_Syspro_FD": "FixedLaborRateAmount",
+            "Fixed_Labor_Rate_Units": "FixedLaborRateTypeID",
+            "Other_Billing_Increment_Syspro_FD": "OtherIncrement",
+            "Other_Billing_Increment_Units": "OtherIncrementTimeUnitTypeID",
+            "Follows_Calendar_ID": "FollowCalendarID",
+            "Promised_Response_Time_Amount": "PromisedResponseTimeAmount",
+            "Promised_Response_Time_Units": "PromisedTimeUnitTypeID",
+            "Triggered_Process_ID": "TriggeredProcessID",
+            "Contract_Starts": "ContractStartTypeID",
+            "Contract_Ends": "ContractEndTypeID",
+            "Minimum_Duration_Amount": "MinimumDurationAmount",
+            "Minimum_Duration_Units": "MinimumDurationUnit",
+            "Other_Duration_Amount": "OtherDurationAmount",
+            "Other_Duration_Units": "OtherDurationUnit",
+            "Ending_Month": "EndingMonth",
+            "Ending_Day": "EndingDay",
+            "Renewal_Limit_Days": "RenewalLimitDay",
+            "Modify_Active_Contract_Terms_Syspro_TF": "IsModifyActiveContractTerms",
+            "ct.Notes": "Notes",
+            "ct.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "ct.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[service_contract_pref] to set_Service_Contract_Preferences
+    {
+        "Id": 88,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[service_contract_pref] p",
+            "OrderBy": "order by One"
+        },
+        "Destination": {
+            "Tables": "set_Service_Contract_Preferences"
+        },
+        "Map": {
+            "One": "ServiceContractPreferID",
+            "Enable_Posting_Syspro_TF": "IsEnablePosting",
+            "Posted_Opportunity_Type": "PostedOpportunityTypeID",
+            "Default_Item_Number": "DefaultItemNumber",
+            "Require_Signature_to_Create_Syspro_TF": "IsRequireSignatureToCreate",
+            "Require_Signature_to_Start_Syspro_TF": "IsRequireSignatureToStart",
+            "Require_Signature_to_Hold_Syspro_TF": "IsRequireSignatureToHold",
+            "Require_Signature_to_Release_Syspro_TF": "IsRequireSignatureToRelease",
+            "Require_Signature_to_Modify_Syspro_TF": "IsRequireSignatureToModify",
+            "Require_Signature_to_Terminate_Syspro_TF": "IsRequireSignatureToTerminate",
+            "Require_Signature_to_Renew_Syspro_TF": "IsRequireSignatureToRenew",
+            "Default_Sold_Date_to_Today_Syspro_TF": "IsDefaultSoldDateToToday",
+            "Modify_Active_Contract_Terms_Syspro_TF": "IsModifyActiveContractTerm"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[service_contract_pref] to utl_Module_PreferRequired_Field
+    {
+        "Id": 89,
+        "Source": {
+            "Tables": "[tempdb].[dbo].[ServiceContractPref_Pivot_Required] pp",
+            "OrderBy": "order by Rownumber"
+        },
+        "Destination": {
+            "Tables": "utl_Module_PreferRequired_Field"
+        },
+
+        "Map": {
+            "14 ModuleID": "ModuleID",
+            "RequiredFieldID": "RequiredFieldID",
+            "0 RequiredModeTypeID": "RequiredModeTypeID",
+            "1 ModulePreferenceID": "ModulePreferenceID",
+            "RequiredFieldName": "RequiredFieldName",
+            "RequiredTypeID": "RequiredTypeID",
+            "case when RequiredFieldID = 280 or RequiredFieldID = 282 or RequiredFieldID = 284 or RequiredFieldID = 289 then 1 else 0 end IsReadOnly": "IsReadOnly",
+            "SeqNo": "SeqNo",
+            "ColNo": "ColNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[service_contract_pref] to utl_Module_PreferDefault_Field
+    {
+        "Id": 90,
+        "Source": {
+            "Tables": "[tempdb].[dbo].[ServiceContractPref_Pivot_Default] pp",
+            "OrderBy": "order by Rownumber"
+        },
+        "Destination": {
+            "Tables": "utl_Module_PreferDefault_Field"
+        },
+
+        "Map": {
+            "14 ModuleID": "ModuleID",
+            "DefaultFieldID": "DefaultFieldID",
+            "1 ModulePreferenceID": "ModulePreferenceID",
+            "DefaultFieldName": "DefaultFieldName",
+            "DefaultValue": "DefaultValue",
+            "SeqNo": "SeqNo"
+        }
     }
+
 ]

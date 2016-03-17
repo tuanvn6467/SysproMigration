@@ -1,0 +1,66 @@
+create view [dbo].[ServiceContractPref_Pivot_Required] 
+  as 
+  select RequiredFieldName, RequiredTypeID, 
+case	when (RequiredFieldName = 'Start Date') then 280 
+		when (RequiredFieldName = 'End Date') then 281 
+		when (RequiredFieldName = 'Contract Type') then 282 
+		when (RequiredFieldName = 'Account Name') then 284
+		when (RequiredFieldName = 'Non-Zero Contract Fee') then 287 
+		when (RequiredFieldName = 'Sold Date') then 289 
+		when (RequiredFieldName = 'Renewal Deadline') then 294 
+		when (RequiredFieldName = 'Non-Zero Usage Fee') then 295 
+		when (RequiredFieldName = 'Usage Limit') then 296 
+		when (RequiredFieldName = 'Promised Response Time') then 297 
+		end RequiredFieldID,
+
+case	when (RequiredFieldName = 'Start Date') then 4 
+		when (RequiredFieldName = 'End Date') then 5 
+		when (RequiredFieldName = 'Contract Type') then 2 
+		when (RequiredFieldName = 'Account Name') then 1
+		when (RequiredFieldName = 'Non-Zero Contract Fee') then 3 
+		when (RequiredFieldName = 'Sold Date') then 3 
+		when (RequiredFieldName = 'Renewal Deadline') then 1 
+		when (RequiredFieldName = 'Non-Zero Usage Fee') then 4 
+		when (RequiredFieldName = 'Usage Limit') then 5 
+		when (RequiredFieldName = 'Promised Response Time') then 2 
+		end SeqNo,
+
+case	when RequiredFieldName = 'Start Date' 
+			or  RequiredFieldName = 'End Date'
+			or  RequiredFieldName = 'Contract Type'
+			or  RequiredFieldName = 'Account Name'
+			or  RequiredFieldName = 'Sold Date'
+			then 1
+			else 2 end ColNo,
+	  ROW_NUMBER() OVER (ORDER BY (SELECT 100)) Rownumber
+	  from
+	  (select 
+	   convert(smallint,1) [Start Date],
+	   convert(smallint,1) [Contract Type],
+	   convert(smallint,1) [Account Name],
+	   convert(smallint,1) [Sold Date],
+	   [End_Date_Required] [End Date]
+      ,[Renewal_Deadline_Required] [Renewal Deadline]
+      ,[Response_Time_Required] [Promised Response Time]
+      ,[Non_Zero_Contract_Fee_Required] [Non-Zero Contract Fee]
+      ,[Non_Zero_Usage_Fee_Required] [Non-Zero Usage Fee]
+      ,[Usage_Limit_Required] [Usage Limit]
+
+
+	  from [adaptv3system].[dbo].[service_contract_pref]
+	  ) p 
+	  unpivot
+	  (
+		RequiredTypeID for 
+		RequiredFieldName in ([Start Date]
+							  ,[Contract Type]
+							  ,[Account Name]
+							  ,[Sold Date]
+							  ,[End Date]
+							  ,[Renewal Deadline]
+							  ,[Promised Response Time]
+							  ,[Non-Zero Contract Fee]
+							  ,[Non-Zero Usage Fee]
+							  ,[Usage Limit]
+							  )
+	  ) as RequiredFieldName 

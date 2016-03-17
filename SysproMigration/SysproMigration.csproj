@@ -145,8 +145,10 @@
     <Content Include="QueryFixed\QueryAdaptFunctionGetGroupIDNewCRM.txt" />
     <Content Include="QueryFixed\QueryAdaptFunctionGetUserIDNewCRM.txt" />
     <Content Include="QueryFixed\QueryAdaptViewPref3Pivot_Default.txt" />
+    <Content Include="QueryFixed\QueryAdaptViewServiceContractPrefPivot_Default.txt" />
     <Content Include="QueryFixed\QueryAdaptViewPref6Pivot_Default.txt" />
     <Content Include="QueryFixed\QueryAdaptViewPref3Pivot_Required.txt" />
+    <Content Include="QueryFixed\QueryAdaptViewServiceContractPrefPivot_Required.txt" />
     <Content Include="QueryFixed\QueryAdaptViewPref6Pivot_Required.txt" />
     <Content Include="QueryFixed\QueryCRMUpdatePhysicalFieldName.txt" />
     <Content Include="QueryFixed\QueryAdaptConvertFieldName.txt" />

@@ -1,0 +1,22 @@
+create view [dbo].[ServiceContractPref_Pivot_Default] 
+  as 
+  select DefaultFieldName, DefaultValue,
+	  case	
+		when (DefaultFieldName = 'ContractTypeID') then 282 
+		end DefaultFieldID,
+	  case	
+		when (DefaultFieldName = 'ContractTypeID') then 1 
+		else 0 end SeqNo,
+		ROW_NUMBER() OVER (ORDER BY (SELECT 100)) Rownumber
+	  from
+	  (select 
+	  --default field
+      CONVERT(varchar,Default_Contract_Type) ContractTypeID
+	  from [adaptv3system].[dbo].[service_contract_pref] p
+	  ) p 
+	  unpivot
+	  (
+		DefaultValue for 
+		DefaultFieldName in (ContractTypeID
+							  )
+	  ) as DefaultFieldName 

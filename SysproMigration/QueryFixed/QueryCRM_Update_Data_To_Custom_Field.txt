@@ -21,7 +21,16 @@ select  ffv.FieldID,
 		ffv.RecID,
 		ffv.FieldVal
 		from	fld_Field_Value ffv 
-		inner join fld_Field ff on ff.FieldID = ffv.FieldID and ff.ModuleID = 13
+		inner join fld_Field ff on ff.FieldID = ffv.FieldID and ff.ModuleID = 17
+ --insert value multiple for item class attributes (chua biet cach lam)
+ --Insert into [dbo].itm_Item_Field_Value_Detail
+--			(ItemFieldValueID,
+--			FieldVal
+--			)
+-- select  1,
+--		ffv.FieldVal
+--		from	fld_Field_Value ffv 
+--		inner join fld_Field ff on ff.FieldID = ffv.FieldID and ff.ModuleID = 17 and ff.NumberOfValues = 2
 
 --begin update transaction
 

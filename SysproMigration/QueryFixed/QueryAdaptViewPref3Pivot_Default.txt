@@ -32,7 +32,7 @@ create view [dbo].[Pref3_Pivot_Default]
 	  ,CONVERT(varchar,[Default_Job_Type]) JobTypeID
 	  from [adaptv3system].[dbo].[pref3] p
 	  --left join 
-		--	(select ROW_NUMBER() over (order by (Select 10000)) ItemID, 
+		--	(select ROW_NUMBER() over (order by Item_Number) ItemID, 
 		--		* from [adaptv3system].[dbo].[item]) as itm 
 		--		on itm.Item_Number = p.Default_Item_Number
 	  ) p 
