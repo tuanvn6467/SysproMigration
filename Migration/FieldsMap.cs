@@ -50,6 +50,10 @@ namespace Migration
             {
                 var fieldName = result.Replace("_Syspro_FD", "");
                 result = string.Format("convert(decimal(15,4),{0}) {1}", fieldName,fieldName.Replace(".", ""));
+            }else if (result.Contains("_Syspro_FBI")) //convert float to bigint
+            {
+                var fieldName = result.Replace("_Syspro_FBI", "");
+                result = string.Format("convert(bigint,{0}) {1}", fieldName,fieldName.Replace(".", ""));
             }
             else if (result.Contains(".Notes") && !result.Contains(".Notes)") && !result.Contains(".Notes,"))
             {

@@ -617,5 +617,216 @@
             "[tempdb].[dbo].[GetDateTime](st.Modified_Date,st.Modified_Time) ModifiedDate": "ModifiedDate",
             "ms_modifiedby.NewValTable ModifiedBy": "ModifiedBy"
         }
+    },
+    //migrate [dbo].[service_contracts] to [dbo].[set_Service_Contract]
+    {
+        "Id": 1011,
+        "Source": {
+            "Tables": "[dbo].[service_contracts] svc",
+            "OrderBy": "order by svc.Contract_Number",
+            "Join": "left join [dbo].[contract_hold_notes] chn on chn.Contract_Number = svc.Contract_Number",
+            "Join1": "left join [dbo].[contract_renew] cr on cr.Old_Contract = svc.Contract_Number",
+            "Join2": "left join [adaptv3system].[dbo].[users] statusby on statusby.User_ID = chn.Status_By",
+            "Join3": "left join  [tempdb].[dbo].[MigrateSupport] ms_statusby on ms_statusby.TargetServer='.' and ms_statusby.OldValTable = statusby.Email_Address",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "set_Service_Contract"
+        },
+        "Map": {
+            "svc.Contract_Number_Syspro_FBI": "ContractNumber",
+            "svc.Contract_Type": "ContractTypeID",
+            "svc.Account_Number_Syspro_FBI": "AccountNumber",
+            //Account_Name
+            "svc.Contract_Status": "ContractStatusTypeID",
+            "svc.Active_Flag_Syspro_TF": "IsActive",
+            "Opportunity_Number_Syspro_FBI": "OpportunityNumber",
+            "Warranty_Flag_Syspro_TF": "IsWarranty",
+            "Warranty_Item_Number": "WarrantyItemNumber",
+            "Warranty_Serial_Number": "WarrantySerialNumber",
+            "Warranty_Lot_Number": "WarrantyLotNumber",
+            "Fee_Basis": "ContractFeeBasisTypeID",
+            "Fee_Basis_Amount_Syspro_FD": "FeeBasisAmount",
+            "Contract_Actual_Fee_Syspro_FD": "ContractActualFee",
+            "Covered_Items": "CoveredItemTypeID",
+            "Covered_Parts": "CoveredPartTypeID",
+            "Covered_Labor": "CoveredLaborTypeID",
+            "Covered_Expenses": "CoveredExpense",
+            "Limit_to_Authorized_Contacts_Syspro_TF": "IsLimitToAuthorizedContact",
+            "Maximum_Authorized_Contacts": "MaximumAuthorizedContact",
+            "Authorized_Contact_Count": "AuthorizedContactCount",
+            "Usage_Fee_Basis": "UsageFeeBasisTypeID",
+            "Usage_Limit_Flag_Syspro_TF": "IsUsageLimit",
+            "Usage_Limit_Amount": "UsageLimitAmount",
+            "Usage_Limit_Units": "UsageLimitUnitTypeID",
+            "Fixed_Labor_Rate_Amount_Syspro_FD": "FixedLaborRateAmount",
+            "Fixed_Labor_Rate_Units": "FixedLaborRateUnitTypeID",
+            "Other_Billing_Increment_Syspro_FD": "OtherBillingIncrement",
+            "Other_Billing_Increment_Units": "OtherBillingIncrementUnit",
+            "Follows_Calendar_ID": "FollowCalendarID",
+            "Promised_Response_Time_Amount": "PromisedResponseTimeAmount",
+            "Promised_Response_Time_Units": "PromisedResponseTimeUnitTypeID",
+            "Triggered_Process_ID": "TriggeredProcessID",
+            "[tempdb].[dbo].[GetDateTime](svc.Sold_Date,'000000') SoldDate": "SoldDate",
+            "[tempdb].[dbo].[GetDateTime](svc.Start_Date,'000000') StartDate": "StartDate",
+            "[tempdb].[dbo].[GetDateTime](svc.Effective_Start_Date,'000000') EffectiveStartDate": "EffectiveStartDate",
+            "[tempdb].[dbo].[GetDateTime](svc.Expiration_Date,'000000') ExpirationDate": "ExpirationDate",
+            "[tempdb].[dbo].[GetDateTime](svc.Renewal_Deadline,'000000') RenewalDeadline": "RenewalDeadline",
+            "Contract_Starts_Basis": "ContractStartTypeID",
+            "Contract_Ends_Basis": "ContractEndTypeID",
+            "Contract_Ends_Fixed_Month": "ContractEndFixedMonth",
+            "Contract_Ends_Fixed_Day": "ContractEndFixedDay",
+            "Minimum_Duration_Amount": "MinimumDurationAmount",
+            "Minimum_Duration_Units": "MinimumDurationUnit",
+            "Other_Duration_Amount": "OtherDurationAmount",
+            "Other_Duration_Units": "OtherDurationUnitTypeID",
+            "Renewal_Limit_Days": "RenewalLimitDay",
+            "Total_Minutes_Used": "TotalMinutesUsed",
+            "Total_Tickets_Used": "TotalTicketsUsed",
+            "Expiration_Job_ID": "ExpirationJobID",
+            "case when chn.Contract_Number >0 then 1 else 0 end IsContractOnHold": "IsContractOnHold",
+            "RTRIM(LTRIM(convert(varchar(max),isnull(chn.Status_Notes,'')))) HoldReasonNotes": "HoldReasonNotes",
+            "[tempdb].[dbo].[GetDateTime](chn.Status_Date,chn.Status_Time) HoldDate": "HoldDate",
+            "ms_statusby.NewValTable HoldUserID": "HoldUserID",
+            "case when cr.Old_Contract > 0 then convert(decimal(15,4),Contract_Actual_Fee) else NULL end ContractRenewalFee": "ContractRenewalFee",
+            "case when cr.Old_Contract > 0 then 1 else 0 end ContractRenewed": "ContractRenewed",
+            "DATEDIFF(day,[tempdb].[dbo].[GetDateTime](svc.Sold_Date,'000000'),[tempdb].[dbo].[GetDateTime](svc.Expiration_Date,'000000')) DaysUntilExpiration": "DaysUntilExpiration",
+            "svc.Notes": "Notes",
+            "[tempdb].[dbo].[GetDateTime](svc.Created_Date,svc.Created_Time) CreatedDate": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "[tempdb].[dbo].[GetDateTime](svc.Modified_Date,svc.Modified_Time) UpdatedDate": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID": "UpdatedUserID"
+        }
+    },
+    //migrate [dbo].[contract_renew] to [dbo].[set_Contract_Renew]
+    {
+        "Id": 1012,
+        "Source": {
+            "Tables": "[dbo].[contract_renew] cr",
+            "OrderBy": "order by cr.Old_Contract"
+        },
+        "Destination": {
+            "Tables": "set_Contract_Renew"
+        },
+        "Map": {
+            "Old_Contract_Syspro_FBI": "OldContractNumber",
+            "New_Contract_Syspro_FBI": "NewContractNumber"
+        }
+    },
+    //migrate [dbo].[contract_warranty_items] to [dbo].[set_Contract_Item_Owned_Xref]
+    {
+        "Id": 1013,
+        "Source": {
+            "Tables": "[dbo].[contract_warranty_items] cwi",
+            "OrderBy": "order by cwi.Contract_Number"
+        },
+        "Destination": {
+            "Tables": "set_Contract_Item_Owned_Xref"
+        },
+        "Map": {
+            "Contract_Number_Syspro_FBI": "ContractNumber",
+            "Line_Number": "LineNumber",
+            "Item_Number": "ItemNumber",
+            "Warrant_Serial": "WarrantSerial",
+            "Item_Owned_ID_Syspro_FBI": "AccountItemOwnID"
+        }
+    },
+    //migrate [dbo].[svc_contract_items] to [dbo].[set_Contract_Item_Xref]
+    {
+        "Id": 1014,
+        "Source": {
+            "Tables": "[dbo].[svc_contract_items] sci",
+            "OrderBy": "order by sci.Contract_Number"
+        },
+        "Destination": {
+            "Tables": "set_Contract_Item_Xref"
+        },
+        "Map": {
+            "Contract_Number_Syspro_FBI": "ContractNumber",
+            "Account_Number_Syspro_FBI": "AccountNumber",
+            "Contract_Active_Syspro_TF": "IsContractActive",
+            "Item_Coverage_Scope": "CoverageScopeTypeID",
+            "Item_Class_ID": "ItemClassID",
+            "Item_Number": "ItemNumber"
+        }
+    },
+    //migrate [dbo].[svc_contract_parts] to [dbo].[set_Contract_Part_Xref]
+    {
+        "Id": 1015,
+        "Source": {
+            "Tables": "[dbo].[svc_contract_parts] scp",
+            "OrderBy": "order by scp.Contract_Number"
+        },
+        "Destination": {
+            "Tables": "set_Contract_Part_Xref"
+        },
+        "Map": {
+            "Contract_Number_Syspro_FBI": "ContractNumber",
+            "Account_Number_Syspro_FBI": "AccountNumber",
+            "Contract_Active_Syspro_TF": "IsContractActive",
+            "Item_Coverage_Scope": "CoverageScopeTypeID",
+            "Item_Class_ID": "ItemClassID",
+            "Item_Number": "ItemNumber",
+            "Item_Coverage_Scope": "CoverageScopeTypeID",
+            "Coverage_Level": "CoverageScopeLevelTypeID",
+            "Discount_Amount_Syspro_FD": "DiscountAmount",
+            "Fixed_Price_Syspro_FD": "FixedPrice"
+        }
+    },
+    //migrate [dbo].[svc_contract_jobs] to [dbo].[set_Contract_Job_Xref]
+    {
+        "Id": 1016,
+        "Source": {
+            "Tables": "[dbo].[svc_contract_jobs] scj",
+            "OrderBy": "order by scj.Contract_Number"
+        },
+        "Destination": {
+            "Tables": "set_Contract_Job_Xref"
+        },
+        "Map": {
+            "Contract_Number_Syspro_FBI": "ContractNumber",
+            "Account_Number_Syspro_FBI": "AccountNumber",
+            "Active_Contract_Syspro_TF": "IsActiveContract",
+            "Coverage_Scope": "CoverageScopeTypeID",
+            "Job_Class": "JobClassID",
+            "Job_Type": "JobTypeID",
+            "Coverage_Level": "CoverageLevelID",
+            "Coverage_Level": "CoverageScopeLevelTypeID",
+            "Discount_Amount_Syspro_FD": "DiscountAmount",
+            "Fixed_Price_Syspro_FD": "FixedPrice",
+            "Fixed_Price_Time_Units": "FixedPriceTimeUnit"
+        }
+    },
+    //migrate [dbo].[svc_contract_expenses] to [dbo].[set_Contract_Expense_Xref]
+    {
+        "Id": 1017,
+        "Source": {
+            "Tables": "[dbo].[svc_contract_expenses] sce",
+            "OrderBy": "order by sce.Contract_Number"
+        },
+        "Destination": {
+            "Tables": "set_Contract_Expense_Xref"
+        },
+        "Map": {
+            "Contract_Number_Syspro_FBI": "ContractNumber",
+            "Account_Number_Syspro_FBI": "AccountNumber",
+            "Active_Contract_Syspro_TF": "IsContractActive",
+            "Expense_Category": "ExpenseCategoryID"
+        }
+    },
+    //migrate [dbo].[service_contract_contact] to [dbo].[set_Contract_Contact_Xref]
+    {
+        "Id": 1018,
+        "Source": {
+            "Tables": "[dbo].[service_contract_contact] scc",
+            "OrderBy": "order by scc.Contract_Number"
+        },
+        "Destination": {
+            "Tables": "set_Contract_Contact_Xref"
+        },
+        "Map": {
+            "Contract_Number_Syspro_FBI": "ContractNumber",
+            "Authorized_Contact_Number_Syspro_FBI": "ContactNumber"
+        }
     }
 ]
