@@ -50,7 +50,7 @@ case	when RequiredFieldName = 'ServiceTicketTypeCreate'
 	  (select Account_Required Account
       ,[Item_Number_Required] ItemNumber
       ,[Problem_Type_Required] ProblemClass
-	  ,convert(smallint,(SELECT [Property_Value] FROM [adaptv3system].[dbo].[user_interface_prefs] where Property_Key='PROBTYPR')) ProblemType 
+	  ,convert(smallint,convert(varchar,(SELECT [Property_Value] FROM [adaptv3system].[dbo].[user_interface_prefs] where Property_Key='PROBTYPR'))) ProblemType 
 	  ,[Resolution_Type_Required] ResolutionType
 	  ,[Problem_Description_Required] ProblemDesctiption
 	  ,[Resolution_Description_Required] ResolutionDescription
@@ -77,4 +77,4 @@ case	when RequiredFieldName = 'ServiceTicketTypeCreate'
 							  ,ServiceTicketTypeCreate
 							  ,ServiceTicketTypeComplete
 							  )
-	  ) as RequiredFieldName 
+	  ) as RequiredFieldName  

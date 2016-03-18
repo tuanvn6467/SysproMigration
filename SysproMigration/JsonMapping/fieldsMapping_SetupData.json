@@ -1761,9 +1761,9 @@
             "Do_Not_Auto_Skip_Milestones_Syspro_TF": "IsDoNotAutoSkipMilestone",
             "Allow_Print_Preview_Syspro_TF": "IsAllowPrintPreview",
             "Allow_Printer_Select_Syspro_TF": "IsAllowPrinterSelect",
-            "(case when (SELECT [Property_Value] FROM [adaptv3system].[dbo].[user_interface_prefs] where Property_Key='ST#SUBJE') = 'Y' then 1 else 0 end) IsIncludeTicketNumber": "IsIncludeTicketNumber",
-            "(case when (SELECT [Property_Value] FROM [adaptv3system].[dbo].[user_interface_prefs] where Property_Key='STCRHOLD') = 'Y' then 1 else 0 end) IsAllowCreattion": "IsAllowCreattion",
-            "(case when (SELECT [Property_Value] FROM [adaptv3system].[dbo].[user_interface_prefs] where Property_Key='CGITMOWN') = 'Y' then 1 else 0 end) AllowChangeItemNumber": "IsAllowChangeItemNumber"
+            "(case when (SELECT convert(varchar,[Property_Value]) FROM [adaptv3system].[dbo].[user_interface_prefs] where Property_Key='ST#SUBJE') = 'Y' then 1 else 0 end) IsIncludeTicketNumber": "IsIncludeTicketNumber",
+            "(case when (SELECT convert(varchar,[Property_Value]) FROM [adaptv3system].[dbo].[user_interface_prefs] where Property_Key='STCRHOLD') = 'Y' then 1 else 0 end) IsAllowCreattion": "IsAllowCreattion",
+            "(case when (SELECT convert(varchar,[Property_Value]) FROM [adaptv3system].[dbo].[user_interface_prefs] where Property_Key='CGITMOWN') = 'Y' then 1 else 0 end) AllowChangeItemNumber": "IsAllowChangeItemNumber"
         }
     },
     //migrate [adaptv3system].[dbo].[pref3] to utl_Module_PreferRequired_Field
@@ -1837,7 +1837,7 @@
         "Source": {
             "Tables": "[adaptv3system].[dbo].[formobj] formobj",
             "OrderBy": "order by Form_ID",
-            "Where": "Form_ID > 10000000"
+            "Where": "Form_ID > 10000000 and Field_Number > 0"
         },
         "Destination": {
             "Tables": "itm_Item_Class_Attribute"

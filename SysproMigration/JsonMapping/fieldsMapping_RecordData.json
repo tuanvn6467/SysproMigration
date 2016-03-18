@@ -411,7 +411,7 @@
         "Source": {
             "Tables": "[dbo].[item_history] ith",
             "OrderBy": "order by ith.Transaction_Number",
-            "Join": "left join [adaptv3SAMPLE].[dbo].[acctitem] accit on accit.Item_Owned_Record_ID = ith.Item_Record_ID",
+            "Join": "left join [dbo].[acctitem] accit on accit.Item_Owned_Record_ID = ith.Item_Record_ID",
             "JoinUser": "Transferred_By"
         },
         "Destination": {

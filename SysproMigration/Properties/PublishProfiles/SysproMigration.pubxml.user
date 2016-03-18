@@ -19,13 +19,13 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>01/16/2016 09:59:55</publishTime>
     </File>
     <File Include="bin/Migration.dll">
-      <publishTime>03/04/2016 11:36:06</publishTime>
+      <publishTime>03/17/2016 17:28:50</publishTime>
     </File>
     <File Include="bin/Newtonsoft.Json.dll">
       <publishTime>01/18/2016 09:51:22</publishTime>
     </File>
     <File Include="bin/SysproMigration.dll">
-      <publishTime>03/04/2016 11:36:06</publishTime>
+      <publishTime>03/18/2016 14:20:22</publishTime>
     </File>
     <File Include="bin/System.Web.Helpers.dll">
       <publishTime>01/16/2016 09:59:54</publishTime>
@@ -73,13 +73,13 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/02/2016 14:33:00</publishTime>
     </File>
     <File Include="JsonMapping/fieldsMapping_RecordData.json">
-      <publishTime>03/04/2016 11:35:42</publishTime>
+      <publishTime>03/18/2016 09:48:02</publishTime>
     </File>
     <File Include="JsonMapping/fieldsMapping_Security.json">
       <publishTime>01/21/2016 16:49:44</publishTime>
     </File>
     <File Include="JsonMapping/fieldsMapping_SetupData.json">
-      <publishTime>03/04/2016 11:34:57</publishTime>
+      <publishTime>03/18/2016 14:21:09</publishTime>
     </File>
     <File Include="JsonMapping/fieldsMapping_System.json">
       <publishTime>01/21/2016 16:49:47</publishTime>
@@ -97,7 +97,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/05/2016 14:47:33</publishTime>
     </File>
     <File Include="QueryFixed/QueryAdaptFunctionCompareModuleID.txt">
-      <publishTime>02/18/2016 15:28:56</publishTime>
+      <publishTime>03/14/2016 17:03:46</publishTime>
     </File>
     <File Include="QueryFixed/QueryAdaptFunctionConvertPhoneFax.txt">
       <publishTime>02/23/2016 11:47:46</publishTime>
@@ -120,14 +120,26 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="QueryFixed/QueryAdaptFunctionGetDateTime.txt">
       <publishTime>02/29/2016 15:32:30</publishTime>
     </File>
+    <File Include="QueryFixed/QueryAdaptFunctionGetGroupIDNewCRM.txt">
+      <publishTime>03/07/2016 17:45:34</publishTime>
+    </File>
     <File Include="QueryFixed/QueryAdaptFunctionGetNewValue.txt">
       <publishTime>02/02/2016 13:27:01</publishTime>
     </File>
     <File Include="QueryFixed/QueryAdaptFunctionGetPostalCodeID.txt">
       <publishTime>02/16/2016 10:55:22</publishTime>
     </File>
+    <File Include="QueryFixed/QueryAdaptFunctionGetRoleIDNewCRM.txt">
+      <publishTime>03/07/2016 17:45:09</publishTime>
+    </File>
     <File Include="QueryFixed/QueryAdaptFunctionGetStateID.txt">
       <publishTime>02/16/2016 10:56:41</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryAdaptFunctionGetTime.txt">
+      <publishTime>03/18/2016 13:55:38</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryAdaptFunctionGetUserIDNewCRM.txt">
+      <publishTime>03/07/2016 16:59:40</publishTime>
     </File>
     <File Include="QueryFixed/QueryAdaptFunctionSupport.txt">
       <publishTime>02/02/2016 13:27:01</publishTime>
@@ -141,14 +153,26 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="QueryFixed/QueryAdaptViewPref1Pivot_Required.txt">
       <publishTime>02/26/2016 16:56:29</publishTime>
     </File>
+    <File Include="QueryFixed/QueryAdaptViewPref3Pivot_Default.txt">
+      <publishTime>03/16/2016 17:10:57</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryAdaptViewPref3Pivot_Required.txt">
+      <publishTime>03/18/2016 10:14:23</publishTime>
+    </File>
     <File Include="QueryFixed/QueryAdaptViewPref6Pivot_Default.txt">
       <publishTime>03/02/2016 17:39:47</publishTime>
     </File>
     <File Include="QueryFixed/QueryAdaptViewPref6Pivot_Required.txt">
       <publishTime>03/02/2016 16:21:11</publishTime>
     </File>
+    <File Include="QueryFixed/QueryAdaptViewServiceContractPrefPivot_Default.txt">
+      <publishTime>03/16/2016 15:53:55</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryAdaptViewServiceContractPrefPivot_Required.txt">
+      <publishTime>03/16/2016 15:35:35</publishTime>
+    </File>
     <File Include="QueryFixed/QueryAdapt_CreateIndexTable.txt">
-      <publishTime>03/04/2016 10:07:30</publishTime>
+      <publishTime>03/04/2016 13:45:40</publishTime>
     </File>
     <File Include="QueryFixed/QueryAdapt_DropIndexTable.txt">
       <publishTime>03/04/2016 10:07:01</publishTime>
@@ -169,7 +193,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/29/2016 09:43:14</publishTime>
     </File>
     <File Include="QueryFixed/QueryCRM_Update_Data_To_Custom_Field.txt">
-      <publishTime>03/03/2016 10:37:01</publishTime>
+      <publishTime>03/15/2016 16:02:28</publishTime>
     </File>
     <File Include="QueryFixed/QueryCRM_Update_fld_Multi_FieldValue_IsPrimary.txt">
       <publishTime>02/25/2016 15:45:30</publishTime>

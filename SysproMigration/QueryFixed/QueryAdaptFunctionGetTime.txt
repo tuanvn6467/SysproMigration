@@ -11,7 +11,7 @@ Begin
 			case when Len(@Time) > 0 
 				 then substring(@Time, 1, 2) + ':' + substring(@Time, 3, 2) + ':' + substring(@Time, 5, 2)
 				 else '' end
-	if(Len(@Text) > 0)
+	if(Len(@Text) > 0) and ISDATE(@Text) = '1'
 	begin
 		set @Result = convert(time,@Text)
 	end

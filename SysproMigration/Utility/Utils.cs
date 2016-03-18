@@ -342,11 +342,17 @@ namespace SysproMigration.Utility
         {
             using (SqlCommand command = new SqlCommand(query, con))
             {
-                if (timeOut > 0)
+                command.CommandTimeout = Int32.MaxValue;
+                try
                 {
-                    command.CommandTimeout = timeOut;
+                    command.ExecuteNonQuery();
                 }
-                command.ExecuteNonQuery();
+                catch (Exception ex)
+                {
+                    Logging.PushInfo("Error query:\n" + query);
+                    throw;
+                }
+                
             }
         }
         
