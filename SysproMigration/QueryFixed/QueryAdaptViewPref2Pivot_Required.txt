@@ -1,0 +1,64 @@
+create view [dbo].[Pref2_Pivot_Required] 
+  as 
+  select RequiredFieldName, RequiredTypeID, 
+case	
+		when (RequiredFieldName = 'AccountNumber') then 202 
+		when (RequiredFieldName = 'OpportunityTypeID') then 203 
+		when (RequiredFieldName = 'TerritoryID') then 204 
+		when (RequiredFieldName = 'PrimarySource') then 206
+		when (RequiredFieldName = 'WinCode') then 210 
+		when (RequiredFieldName = 'EstimatedCloseDate') then 211 
+		when (RequiredFieldName = 'ChancetoClose') then 212 
+		when (RequiredFieldName = 'StartDate') then 218 
+		when (RequiredFieldName = 'Line Item Number') then 222 
+		when (RequiredFieldName = 'LoseCode') then 234 
+		when (RequiredFieldName = 'AssignTo') then 278 
+		end RequiredFieldID,
+		
+case	
+		when (RequiredFieldName = 'AccountNumber') then 1 
+		when (RequiredFieldName = 'OpportunityTypeID') then 2 
+		when (RequiredFieldName = 'TerritoryID') then 5 
+		when (RequiredFieldName = 'PrimarySource') then 7
+		when (RequiredFieldName = 'WinCode') then 3 
+		when (RequiredFieldName = 'EstimatedCloseDate') then 9 
+		when (RequiredFieldName = 'ChancetoClose') then 10 
+		when (RequiredFieldName = 'StartDate') then 11 
+		when (RequiredFieldName = 'Line Item Number') then 8 
+		when (RequiredFieldName = 'LoseCode') then 4 
+		when (RequiredFieldName = 'AssignTo') then 6 
+		end SeqNo,
+
+	  ROW_NUMBER() OVER (ORDER BY (SELECT 100)) Rownumber
+	  from
+
+	  (select 
+	  [Account_Required] AccountNumber
+      ,[Opportunity_Type_Required] OpportunityTypeID
+      ,[Win_Loss_Code_Required] WinCode
+	  ,[Win_Loss_Code_Required] LoseCode
+      ,[Territory_Required] TerritoryID
+      ,[Salesperson_Required] AssignTo
+      ,[Source_Required] PrimarySource
+      ,[Items_Required] [Line Item Number]
+      ,[Close_By_Required] EstimatedCloseDate
+      ,[Chance_to_Close_Required] ChancetoClose
+	  ,[Start_Date_Required] StartDate
+	  from [adaptv3system].[dbo].[pref2]
+	  ) p 
+	  unpivot
+	  (
+		RequiredTypeID for 
+		RequiredFieldName in (AccountNumber
+							  ,OpportunityTypeID
+							  ,WinCode
+							  ,LoseCode
+							  ,TerritoryID
+							  ,AssignTo
+							  ,PrimarySource
+							  ,[Line Item Number]
+							  ,EstimatedCloseDate
+							  ,ChancetoClose
+							  ,StartDate
+							  )
+	  ) as RequiredFieldName  

@@ -14,6 +14,8 @@ namespace Migration
         public const string Pref6_Pivot_Default = "Pref6_Pivot_Default";
         public const string Pref3_Pivot_Required = "Pref3_Pivot_Required";
         public const string Pref3_Pivot_Default = "Pref3_Pivot_Default";
+        public const string Pref2_Pivot_Required = "Pref2_Pivot_Required";
+        public const string Pref2_Pivot_Default = "Pref2_Pivot_Default";
         public const string ServiceContractPref_Pivot_Required = "ServiceContractPref_Pivot_Required";
         public const string ServiceContractPref_Pivot_Default = "ServiceContractPref_Pivot_Default";
 

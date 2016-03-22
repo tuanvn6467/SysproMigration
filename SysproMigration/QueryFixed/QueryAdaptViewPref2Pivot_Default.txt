@@ -1,0 +1,38 @@
+create view [dbo].[Pref2_Pivot_Default] 
+  as 
+  select DefaultFieldName, DefaultValue,
+	  case	
+		when (DefaultFieldName = 'OpportunityTypeID') then 20 
+		when (DefaultFieldName = 'WinCode') then 23 
+		when (DefaultFieldName = 'EstimatedCloseDate') then 24 
+		when (DefaultFieldName = 'ChancetoClose') then 25
+		when (DefaultFieldName = 'LoseCode') then 72 end 
+		DefaultFieldID,
+	  case	
+		when (DefaultFieldName = 'OpportunityTypeID') then 1 
+		when (DefaultFieldName = 'WinCode') then 2 
+		when (DefaultFieldName = 'EstimatedCloseDate') then 4 
+		when (DefaultFieldName = 'ChancetoClose') then 5
+		when (DefaultFieldName = 'LoseCode') then 3 end
+		SeqNo,
+		ROW_NUMBER() OVER (ORDER BY (SELECT 100)) Rownumber
+	  from
+	  (select 
+	  --default field
+       CONVERT(varchar,[Default_Opportunity_Type]) OpportunityTypeID
+      ,CONVERT(varchar,[Default_Win_Code]) WinCode
+      ,CONVERT(varchar,[Default_Loss_Code]) LoseCode
+      ,CONVERT(varchar,[Default_Close_By_Offset]) ChancetoClose
+      ,CONVERT(varchar,[Default_Close_Chance]) EstimatedCloseDate
+	  from [adaptv3system].[dbo].[pref2]
+	  ) p 
+	  unpivot
+	  (
+		DefaultValue for 
+		DefaultFieldName in (OpportunityTypeID
+							  ,WinCode
+							  ,LoseCode
+							  ,ChancetoClose
+							  ,EstimatedCloseDate
+							  )
+	  ) as DefaultFieldName 

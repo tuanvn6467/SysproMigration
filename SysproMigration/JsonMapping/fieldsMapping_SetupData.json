@@ -2054,6 +2054,308 @@
             "DefaultValue": "DefaultValue",
             "SeqNo": "SeqNo"
         }
-    }
+    },
+    //migrate [adaptv3system].[dbo].[winloss] to opp_Win_Loss_Reason
+    {
+        "Id": 91,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[winloss] wl",
+            "OrderBy": "order by Win_Loss_Flag",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "opp_Win_Loss_Reason"
+        },
 
+        "Map": {
+            //"Win_Loss_Code": "WinLossReasonID",
+            "Win_Loss_Flag": "WinLossReasonTypeID",
+            "Description": "WinLossReasonName",
+            "wl.Notes": "Notes",
+            "wl.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "wl.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[comp] to opp_Competing_ProductService
+    {
+        "Id": 92,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[comp] comp",
+            "OrderBy": "order by comp.Competitor_ID",
+            "Join": "left join adaptv3system..comptarg comptarg on comptarg.Competitor_ID = comp.Competitor_ID",
+            "Join1": "left join adaptv3system..compp compp on compp.Competitor_ID = comp.Competitor_ID",
+            "Join2": "left join adaptv3system..compourp compourp on compourp.Competitor_ID = comp.Competitor_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "opp_Competing_ProductService"
+        },
+        "Map": {
+            "comp.Competitor_ID": "CompetitorID",
+            "Product_Service_Name": "CompetitorProductServiceName",
+            "Competitor_Company_ID": "CompetitorCompanyID",
+            "Competitiveness_Rating": "CompetitivenessRatingTypeID",
+            "Last_Competes_With_ID": "LastCompetingWithID",
+            "Last_Feature_ID": "LastCompetingFeatureID",
+            "Last_Strength_ID": "LastCompetingStrengthID",
+            "Last_Weakness_ID": "LastCompetingWeaknessID",
+            "comptarg.Target_Market": "TargetMarket",
+            "compp.Competitor_Sales_Pitch": "CompetitorSalesPitch",
+            "compourp.Our_Sales_Pitch": "OurSalesPitch",
+            "comp.Notes": "Notes",
+            "comp.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "comp.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[compco] to opp_Competing_Company
+    {
+        "Id": 93,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[compco] compco",
+            "OrderBy": "order by Company_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "opp_Competing_Company"
+        },
+        "Map": {
+            "Company_ID": "CompanyID",
+            "Company_Name": "CompanyName",
+            "[tempdb].[dbo].[ConvertPhoneFax](compco.Phone_Number,'') PhoneNumber": "PhoneNumber",
+            "[tempdb].[dbo].[ConvertPhoneFax](compco.Fax_Number,'') FaxNumber": "FaxNumber",
+            "compco.Web_Address": "WebAddress",
+            "compco.Email_Address": "EmailAddress",
+            "Stock_Symbol": "StockSymbol",
+            "Address_Line_1": "AddressLine1",
+            "Address_Line_2": "AddressLine2",
+            "Address_Line_3": "AddressLine3",
+            "compco.City": "City",
+            "convert(varchar,[tempdb].[dbo].[GetCountyID](compco.County)) County": "County",
+            "convert(varchar,[tempdb].[dbo].[GetStateID](compco.State_Province)) StateProvince": "StateProvince",
+            "compco.Postal_Code": "PostalCode",
+            "convert(varchar,(select top 1 Country_ID from [adaptv3system].[dbo].[country] where Country_Name = compco.Country)) Country": "Country",
+            "compco.Notes": "Notes",
+            "compco.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "compco.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[compf] to opp_Competing_Feature
+    {
+        "Id": 94,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[compf] compf",
+            "OrderBy": "order by Feature_ID"
+        },
+        "Destination": {
+            "Tables": "opp_Competing_Feature"
+        },
+        "Map": {
+            "Feature_ID": "CompetingFeatureID",
+            "Competitor_ID": "CompetitorID",
+            "Feature_Name": "CompetingFeatureName",
+            "compf.Notes": "Notes"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[compwith] to opp_Competing_With
+    {
+        "Id": 95,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[compwith] compwith",
+            "OrderBy": "order by Competitor_ID"
+        },
+        "Destination": {
+            "Tables": "opp_Competing_With"
+        },
+        "Map": {
+            "Record_ID": "CompetingWithID",
+            "Competitor_ID": "CompetitorID",
+            "Item_Number": "ItemNumber",
+            "compwith.Notes": "Notes"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[comps] to opp_Competing_Strength
+    {
+        "Id": 96,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[comps] comps",
+            "OrderBy": "order by Competitor_ID"
+        },
+        "Destination": {
+            "Tables": "opp_Competing_Strength"
+        },
+        "Map": {
+            "Competitor_ID": "CompetitorID",
+            "Strength_ID": "CompetingStrengthID",
+            "Strength_Name": "CompetingStrengthName",
+            "comps.Notes": "Notes"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[compw] to opp_Competing_Weakness
+    {
+        "Id": 97,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[compw] compw",
+            "OrderBy": "order by Competitor_ID"
+        },
+        "Destination": {
+            "Tables": "opp_Competing_Weakness"
+        },
+        "Map": {
+            "Competitor_ID": "CompetitorID",
+            "Weakness_ID": "CompetingWeaknessID",
+            "Weakness_Name": "CompetingWeaknessName",
+            "compw.Notes": "Notes"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[issue] to opp_Issue
+    {
+        "Id": 98,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[issue] issue",
+            "OrderBy": "order by Issue_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "opp_Issue"
+        },
+        "Map": {
+            "Issue_ID": "IssueID",
+            "Issue_Name": "IssueName",
+            "issue.Notes": "Notes",
+            "issue.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "issue.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[currency_exchange_rates] to opp_Currency_Exchange_Rates
+    {
+        "Id": 99,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[currency_exchange_rates] cer",
+            "OrderBy": "order by From_Currency",
+        },
+        "Destination": {
+            "Tables": "opp_Currency_Exchange_Rates"
+        },
+        "Map": {
+            "From_Currency": "FromCurrency",
+            "To_Currency": "ToCurrency",
+            "Exchange_Rate_Syspro_FD": "ExchangeRate",
+            "[tempdb].[dbo].[GetDateTime](GMT_Date,GMT_Time) ImportedDate": "ImportedDate"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[oppassoctyp] to opp_Association_Type
+    {
+        "Id": 100,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[oppassoctyp] oppassoctyp",
+            "OrderBy": "order by Association_Type_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "opp_Association_Type"
+        },
+        "Map": {
+            "Association_Type_ID": "AssociationTypeID",
+            "Association_Type_Name": "AssociationTypeName",
+            "oppassoctyp.Notes": "Notes",
+            "oppassoctyp.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "oppassoctyp.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[optybrck] to opp_Closing_Chance_Bracket
+    {
+        "Id": 101,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[optybrck] optybrck",
+            "OrderBy": "order by Bracket_ID"
+        },
+        "Destination": {
+            "Tables": "opp_Closing_Chance_Bracket"
+        },
+        "Map": {
+            "Bracket_ID": "ClosingChanceBracketID",
+            "Starting_Percent": "StartingPercent"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref2] to opp_Opportunity_Preferences
+    {
+        "Id": 102,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[pref2] p",
+            "OrderBy": "order by One"
+        },
+        "Destination": {
+            "Tables": "opp_Opportunity_Preferences"
+        },
+        "Map": {
+            "One": "OpportunityPreferID",
+            "Assign_to_Account_Manager_Syspro_TF": "IsAssignToAccountManager",
+            "Assign_to_Creator_Syspro_TF": "IsAssignToCreator",
+            "Assign_By_Territory_Syspro_TF": "IsAssignByTerritory",
+            "Enable_Escalations_Syspro_TF": "IsEnableEscalation",
+            "Enable_Notifications_Syspro_TF": "IsEnableNotification",
+            "Duplicate_Order_Syspro_TF": "IsDuplicateOrder",
+            "Do_Not_Auto_Skip_Milestones_Syspro_TF": "IsDo_NotAutoSkipMilestone",
+            "Allow_Print_Preview_Syspro_TF": "IsAllowPrintPreview",
+            "Allow_Printer_Select_Syspro_TF": "IsAllowPrinterSelect",
+            "Allow_Change_Close_Date_Syspro_TF": "IsAllowChangeCloseDate",
+            "(SELECT convert(varchar,[Property_Value]) FROM [adaptv3system].[dbo].[user_interface_prefs] where Property_Key='COMPLNK1') ViewLink1": "ViewLink1",
+            "(SELECT convert(varchar,[Property_Value]) FROM [adaptv3system].[dbo].[user_interface_prefs] where Property_Key='COMPLNK2') ViewLink2": "ViewLink2",
+            "(SELECT convert(varchar,[Property_Value]) FROM [adaptv3system].[dbo].[user_interface_prefs] where Property_Key='COMPLNK3') ViewLink3": "ViewLink3",
+            "(SELECT convert(varchar,[Property_Value]) FROM [adaptv3system].[dbo].[user_interface_prefs] where Property_Key='COMPSTOK') StockWebLink": "StockWebLink"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref2] to utl_Module_PreferRequired_Field
+    {
+        "Id": 103,
+        "Source": {
+            "Tables": "[tempdb].[dbo].[Pref2_Pivot_Required] pp",
+            "OrderBy": "order by Rownumber"
+        },
+        "Destination": {
+            "Tables": "utl_Module_PreferRequired_Field"
+        },
+
+        "Map": {
+            "2 ModuleID": "ModuleID",
+            "RequiredFieldID": "RequiredFieldID",
+            "0 RequiredModeTypeID": "RequiredModeTypeID",
+            "1 ModulePreferenceID": "ModulePreferenceID",
+            "RequiredFieldName": "RequiredFieldName",
+            "RequiredTypeID": "RequiredTypeID",
+            "0 IsReadOnly": "IsReadOnly",
+            "SeqNo": "SeqNo",
+            "1 ColNo": "ColNo"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[pref2] to utl_Module_PreferDefault_Field
+    {
+        "Id": 104,
+        "Source": {
+            "Tables": "[tempdb].[dbo].[Pref2_Pivot_Default] pp",
+            "OrderBy": "order by Rownumber"
+        },
+        "Destination": {
+            "Tables": "utl_Module_PreferDefault_Field"
+        },
+
+        "Map": {
+            "2 ModuleID": "ModuleID",
+            "DefaultFieldID": "DefaultFieldID",
+            "1 ModulePreferenceID": "ModulePreferenceID",
+            "DefaultFieldName": "DefaultFieldName",
+            "DefaultValue": "DefaultValue",
+            "SeqNo": "SeqNo"
+        }
+    }
 ]

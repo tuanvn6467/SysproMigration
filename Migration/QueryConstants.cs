@@ -54,6 +54,10 @@ namespace Migration
 
         public static string QueryAdaptViewServiceContractPrefPivot_Default = "QueryAdaptViewServiceContractPrefPivot_Default.txt";
 
+        public static string QueryAdaptViewPref2Pivot_Required = "QueryAdaptViewPref2Pivot_Required.txt";
+
+        public static string QueryAdaptViewPref2Pivot_Default = "QueryAdaptViewPref2Pivot_Default.txt";
+
         public static string QueryCRM_CreateUniqueIndex = "QueryCRM_CreateUniqueIndex.txt";
 
         public static string QueryCRM_DropUniqueIndex = "QueryCRM_DropUniqueIndex.txt";
