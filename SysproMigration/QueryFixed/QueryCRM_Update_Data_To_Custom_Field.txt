@@ -98,7 +98,7 @@ declare	@UpdateFields		varchar(max)  = ''
 		where (ff.FieldTypeID		<> 12
 			or ff.NumberOfValues	<> 2)
 			and RecID = @RecID
-
+			and fv.FieldID <> 201
 			--1.2 Update data to table
 			set	@Sql					= 
 			' update	dbo.' + @TableName + 

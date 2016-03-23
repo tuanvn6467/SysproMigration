@@ -13,7 +13,7 @@ Begin
 				 else '' end
 	if(Len(@Text) > 0 and ISDATE(@Text) = 1)
 	begin
-		set @Result = convert(datetime,@Text)
+		set @Result = convert(date,@Text)
 	end
 	else
 	begin

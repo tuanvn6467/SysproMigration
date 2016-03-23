@@ -828,5 +828,367 @@
             "Contract_Number_Syspro_FBI": "ContractNumber",
             "Authorized_Contact_Number_Syspro_FBI": "ContactNumber"
         }
+    },
+    //migrate [dbo].[oppty] to [dbo].[opp_Opportunity]
+    {
+        "Id": 1019,
+        "Source": {
+            "Tables": "[dbo].[oppty] opp",
+            "OrderBy": "order by opp.Opportunity_Number",
+            "Join": "left join (select *,ROW_NUMBER() over(order by [Currency_Code]) CurrencyID from [adaptv3system].[dbo].[currency_codes]) curc on curc.Currency_Code = opp.Currency_Code",
+            "JoinUser": "Salesperson_ID,Posted_By,Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "opp_Opportunity"
+        },
+        "Map": {
+            "opp.Opportunity_Number_Syspro_FD": "OpportunityNumber",
+            "opp.Account_Number_Syspro_FD": "AccountNumber",
+            "opp.Contact_Number_Syspro_FD": "ContactNumber",
+            //[Related_Account_Number]
+            //[Related_Contact_Number]
+            "Opportunity_Name": "Subject",
+            "Opportunity_Type": "OpportunityTypeID",
+            "Status": "StatusID",
+            //Open_Flag
+            "Posted_Syspro_TF": "Posted",
+            "[tempdb].[dbo].[GetDateTime](opp.Posted_Date,opp.Posted_Time) PostedDate": "PostedDate",
+            "ms_postedby.NewValTable PostedBy": "PostedBy",
+            "Order_Number": "OrderNumber",
+            "(case when Status = 2 then Win_Loss_Code else 0 end) WinReason": "WinReason",
+            "(case when Status = 3 then Win_Loss_Code else 0 end) LossReason": "LossReason",
+            "[tempdb].[dbo].[GetDateTime](opp.Start_Date,'000000') StartDate": "StartDate",
+            "[tempdb].[dbo].[GetDateTime](opp.Estimated_Close_Date,'000000') EstimatedCloseDate": "EstimatedCloseDate",
+            "[tempdb].[dbo].[GetDateTime](opp.Actual_Close_Date,'000000') ActualCloseDate": "ActualCloseDate",
+            //[Hold_Flag]
+            "Territory_ID": "TerritoryID",
+            "ms_salespersonid.NewValTable Salesperson": "Salesperson",
+            //Assigned_Date
+            "Primary_Source": "PrimarySource",
+            "Secondary_Source": "SecondarySource",
+            "Marketing_Campaign_Syspro_FBI": "MarketingCampaign",
+            "Marketing_Event_Syspro_FBI": "MarketingEvent",
+            "Total_Value_Syspro_FD": "TotalValue",
+            //Last_Line_Item
+            "convert(float,Chance_to_Close) ChancetoClose": "ChancetoClose",
+            "Last_Milestone": "LastMilestone",
+            "[tempdb].[dbo].[GetDateTime](opp.Last_Milestone_Date,'000000') LastMilestoneDate": "LastMilestoneDate",
+            "Next_Milestone": "NextMilestone",
+            //"Last_Contact_Record_ID"
+            "Payment_Terms_ID": "PaymentTerms",
+            "Shipping_Method_ID": "ShippingMethod",
+            "FOB_ID": "FOB",
+            "curc.CurrencyID": "Currency",
+            "Tax_Schedule_ID": "TaxSchedule",
+            "Tax_Rate": "TaxRate",
+            "Total_Tax_Syspro_FD": "TotalTax",
+            //"Shipping_Amount"
+            //"Total_Discount"
+            "Purchase_Order_Number": "PurchaseOrderNumber",
+            "Purchase_Order_Amount_Syspro_FD": "PurchaseOrderAmount",
+            "[tempdb].[dbo].[GetDateTime](opp.Purchase_Order_Date,'000000') PurchaseOrderDate": "PurchaseOrderDate",
+            //Number_of_Web_Messages
+            //Read_Web_Messages
+            "Bill_To_Attention": "BillToAttention",
+            "Bill_To_Address_Line_1": "BillToAddressLine1",
+            "Bill_To_Address_Line_2": "BillToAddressLine2",
+            "Bill_To_Address_Line_3": "BillToAddressLine3",
+            "Bill_To_City": "BillToCity",
+            "Bill_To_County": "BillToCounty",
+            "Bill_To_State": "BillToState",
+            "Bill_To_Postal_Code": "BillToPostalCode",
+            "Bill_To_Country": "BillToCountry",
+            "Ship_To_Attention": "ShipToAttention",
+            "Ship_To_Address_Line_1": "ShipToAddressLine1",
+            "Ship_To_Address_Line_2": "ShipToAddressLine2",
+            "Ship_To_Address_Line_3": "ShipToAddressLine3",
+            "Ship_To_City": "ShipToCity",
+            "Ship_To_County": "ShipToCounty",
+            "Ship_To_State": "ShipToState",
+            "Ship_To_Postal_Code": "ShipToPostalCode",
+            "Ship_To_Country": "ShipToCountry",
+            "Service_Ticket_Number_Syspro_FBI": "ServiceTicketNumber",
+            "Service_Contract_Number_Syspro_FBI": "ContractNumber",
+            //Last_ERP_Quotation_Number
+            //Last_CRM_Quotation_Number
+            //Total_Mileage
+            "opp.Notes": "OpportunityNotes",
+            "opp.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedBy": "CreatedBy",
+            "opp.Modified_Date": "ModifiedDate",
+            "ms_modifiedby.NewValTable ModifiedBy ": "ModifiedBy"
+        }
+    },
+    /*migrate tab in record*/
+    //MODULE ACCOUNT AND CONTACT
+    //migrate [dbo].[relacct] to acc_Relationship_Account
+    {
+        "Id": 1020,
+        "Source": {
+            "Tables": "[dbo].[relacct] r",
+            "OrderBy": "order by Relationship_Record_ID",
+            "JoinUser": "Reported_By"
+        },
+        "Destination": {
+            "Tables": "acc_Relationship_Account"
+        },
+        "Map": {
+            "Relationship_Record_ID_Syspro_FBI": "RelationshipRecordID",
+            "Primary_Account_Syspro_FBI": "PrimaryAccountNumber",
+            "Primary_Contact_Syspro_FBI": "PrimaryContactNumber",
+            "Related_Account_Syspro_FBI": "RelatedAccountNumber",
+            "Related_Contact_Syspro_FBI": "RelatedContactNumber",
+            "Relationship_Name_ID": "RelationshipChoiceID",
+            "[tempdb].[dbo].[GetDateTime](Date_Reported,Time_Reported) RelationshipDiscoveredDate": "RelationshipDiscoveredDate",
+            "Direction": "DirectionID",
+            "r.Notes": "Notes",
+            "Reverse_Record_ID": "ReverseRecordID",
+            "ms_reportedby.NewValTable CreatedUserID": "CreatedUserID",
+            "ms_reportedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //MODULE SERVICE TICKET
+    //migrate [dbo].[ticket_labor] to set_Ticket_Labor
+    {
+        "Id": 1021,
+        "Source": {
+            "Tables": "[dbo].[ticket_labor] tl",
+            "OrderBy": "order by Service_Ticket_Number",
+            "JoinUser": "Performed_By"
+        },
+        "Destination": {
+            "Tables": "set_Ticket_Labor"
+        },
+        "Map": {
+            "Service_Ticket_Number_Syspro_FBI": "ServiceTicketNumber",
+            //Record_ID
+            "[tempdb].[dbo].[GetDateTime](Work_Date,'000000') WorkDate": "WorkDate",
+            "[tempdb].[dbo].[GetTime](Start_Time) StartTime": "StartTime",
+            "[tempdb].[dbo].[GetTime](End_Time) EndTime": "EndTime",
+            "Job_Type_ID": "JobTypeID",
+            "ms_performedby.NewValTable PerformedUserID": "PerformedUserID",
+            //Description_of_Work
+            "Time_Units": "TimeUnitTypeID",
+            "Standard_Time_Unit_Fee_Syspro_FD": "StandardTimeUnitFee",
+            "Overtime_Unit_Fee_Syspro_FD": "OvertimeUnitFee",
+            "Other_Time_Unit_Fee_Syspro_FD": "OtherTimeUnitFee",
+            "Standard_Unit_Cost_Syspro_FD": "StandardUnitCost",
+            "Overtime_Unit_Cost_Syspro_FD": "OvertimeUnitCost",
+            "Other_Time_Unit_Cost_Syspro_FD": "OtherTimeUnitCost",
+            "Standard_Time_Duration_Syspro_FD": "StandardTimeDuration",
+            "Overtime_Duration_Syspro_FD": "OvertimeDuration",
+            "Other_Time_Duration_Syspro_FD": "OtherTimeDuration",
+            "Non_Billed_Time_Duration_Syspro_FD": "NonBilledTimeDuration",
+            "Taxable_Syspro_TF": "IsTaxable",
+            "Tax_Schedule": "TaxScheduleID",
+            "tl.Notes": "Notes"
+        }
+    },
+    //migrate [dbo].[ticket_parts] to set_Ticket_Part
+    {
+        "Id": 1022,
+        "Source": {
+            "Tables": "[dbo].[ticket_parts] tp",
+            "OrderBy": "order by tp.Ticket_Number",
+            "Join": "left join [dbo].ticket_parts_extra tpe on tpe.Ticket_Number = tp.Ticket_Number"
+        },
+        "Destination": {
+            "Tables": "set_Ticket_Part"
+        },
+        "Map": {
+            "tp.Ticket_Number_Syspro_FBI": "ServiceTicketNumber",
+            //Record_ID
+            "Part_Type": "PartTypeID",
+            "Item_Number": "ItemNumber",
+            "Item_Description": "ItemDescription",
+            "Serial_Number": "SerialNumber",
+            "Lot_Number": "LotNumber",
+            "Quantity_Syspro_FD": "Quantity",
+            "Effect_On_Components": "EffectComponentTypeID",
+            "Replaced_Component_ID_Syspro_FD": "ReplacedComponentID",
+            "Replacement_Component_ID_Syspro_FD": "ReplacementComponentID",
+            "Unit_Cost_Syspro_FD": "UnitCost",
+            "Unit_Price_Syspro_FD": "UnitPrice",
+            "Discount_Syspro_FD": "Discount",
+            "Discount_Method": "DiscountMethodTypeID",
+            "Taxable_Syspro_TF": "IsTaxable",
+            "Tax_Schedule_ID": "TaxScheduleID",
+            "Tax_Rate_Syspro_FD": "TaxRate",
+            "Warehouse": "Warehouse",
+            "tp.Notes": "Notes",
+            "tpe.Part_Status": "TicketPartStatusID",
+            "tpe.Inventory_Location": "InventoryLocationID"
+        }
+    },
+    //migrate expense tab in service ticket
+    //migrate [dbo].[expenses] to utl_Expense
+    {
+        "Id": 1023,
+        "Source": {
+            "Tables": "[dbo].[expenses] e",
+            "OrderBy": "order by Parent_Record_Type",
+            "JoinUser": "Reported_By"
+        },
+        "Destination": {
+            "Tables": "utl_Expense"
+        },
+        "Map": {
+            "Parent_Record_Type": "ModuleID",
+            "Parent_Record_Number_Syspro_FD": "ModuleRecID",
+            //Expense_Record_ID
+            "[tempdb].[dbo].[GetDateTime](Expense_Date,'000000') ExpenseDate": "ExpenseDate",
+            "[tempdb].[dbo].[GetTime](Expense_Time) ExpenseTime": "ExpenseTime",
+            "ms_reportedby.NewValTable ReportedUserID": "ReportedUserID",
+            "Expense_Category": "ExpenseCategoryID",
+            "Description": "Description",
+            "Cost_Per_Mile_Syspro_FD": "CostPerMile",
+            "Starting_Mileage": "StartingMileage",
+            "Ending_Mileage": "EndingMileage",
+            "Amount_Syspro_FD": "Amount",
+            "Billable_Syspro_TF": "IsBillable",
+            "Billable_Amount_Syspro_FD": "BillableAmount",
+            "Taxable_Syspro_TF": "IsTaxable",
+            "Tax_Schedule": "TaxScheduleID",
+            "e.Notes": "Notes"
+        }
+    },
+    //migrate [dbo].[oppcon] to opp_Opportunity_Contact
+    {
+        "Id": 1024,
+        "Source": {
+            "Tables": "[dbo].[oppcon] oppcon",
+            "OrderBy": "order by Opportunity_ID",
+            "Join": "left join (select ROW_NUMBER() over (order by Job_Title) JobTitleID ,*  from [adaptv3system].[dbo].jobtitle) as jt on jt.Job_Title = oppcon.Job_Title",
+            "Join1": "left join (select ROW_NUMBER() over (order by Department_Name) DepartmentID,*  from [adaptv3system].[dbo].dept) as dept on dept.Department_Name = oppcon.Department",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "opp_Opportunity_Contact"
+        },
+        "Map": {
+            "Opportunity_ID_Syspro_FBI": "OpportunityNumber",
+            //Record_ID
+            "Contact_Number_Syspro_FBI": "ContactNumber",
+            "jt.JobTitleID": "JobTitleID",
+            "dept.DepartmentID": "DepartmentID",
+            "Decision_Role": "DecisionAuthorityID",
+            "[tempdb].[dbo].[ConvertPhoneFax](oppcon.Phone,'') Phone": "Phone",
+            "oppcon.Phone_Extension": "PhoneExtension",
+            "[tempdb].[dbo].[ConvertPhoneFax](oppcon.Fax,'') Fax": "Fax",
+            "oppcon.Fax_Extension": "FaxExtension",
+            "Email": "Email",
+            "oppcon.Notes": "Notes",
+            "oppcon.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "oppcon.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [dbo].[oppcmp] to opp_Opportunity_Competitor
+    {
+        "Id": 1025,
+        "Source": {
+            "Tables": "[dbo].[oppcmp] oppcmp",
+            "OrderBy": "order by Record_Number",
+            "JoinUser": "Reported_By,Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "opp_Opportunity_Competitor"
+        },
+        "Map": {
+            "convert(int,Record_Number) OppCompetitorID": "OppCompetitorID",
+            "Opportunity_Number_Syspro_FBI": "OpportunityNumber",
+            "Competitor_ID": "CompetitorID",
+            "Competitor_Name": "OppCompetitorName",
+            "[tempdb].[dbo].[GetDate](Date_Reported) DateReported": "DateReported",
+            "ms_reportedby.NewValTable ReportedUserID": "ReportedUserID",
+            "Our_Competitive_Strength": "OurCompetitiveStrengthTypeID",
+            "Importance_to_Customer": "ImportanceToCustomerTypeID",
+            "Last_Strength_ID": "LastCompetingStrengthID",
+            "Last_Weakness_ID": "LastCompetingWeaknessID",
+            "oppcmp.Notes": "Notes",
+            "oppcmp.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "oppcmp.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable ModifiedBy ": "UpdatedUserID"
+        }
+    },
+    //migrate [dbo].[oppcmpw] to opp_Opportunity_Competitor_Weakness
+    {
+        "Id": 1026,
+        "Source": {
+            "Tables": "[dbo].[oppcmpw] oppcmpw",
+            "OrderBy": "order by Opportunity_Competitor_ID"
+        },
+        "Destination": {
+            "Tables": "opp_Opportunity_Competitor_Weakness"
+        },
+        "Map": {
+            "convert(int,Opportunity_Competitor_ID) OpportunityCompetitorID": "OpportunityCompetitorID",
+            //"Weakness_ID"
+            "Weakness_Name": "OppCompetitorWeaknessName",
+            "oppcmpw.Notes": "Notes"
+        }
+    },
+    //migrate [dbo].[oppcmps] to opp_Opportunity_Competitor_Strength
+    {
+        "Id": 1027,
+        "Source": {
+            "Tables": "[dbo].[oppcmps] oppcmps",
+            "OrderBy": "order by Opportunity_Competitor_ID"
+        },
+        "Destination": {
+            "Tables": "opp_Opportunity_Competitor_Strength"
+        },
+        "Map": {
+            "convert(int,Opportunity_Competitor_ID) OpportunityCompetitorID": "OpportunityCompetitorID",
+            //"Strength_ID"
+            "Strength_Name": "OppCompetitorStrengthName",
+            "oppcmps.Notes": "Notes"
+        }
+    },
+    //migrate [dbo].[oppiss] to opp_Opportunity_Issue
+    {
+        "Id": 1028,
+        "Source": {
+            "Tables": "[dbo].[oppiss] oppiss",
+            "OrderBy": "order by Record_Number",
+            "JoinUser": "Reported_By"
+        },
+        "Destination": {
+            "Tables": "opp_Opportunity_Issue"
+        },
+        "Map": {
+            "convert(int,Record_Number) OppIssueID": "OppIssueID",
+            "Opportunity_Number_Syspro_FBI": "OpportunityNumber",
+            "Issue_Type": "IssueTypeID",
+            "Issue_Name": "IssueName",
+            "[tempdb].[dbo].[GetDate](Date_Reported) DateReported": "DateReported",
+            "ms_reportedby.NewValTable ReportedUserID": "ReportedUserID",
+            "Importance": "ImportanceToCustomerTypeID",
+            "Competitive_Strength": "CompetitiveStrengthTypeID",
+            "RTRIM(LTRIM(convert(varchar(max),isnull(Explanation,'')))) Explanation": "Explanation"
+        }
+    },
+    //migrate [dbo].[oppassoc] to opp_Opportunity_Associated_Account
+    {
+        "Id": 1029,
+        "Source": {
+            "Tables": "[dbo].[oppassoc] oppassoc",
+            "OrderBy": "order by Associated_Record_ID"
+        },
+        "Destination": {
+            "Tables": "opp_Opportunity_Associated_Account"
+        },
+        "Map": {
+            "Associated_Record_ID": "OppAssociatedID",
+            "Opportunity_Number": "OpportunityNumber",
+            "Associated_Account_Number": "AssociatedAccountNumber",
+            "Associated_Contact_Number": "AssociatedContactNumber",
+            "Association_Type": "AssociationTypeID",
+            "[tempdb].[dbo].[GetDateTime](Date_Discovered,'000000') DiscoveredDate": "DiscoveredDate",
+            "[tempdb].[dbo].[GetTime](Time_Discovered) DiscoveredTime": "DiscoveredTime",
+            "oppassoc.Notes": "Notes"
+        }
     }
 ]
