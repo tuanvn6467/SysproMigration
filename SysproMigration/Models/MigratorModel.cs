@@ -164,6 +164,7 @@ namespace SysproMigration.Models
 
         public string MigrationConnectionString { get; set; }
 
+        public bool isMigrateCustomData { get; set; }
         public MigratorModel()
         {
             Init();
@@ -216,15 +217,19 @@ namespace SysproMigration.Models
                 _fieldsMapsRecordData = JsonConvert.DeserializeObject<List<FieldsMap>>(mapString) ??
                                     new List<FieldsMap>();
             }
+
             //read db fields map update lastest data
-            using (
-                var sr =
-                    new StreamReader(Path.Combine(HostingEnvironment.ApplicationPhysicalPath,
-                        ConfigurationManager.AppSettings[Constants.FieldsMapping_UpdateLastest])))
+            if (isMigrateCustomData)
             {
-                var mapString = sr.ReadToEnd();
-                _fieldsMapsUpdateLastest = JsonConvert.DeserializeObject<List<FieldsMap>>(mapString) ??
-                                    new List<FieldsMap>();
+                using (
+                    var sr =
+                        new StreamReader(Path.Combine(HostingEnvironment.ApplicationPhysicalPath,
+                            ConfigurationManager.AppSettings[Constants.FieldsMapping_UpdateLastest])))
+                {
+                    var mapString = sr.ReadToEnd();
+                    _fieldsMapsUpdateLastest = JsonConvert.DeserializeObject<List<FieldsMap>>(mapString) ??
+                                        new List<FieldsMap>();
+                }
             }
         }
 
@@ -251,17 +256,18 @@ namespace SysproMigration.Models
                 }
 
                 // Disable all triggers
-                using (var conn = new SqlConnection(_destinationConnectionString))
+                /*using (var conn = new SqlConnection(_destinationConnectionString))
                 {
                     Logging.PushInfo("Start Disable all triggers");
                     conn.Open();
                     const string disableTriggerSql = "sp_MSforeachtable 'alter table ? disable trigger all'";
                     Logging.PushInfo("Command : " + disableTriggerSql);
                     var disableTriggerCmd = new SqlCommand(disableTriggerSql, conn);
+                    disableTriggerCmd.CommandTimeout = Int32.MaxValue;
                     disableTriggerCmd.ExecuteNonQuery();
 
                     Logging.PushInfo("End Disable all triggers");
-                }
+                }*/
 
                 //open connections
                 var sourceConn = new SqlConnection(_soureConnectionString);

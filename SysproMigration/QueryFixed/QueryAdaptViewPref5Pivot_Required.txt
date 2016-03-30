@@ -1,0 +1,32 @@
+create view [dbo].[Pref5_Pivot_Required] 
+  as 
+  select RequiredFieldName, RequiredTypeID, 
+case	
+		when (RequiredFieldName = 'Campaign Name') then 500 
+		when (RequiredFieldName = 'Campaign Type') then 501 
+		when (RequiredFieldName = 'Campaign Manager') then 505 
+		end RequiredFieldID,
+		
+case	
+		when (RequiredFieldName = 'Campaign Name') then 1 
+		when (RequiredFieldName = 'Campaign Type') then 2 
+		when (RequiredFieldName = 'Campaign Manager') then 3
+		end SeqNo,
+
+	  ROW_NUMBER() OVER (ORDER BY (SELECT 100)) Rownumber
+	  from
+
+	  (select 
+	   Campaign_Type_Required [Campaign Type]
+      ,Campaign_Manager_Required [Campaign Manager]
+	  ,convert(smallint,1) [Campaign Name]
+	  from [adaptv3system].[dbo].[pref5]
+	  ) p 
+	  unpivot
+	  (
+		RequiredTypeID for 
+		RequiredFieldName in ([Campaign Type]
+							  ,[Campaign Manager]
+							  ,[Campaign Name]
+							  )
+	  ) as RequiredFieldName  

@@ -296,6 +296,14 @@ namespace SysproMigration.Utility
             CheckViewExist(con, ViewConstants.Pref2_Pivot_Default);
             var queryViewPref2Pivot_Default = QueryConstants.QueryAdaptViewPref2Pivot_Default.GetTextInQueryFixedFolder();
             Execute(con, queryViewPref2Pivot_Default);
+            //view pivot pref5 required table
+            CheckViewExist(con, ViewConstants.Pref5_Pivot_Required);
+            var queryViewPref5Pivot_Required = QueryConstants.QueryAdaptViewPref5Pivot_Required.GetTextInQueryFixedFolder();
+            Execute(con, queryViewPref5Pivot_Required);
+            //view pivot pref5 default table
+            CheckViewExist(con, ViewConstants.Pref5_Pivot_Default);
+            var queryViewPref5Pivot_Default = QueryConstants.QueryAdaptViewPref5Pivot_Default.GetTextInQueryFixedFolder();
+            Execute(con, queryViewPref5Pivot_Default);
             //function compare module
             CheckFunctionExist(con, FunctionConstants.CompareModuleID);
             var queryFunctionCompareModuleID = QueryConstants.QueryAdaptFunctionCompareModuleID.GetTextInQueryFixedFolder();

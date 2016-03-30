@@ -35,6 +35,7 @@
 
             txtDestinationUserLogin: '#DestinationUserLogin',
             txtDestinationUserPassword: '#DestinationUserPassword',
+            IsMigrateCustomData: "#IsMigrateCustomData"
         },
         totalTableMigrateCount: 0,
         tableMigratedCount: 0,
@@ -164,6 +165,7 @@
                         userPassword: $(ui.txtDestinationUserPassword).val(),
                         tennantID: $(ui.dbDestinationCompany + ' option:selected').attr("tennantID"),
                         databaseID: $(ui.dbDestinationCompany + ' option:selected').val(),
+                        isMigrateCustomData:$(ui.IsMigrateCustomData).is(":checked"),
                         convertAgain: isConvertAgain
                     },
                     beforeSend: function() {

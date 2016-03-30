@@ -54,6 +54,10 @@ namespace Migration
             {
                 var fieldName = result.Replace("_Syspro_FBI", "");
                 result = string.Format("convert(bigint,{0}) {1}", fieldName,fieldName.Replace(".", ""));
+            }else if (result.Contains("_Syspro_FI")) //convert float to int
+            {
+                var fieldName = result.Replace("_Syspro_FI", "");
+                result = string.Format("convert(int,{0}) {1}", fieldName,fieldName.Replace(".", ""));
             }
             else if (result.Contains(".Notes") && !result.Contains(".Notes)") && !result.Contains(".Notes,"))
             {
@@ -101,11 +105,17 @@ namespace Migration
                 var lstFieldUser = Source.JoinUser.Split(',').ToList();
                 foreach (var fieldUser in lstFieldUser)
                 {
-                    res += string.Format("\nleft join [adaptv3system].[dbo].[users] {0} on {0}.User_ID = {1}.{2}", 
+                    /*res += string.Format("\nleft join [adaptv3system].[dbo].[users] {0} on {0}.User_ID = {1}.{2}", 
                         ParseData.GetAcronymString(fieldUser), acronymTable, fieldUser);
                     res +=
                         string.Format(
                             "\nleft join  [tempdb].[dbo].[MigrateSupport] ms_{0} on ms_{0}.TargetServer='.' and ms_{0}.OldValTable = {0}.Email_Address",
+                            ParseData.GetAcronymString(fieldUser));*/
+                    res += string.Format("\nouter apply (select top 1 * from [adaptv3system].[dbo].[users] {0} where {0}.User_ID = {1}.{2}) as {0}", 
+                        ParseData.GetAcronymString(fieldUser), acronymTable, fieldUser);
+                    res +=
+                        string.Format(
+                            "\nouter apply (select top 1 * from [tempdb].[dbo].[MigrateSupport] ms_{0} where ms_{0}.TargetServer='.' and ms_{0}.OldValTable = {0}.Email_Address) ms_{0}",
                             ParseData.GetAcronymString(fieldUser));
                 }
             }

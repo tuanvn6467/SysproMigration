@@ -4,7 +4,12 @@ if(exists (SELECT *
 	begin
 		drop index sec_User_Index_Ignore_Dup_Key on [st_Security].[dbo].[sec_User]
 	end
-
+if(exists (SELECT * 
+			FROM st_Security.sys.indexes 
+			WHERE name='sec_User_Pref_Index_Ignore_Dup_Key' AND object_id = OBJECT_ID('[{0}].[dbo].[sec_User_Preference]')))
+	begin
+		drop index sec_User_Pref_Index_Ignore_Dup_Key on [{0}].[dbo].[sec_User_Preference]
+	end
 if(exists (SELECT * 
 			FROM crm_System.sys.indexes 
 			WHERE name='utl_Database_User_Xref_Index_Ignore_Dup_Key' AND object_id = OBJECT_ID('[crm_System].[dbo].[utl_Database_User_Xref]')))

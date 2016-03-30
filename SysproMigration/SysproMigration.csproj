@@ -144,7 +144,9 @@
     <Content Include="QueryFixed\QueryAdaptFunctionGetRoleIDNewCRM.txt" />
     <Content Include="QueryFixed\QueryAdaptFunctionGetGroupIDNewCRM.txt" />
     <Content Include="QueryFixed\QueryAdaptFunctionGetUserIDNewCRM.txt" />
+    <Content Include="QueryFixed\QueryAdaptViewPref5Pivot_Default.txt" />
     <Content Include="QueryFixed\QueryAdaptViewPref2Pivot_Default.txt" />
+    <Content Include="QueryFixed\QueryAdaptViewPref5Pivot_Required.txt" />
     <Content Include="QueryFixed\QueryAdaptViewPref2Pivot_Required.txt" />
     <Content Include="QueryFixed\QueryAdaptViewPref3Pivot_Default.txt" />
     <Content Include="QueryFixed\QueryAdaptViewServiceContractPrefPivot_Default.txt" />

@@ -1,3 +1,4 @@
+
 update fld_Field_Value
 set FieldVal = [dbo].[ufn_Adapt_ConvertValue](FieldID,FieldVal)
 
@@ -39,7 +40,7 @@ declare			@TableID				int,
 				@CountLoop				int,
 				@TransactionSQL			nvarchar(max)
 
-set				@TransactionSQL = 'BEGIN TRANSACTION '
+set				@TransactionSQL = 'BEGIN TRANSACTION BEGIN TRY'
 set				@CountLoop		= 0
 
 declare Cur cursor local for
@@ -98,7 +99,7 @@ declare	@UpdateFields		varchar(max)  = ''
 		where (ff.FieldTypeID		<> 12
 			or ff.NumberOfValues	<> 2)
 			and RecID = @RecID
-			and fv.FieldID <> 201
+			--and fv.FieldID <> 201
 			--1.2 Update data to table
 			set	@Sql					= 
 			' update	dbo.' + @TableName + 
@@ -109,17 +110,11 @@ declare	@UpdateFields		varchar(max)  = ''
 			begin
 				if(@CountLoop = 1000)
 				begin
-					set @TransactionSQL = @TransactionSQL + ' COMMIT'
-					begin try
-						exec (@TransactionSQL)	
-						set		@CountLoop		= 0
-						set		@TransactionSQL = 'BEGIN TRANSACTION '
-					end try
-					begin catch
-						--select @Sql
-						set		@CountLoop		= 0
-						set		@TransactionSQL = 'BEGIN TRANSACTION '
-					end catch
+					set @TransactionSQL = @TransactionSQL + ' COMMIT END TRY BEGIN CATCH ROLLBACK TRANSACTION END CATCH'
+					--SELECT @TransactionSQL
+					exec (@TransactionSQL)	
+					set		@CountLoop		= 0
+					set		@TransactionSQL = 'BEGIN TRANSACTION BEGIN TRY'
 				end
 				else begin
 					set @TransactionSQL = @TransactionSQL + @Sql + ' '
@@ -131,15 +126,12 @@ end
 CLOSE Cur 
 DEALLOCATE Cur 
 
-if(@TransactionSQL <> 'BEGIN TRANSACTION ')
-begin try
-	set @TransactionSQL = @TransactionSQL + ' COMMIT'
-	exec (@TransactionSQL)	
-end try
-begin catch
-	--select @TransactionSQL
-end catch
-
+if(@TransactionSQL <> 'BEGIN TRANSACTION BEGIN TRY')
+BEGIN
+set @TransactionSQL = @TransactionSQL + ' COMMIT END TRY BEGIN CATCH ROLLBACK TRANSACTION END CATCH'
+--SELECT @TransactionSQL
+exec (@TransactionSQL)	
+END
 delete from [dbo].[fld_Field_Value]
 
  

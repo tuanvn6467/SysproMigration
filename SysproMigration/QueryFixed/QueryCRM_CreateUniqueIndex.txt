@@ -8,6 +8,15 @@ if(exists (SELECT *
 			[UserName],
 			[Email]
 	) with IGNORE_DUP_KEY 
+if(exists (SELECT * 
+			FROM [{0}].sys.indexes 
+			WHERE name='sec_User_Pref_Index_Ignore_Dup_Key' AND object_id = OBJECT_ID('[{0}].[dbo].[sec_User_Preference]')))
+	begin
+		drop index sec_User_Pref_Index_Ignore_Dup_Key on [{0}].[dbo].[sec_User_Preference]
+	end
+	create unique index sec_User_Pref_Index_Ignore_Dup_Key on [{0}].[dbo].[sec_User_Preference](
+			[UserID]
+	) with IGNORE_DUP_KEY 
 
 if(exists (SELECT * 
 			FROM crm_System.sys.indexes 

@@ -1,0 +1,24 @@
+create view [dbo].[Pref5_Pivot_Default] 
+  as 
+  select DefaultFieldName, DefaultValue,
+	  case	
+		when (DefaultFieldName = 'Campaign Type') then 500
+		end 
+		DefaultFieldID,
+	  case	
+		when (DefaultFieldName = 'Campaign Type') then 1 
+		end
+		SeqNo,
+		ROW_NUMBER() OVER (ORDER BY (SELECT 100)) Rownumber
+	  from
+	  (select 
+	  --default field
+       CONVERT(varchar,[Default_Campaign_Type]) [Campaign Type]
+	  from [adaptv3system].[dbo].[pref5]
+	  ) p 
+	  unpivot
+	  (
+		DefaultValue for 
+		DefaultFieldName in ([Campaign Type]
+							  )
+	  ) as DefaultFieldName 

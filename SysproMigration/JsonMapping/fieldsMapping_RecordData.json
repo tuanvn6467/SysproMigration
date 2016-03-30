@@ -540,7 +540,7 @@
             "Routing_ID": "RoutingID",
             "[tempdb].[dbo].[GetDateTime](st.Next_Escalation_Date,'000000') NextEscalationDate": "NextEscalationDate",
             "[tempdb].[dbo].[GetTime](st.Next_Escalation_Time) NextEscalationTime": "NextEscalationTime",
-            "Next_Escalation_Trigger": "NextEscalationTrigger",
+            //"Next_Escalation_Trigger": "NextEscalationTrigger",
             //Last_Activity_Date
             //Last_Activity_ID
             //Next_Activity_Date
@@ -626,8 +626,8 @@
             "OrderBy": "order by svc.Contract_Number",
             "Join": "left join [dbo].[contract_hold_notes] chn on chn.Contract_Number = svc.Contract_Number",
             "Join1": "left join [dbo].[contract_renew] cr on cr.Old_Contract = svc.Contract_Number",
-            "Join2": "left join [adaptv3system].[dbo].[users] statusby on statusby.User_ID = chn.Status_By",
-            "Join3": "left join  [tempdb].[dbo].[MigrateSupport] ms_statusby on ms_statusby.TargetServer='.' and ms_statusby.OldValTable = statusby.Email_Address",
+            "Join2": "outer apply (select top 1 * from [adaptv3system].[dbo].[users] statusby where statusby.User_ID = chn.Status_By) statusby",
+            "Join3": "outer apply (select top 1 * from [tempdb].[dbo].[MigrateSupport] ms_statusby where ms_statusby.TargetServer='.' and ms_statusby.OldValTable = statusby.Email_Address order by ms_statusby.Id desc) ms_statusby",
             "JoinUser": "Created_By,Modified_By"
         },
         "Destination": {
@@ -666,7 +666,7 @@
             "Follows_Calendar_ID": "FollowCalendarID",
             "Promised_Response_Time_Amount": "PromisedResponseTimeAmount",
             "Promised_Response_Time_Units": "PromisedResponseTimeUnitTypeID",
-            "Triggered_Process_ID": "TriggeredProcessID",
+            //"Triggered_Process_ID": "TriggeredProcessID",
             "[tempdb].[dbo].[GetDateTime](svc.Sold_Date,'000000') SoldDate": "SoldDate",
             "[tempdb].[dbo].[GetDateTime](svc.Start_Date,'000000') StartDate": "StartDate",
             "[tempdb].[dbo].[GetDateTime](svc.Effective_Start_Date,'000000') EffectiveStartDate": "EffectiveStartDate",
@@ -863,6 +863,7 @@
             //[Hold_Flag]
             "Territory_ID": "TerritoryID",
             "ms_salespersonid.NewValTable Salesperson": "Salesperson",
+            "ms_salespersonid.NewValTable AssignedTo": "AssignedTo",
             //Assigned_Date
             "Primary_Source": "PrimarySource",
             "Secondary_Source": "SecondarySource",
@@ -919,11 +920,113 @@
             "ms_modifiedby.NewValTable ModifiedBy ": "ModifiedBy"
         }
     },
+    //migrate [dbo].[campaign] to cam_Campaign
+    {
+        "Id": 1020,
+        "Source": {
+            "Tables": "[dbo].[campaign] cam",
+            "OrderBy": "order by Campaign_ID",
+            "JoinUser": "Approved_Declined_By,Campaign_Manager,Started_By,Submitted_By,Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "cam_Campaign"
+        },
+        "Map": {
+            "Campaign_ID_Syspro_FBI": "CampaignNumber",
+
+            "Campaign_Name": "CampaignName",
+            "Campaign_Type": "CampaignType",
+            "Status": "CampaignStatusID",
+            "[tempdb].[dbo].[GetDateTime](cam.Submitted_Date,cam.Submitted_Time) SubmittedDate": "SubmittedDate",
+            "ms_submittedby.NewValTable SubmittedBy": "SubmittedBy",
+            //Started_Date
+            //Started_Time
+            "ms_startedby.NewValTable StartedBy": "StartedBy",
+            "Approval_Status": "ApprovalStatus",
+            "[tempdb].[dbo].[GetDateTime](cam.Approved_Declined_Date,cam.Approved_Declined_Time) ApprovedDate": "ApprovedDate",
+            "[tempdb].[dbo].[GetTime](cam.Approved_Declined_Time) ApprovedTime": "ApprovedTime",
+            "ms_approveddeclinedby.NewValTable ApprovedBy ": "ApprovedBy",
+            "Assign_Before_Approval_Syspro_TF": "AssignBeforeApproval",
+            "Open_Campaign_Syspro_TF": "IsOpenCampaign",
+            "[tempdb].[dbo].[GetDateTime](cam.Start_Date,'000000') StartDate": "StartDate",
+            "[tempdb].[dbo].[GetDateTime](cam.End_Date,'000000') EndDate": "EndDate",
+            "ms_campaignmanager.NewValTable CampaignManager ": "CampaignManager",
+            //[Started_Date]
+            //[Started_Time]
+            //Assigned_Date
+            //Assigned_Time
+            "Outbound_Process": "OutboundProcess",
+            "Email_Response_Process": "EmailResponseProcess",
+            //Opt_In_Response_Process
+            //"Fax_Response_Process": "FaxResponseProcess",
+            //"Web_Response_Process": "WebResponseProcess",
+            //"Telephone_Response_Process": "PhoneResponseProcess",
+            //Total_Market_Population
+            "Primary_Source": "PrimarySourceID",
+            "Secondary_Source": "SecondarySourceID",
+            "Responses_Goal_Syspro_FD": "ResponsesGoal",
+            "Sales_Goal_Syspro_FD": "SalesGoal",
+            //Account_Responses
+            "[tempdb].[dbo].[GetDateTime](cam.Last_Response_Date,'000000') LastResponseDate": "LastResponseDate",
+            //Accounts_Created
+            "Outbound_Contacts": "TotalOutboundContacts",
+            "Total_Sales_Syspro_FD": "TotalSales",
+            //Total_Pipeline_Value
+            //Total_Pipeline_Weighted_Value
+            //Opportunities_Count
+            "Won_Opportunities_Count": "NumberofWonSales",
+            "Lost_Opportunities_Count": "NumberofLostSales",
+            "Open_Opportunities_Count": "NumberofOpenSales",
+            //Total_Opportunity_Days_to_Close
+            "Total_Expenses_Syspro_FD": "TotalExpenses",
+
+
+            "Total_Budget_Syspro_FD": "TotalBudget",
+            //Budget_Allocated_to_Events
+            //Last_Event
+            "Last_Milestone": "LastMilestone",
+            "[tempdb].[dbo].[GetDateTime](cam.Last_Milestone_Date,'000000') LastMilestoneDate": "LastMilestoneDate",
+            "Next_Milestone": "NextMilestone",
+            //Last_Email_Filter_ID
+            //Email_Filter_Count
+            //Last_Fax_Filter_ID
+            //Fax_Filter_Count
+            //Last_Web_Filter_ID
+            //Web_Filter_Count
+            "Auto_Start_Syspro_TF": "AutomaticallyStarts",
+            "[tempdb].[dbo].[GetDateTime](cam.Auto_Start_Date,'000000') AutomaticallyStartsOn": "AutomaticallyStartsOn",
+            //Auto_Start_Job_Number
+            "Auto_End_Syspro_TF": "AutomaticallyEnds",
+            "[tempdb].[dbo].[GetDateTime](cam.Auto_End_Date,'000000') AutomaticallyEndsOn": "AutomaticallyEndsOn",
+            //Auto_End_Job_Number
+            "cam.Notes": "CampaignNotes",
+            "cam.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedBy": "CreatedBy",
+            "cam.Modified_Date": "ModifiedDate",
+            "ms_modifiedby.NewValTable ModifiedBy ": "ModifiedBy"
+            //of campaign table in new crm
+            //[MarketPopulation]
+            //[TotalResponses]
+            //[ResponseRate]
+            //[CostPerResponse]
+            //[CostPerNewAccount]
+            //[TotalNewAccounts]
+            //[TotalGrossPendingSales]
+            //[TotalWeightedPendingSales]
+            //[WinRate]
+            //[LossRate]
+            //[AverageSalesCycle]
+            //[GrossProfit]
+            //[GrossProfitRatio]
+            //[AssignStartCampaign]
+        }
+    },
+
     /*migrate tab in record*/
     //MODULE ACCOUNT AND CONTACT
     //migrate [dbo].[relacct] to acc_Relationship_Account
     {
-        "Id": 1020,
+        "Id": 2000,
         "Source": {
             "Tables": "[dbo].[relacct] r",
             "OrderBy": "order by Relationship_Record_ID",
@@ -950,7 +1053,7 @@
     //MODULE SERVICE TICKET
     //migrate [dbo].[ticket_labor] to set_Ticket_Labor
     {
-        "Id": 1021,
+        "Id": 2001,
         "Source": {
             "Tables": "[dbo].[ticket_labor] tl",
             "OrderBy": "order by Service_Ticket_Number",
@@ -986,7 +1089,7 @@
     },
     //migrate [dbo].[ticket_parts] to set_Ticket_Part
     {
-        "Id": 1022,
+        "Id": 2002,
         "Source": {
             "Tables": "[dbo].[ticket_parts] tp",
             "OrderBy": "order by tp.Ticket_Number",
@@ -1023,7 +1126,7 @@
     //migrate expense tab in service ticket
     //migrate [dbo].[expenses] to utl_Expense
     {
-        "Id": 1023,
+        "Id": 2003,
         "Source": {
             "Tables": "[dbo].[expenses] e",
             "OrderBy": "order by Parent_Record_Type",
@@ -1054,7 +1157,7 @@
     },
     //migrate [dbo].[oppcon] to opp_Opportunity_Contact
     {
-        "Id": 1024,
+        "Id": 2004,
         "Source": {
             "Tables": "[dbo].[oppcon] oppcon",
             "OrderBy": "order by Opportunity_ID",
@@ -1086,7 +1189,7 @@
     },
     //migrate [dbo].[oppcmp] to opp_Opportunity_Competitor
     {
-        "Id": 1025,
+        "Id": 2005,
         "Source": {
             "Tables": "[dbo].[oppcmp] oppcmp",
             "OrderBy": "order by Record_Number",
@@ -1115,7 +1218,7 @@
     },
     //migrate [dbo].[oppcmpw] to opp_Opportunity_Competitor_Weakness
     {
-        "Id": 1026,
+        "Id": 2006,
         "Source": {
             "Tables": "[dbo].[oppcmpw] oppcmpw",
             "OrderBy": "order by Opportunity_Competitor_ID"
@@ -1132,7 +1235,7 @@
     },
     //migrate [dbo].[oppcmps] to opp_Opportunity_Competitor_Strength
     {
-        "Id": 1027,
+        "Id": 2007,
         "Source": {
             "Tables": "[dbo].[oppcmps] oppcmps",
             "OrderBy": "order by Opportunity_Competitor_ID"
@@ -1149,7 +1252,7 @@
     },
     //migrate [dbo].[oppiss] to opp_Opportunity_Issue
     {
-        "Id": 1028,
+        "Id": 2008,
         "Source": {
             "Tables": "[dbo].[oppiss] oppiss",
             "OrderBy": "order by Record_Number",
@@ -1172,7 +1275,7 @@
     },
     //migrate [dbo].[oppassoc] to opp_Opportunity_Associated_Account
     {
-        "Id": 1029,
+        "Id": 2009,
         "Source": {
             "Tables": "[dbo].[oppassoc] oppassoc",
             "OrderBy": "order by Associated_Record_ID"
@@ -1189,6 +1292,169 @@
             "[tempdb].[dbo].[GetDateTime](Date_Discovered,'000000') DiscoveredDate": "DiscoveredDate",
             "[tempdb].[dbo].[GetTime](Time_Discovered) DiscoveredTime": "DiscoveredTime",
             "oppassoc.Notes": "Notes"
+        }
+    },
+    //migrate [dbo].[oppitem] to opp_Opportunity_Item
+    {
+        "Id": 2010,
+        "Source": {
+            "Tables": "[dbo].[oppitem] oppitem",
+            "OrderBy": "order by Opportunity_Number",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "opp_Opportunity_Item"
+        },
+        "Map": {
+            "Opportunity_Number_Syspro_FBI": "OpportunityNumber",
+            "Line_Number": "LineNumber",
+            "Sequence_Number": "SeqNo",
+            "Item_Type": "ItemTypeID",
+            "Item_Number": "ItemNumber",
+            "Item_Description": "ItemDescription",
+            "Unit_Price_Syspro_FD": "UnitPrice",
+            "Discount_Syspro_FD": "Discount",
+            "Unit_Initial_Cost_Syspro_FD": "UnitInitialCost",
+            "Tax_Schedule_ID": "TaxScheduleID",
+            "Tax_Rate_Syspro_FD": "TaxRate",
+            "Discount_Method": "DiscountMethodTypeID",
+            "Different_Close_Date_Syspro_TF": "IsDifferentCloseDate",
+            "[tempdb].[dbo].[GetDateTime](Close_Date,'000000') CloseDate": "CloseDate",
+            "Warehouse": "Warehouse",
+            "Contact_Number_Syspro_FBI": "ContactNumber",
+            "oppitem.Notes": "Notes",
+            "oppitem.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "oppitem.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //for campaign tab
+    //migrate [dbo].[budget] to utl_Expense_Category_Budget
+    {
+        "Id": 2011,
+        "Source": {
+            "Tables": "[dbo].[budget] budget",
+            "OrderBy": "order by Related_To"
+        },
+        "Destination": {
+            "Tables": "utl_Expense_Category_Budget"
+        },
+        "Map": {
+            "(case when Related_To = 0 then 1 when Related_To = 1 then 2 when Related_To = 2 then 5 when Related_To = 3 then 3 else 0 end) ModuleID": "ModuleID",
+            "Related_To_Record_Number_Syspro_FBI": "ModuleRecordID",
+            "Category": "ExpenseCategoryID",
+            "Budget_Amount_Syspro_FD": "BudgetAmount",
+            "budget.Notes": "Notes"
+        }
+    },
+    //migrate [dbo].[exptot] to utl_Expense_Category_Total
+    {
+        "Id": 2012,
+        "Source": {
+            "Tables": "[dbo].[exptot] exptot",
+            "OrderBy": "order by Related_To"
+        },
+        "Destination": {
+            "Tables": "utl_Expense_Category_Total"
+        },
+        "Map": {
+            "(case when Related_To = 0 then 1 when Related_To = 1 then 2 when Related_To = 2 then 5 when Related_To = 3 then 3 else 0 end) ModuleID": "ModuleID",
+            "Related_To_Record_Number_Syspro_FBI": "ModuleRecordID",
+            "Category_ID": "ExpenseCategoryID",
+            "Total_Expenses_Syspro_FD": "TotalExpense",
+        }
+    },
+    //migrate [dbo].[camp_account] to cam_Campaign_Account
+    {
+        "Id": 2013,
+        "Source": {
+            "Tables": "[dbo].[camp_account] camacc",
+            "OrderBy": "order by Campaign_ID"
+        },
+        "Destination": {
+            "Tables": "cam_Campaign_Account"
+        },
+        "Map": {
+            "Campaign_ID_Syspro_FBI": "CampaignNumber",
+            "Account_ID_Syspro_FBI": "AccountNumber",
+            "Outbound_Account_Syspro_TF": "IsOutboundAccount",
+            "New_Account_Syspro_TF": "IsNewAccount",
+            "Contacted_Syspro_TF": "IsContacted",
+            "[tempdb].[dbo].[GetDateTime](camacc.Contacted_Date,camacc.Contacted_Time) ContactedDate": "ContactedDate",
+            "Responded_Syspro_TF": "IsResponded",
+            "[tempdb].[dbo].[GetDateTime](camacc.Responded_Date,camacc.Responded_Time) RespondedDate": "RespondedDate",
+            "Phone_Process_Triggered_Syspro_TF": "IsPhoneProcessTriggered",
+            "Email_Process_Triggered_Syspro_TF": "IsEmailProcessTriggered",
+            "Fax_Process_Triggered_Syspro_TF": "IsFaxProcessTriggered",
+            "Web_Process_Triggered_Syspro_TF": "IsWebProcessTriggered"
+        }
+    },
+    //migrate [dbo].[camp_contact] to cam_Campaign_Contact
+    {
+        "Id": 2014,
+        "Source": {
+            "Tables": "[dbo].[camp_contact] camct",
+            "OrderBy": "order by Campaign_ID"
+        },
+        "Destination": {
+            "Tables": "cam_Campaign_Contact"
+        },
+        "Map": {
+            "Campaign_ID_Syspro_FBI": "CampaignNumber",
+            "Account_Number_Syspro_FBI": "AccountNumber",
+            "Contact_Number_Syspro_FBI": "ContactNumber",
+            "Outbound_Contact_Syspro_TF": "IsOutboundContact",
+            "Contacted_Syspro_TF": "IsContacted",
+            "[tempdb].[dbo].[GetDateTime](camct.Contacted_Date,camct.Contacted_Time) ContactedDate": "ContactedDate",
+            "Responded_Syspro_TF": "IsResponded",
+            "[tempdb].[dbo].[GetDateTime](camct.Responded_Date,camct.Responded_Time) RespondedDate": "RespondedDate",
+            "Phone_Process_Triggered_Syspro_TF": "IsPhoneProcessTriggered",
+            "Email_Process_Triggered_Syspro_TF": "IsEmailProcessTriggered",
+            "Fax_Process_Triggered_Syspro_TF": "IsFaxProcessTriggered",
+            "Web_Process_Triggered_Syspro_TF": "IsWebProcessTriggered"
+        }
+    },
+    //migrate [dbo].[campaign_email_filter] to cam_Email_Filter
+    {
+        "Id": 2015,
+        "Source": {
+            "Tables": "[dbo].[campaign_email_filter] cef",
+            "OrderBy": "order by Campaign_Number"
+        },
+        "Destination": {
+            "Tables": "cam_Email_Filter"
+        },
+        "Map": {
+            "Campaign_Number_Syspro_FBI": "CampaignNumber",
+            "Active_Campaign_Syspro_TF": "IsActiveCampaign",
+            "Received_Mail_Box": "ReceivedMailBox",
+            "Subject_Text": "SubjectText",
+            "Body_Text": "BodyText"
+        }
+    },
+    //migrate [dbo].[milest] to wof_Milestone_Status
+    {
+        "Id": 2016,
+        "Source": {
+            "Tables": "[dbo].[milest] milest",
+            "OrderBy": "order by Parent_Record_Type",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "wof_Milestone_Status"
+        },
+        "Map": {
+            "Parent_Record_Type": "ModuleID",
+            "Parent_Record_ID_Syspro_FBI": "RecID",
+            "Milestone_ID": "MilestoneID",
+            "Status": "StatusID",
+            "[tempdb].[dbo].[GetDateTime](milest.Completed_Date,'000000') CompletedDate": "CompletedDate",
+            "milest.Notes": "Notes",
+            "milest.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "milest.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     }
 ]

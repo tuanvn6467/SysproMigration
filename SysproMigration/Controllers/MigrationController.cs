@@ -39,7 +39,7 @@ namespace SysproMigration.Controllers
             return View();
         }
 
-        public async Task<ActionResult> MigrateData(string sourceSQLServerName, string sourceDb, string targetDb, int tennantID, int databaseID, string userName, string userPassword, bool convertAgain)
+        public async Task<ActionResult> MigrateData(string sourceSQLServerName, string sourceDb, string targetDb, int tennantID, int databaseID, string userName, string userPassword, bool convertAgain, bool isMigrateCustomData)
         {
             try
             {
@@ -78,7 +78,9 @@ namespace SysproMigration.Controllers
                 _migrator.Fixing += _migrator_Fixing;
                 _migrator.Fixed += _migrator_Fixed;
                 _migrator.MigrationError += _migrator_MigrationError;
-                
+
+                _migrator.isMigrateCustomData = isMigrateCustomData;
+
                 _migrator.LoadFieldsMap();
 
                 _migrator.SourceConnectionString = sourceConn;
