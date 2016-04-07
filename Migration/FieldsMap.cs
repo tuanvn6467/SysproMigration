@@ -111,11 +111,11 @@ namespace Migration
                         string.Format(
                             "\nleft join  [tempdb].[dbo].[MigrateSupport] ms_{0} on ms_{0}.TargetServer='.' and ms_{0}.OldValTable = {0}.Email_Address",
                             ParseData.GetAcronymString(fieldUser));*/
-                    res += string.Format("\nouter apply (select top 1 * from [adaptv3system].[dbo].[users] {0} where {0}.User_ID = {1}.{2}) as {0}", 
+                    res += string.Format("\nouter apply (select top 1 * from [adaptv3system].[dbo].[users] {0} where {0}.User_ID COLLATE SQL_Latin1_General_CP1_CI_AS = {1}.{2} COLLATE SQL_Latin1_General_CP1_CI_AS ) as {0}", 
                         ParseData.GetAcronymString(fieldUser), acronymTable, fieldUser);
                     res +=
                         string.Format(
-                            "\nouter apply (select top 1 * from [tempdb].[dbo].[MigrateSupport] ms_{0} where ms_{0}.TargetServer='.' and ms_{0}.OldValTable = {0}.Email_Address) ms_{0}",
+                            "\nouter apply (select top 1 * from [tempdb].[dbo].[MigrateSupport] ms_{0} where ms_{0}.TargetServer='.' and ms_{0}.OldValTable = {0}.Email_Address order by ms_{0}.Id desc) ms_{0}",
                             ParseData.GetAcronymString(fieldUser));
                 }
             }

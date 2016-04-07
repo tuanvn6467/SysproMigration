@@ -43,6 +43,7 @@
         logFileDownload: null,
         logFileName: null,
         loadLogInteraval: -1,
+        needToConfirm: false,
         init: function () {
             var ui = migrationController.ui;
             var dialogButtons =
@@ -150,6 +151,12 @@
                 }
             });
 
+            //not close page
+            window.onbeforeunload = migrationController.confirmExit;
+        },
+        confirmExit: function() {
+            if (migrationController.needToConfirm)
+                return "Reload page will be lost data, Do you want to continue?";
         },
         migrateData: function (isConvertAgain, dialog) {
             var ui = migrationController.ui;
@@ -335,7 +342,10 @@
             $(ui.progressbar).progressbar("value", val + mathPlus);
 
             if (val <= 99) {
+                migrationController.needToConfirm = true;
                 migrationController.progressTimer = setTimeout(migrationController.progress, 50);
+            } else {
+                migrationController.needToConfirm = false;
             }
         },
         closeMigrate: function () {

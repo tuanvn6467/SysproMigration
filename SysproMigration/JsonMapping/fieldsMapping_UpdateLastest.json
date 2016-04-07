@@ -28,7 +28,7 @@
             "Tables": "fld_Field_Value",
             "Script": "QueryCRM_Update_Data_To_Custom_Field.txt"
         },
-        "Size":  100000,
+        "Size": 100000,
         "Map": {
             "convert(bigint, Parent_Record_ID) RecID": "RecID",
             "Field_ID": "FieldID",

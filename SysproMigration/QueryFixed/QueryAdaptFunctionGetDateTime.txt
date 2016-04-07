@@ -7,8 +7,19 @@ Returns datetime
 AS
 Begin
 	declare @Result datetime
-	set @Result = case when @Date not like '0%' and @Date not like '%0000' and Len(@Date) > 0
-						then convert(datetime,substring(@Date, 1, 4) + '-' + substring(@Date, 5, 2) + '-' + substring(@Date, 7, 2) 
-									+ ' ' + substring(@Time, 1, 2) + ':' + substring(@Time, 3, 2) + ':' + substring(@Time, 5, 2)) else null end 
+	declare @Text varchar(255)
+	set @Text = case when @Date not like '0%' and @Date not like '%0000' and Len(@Date) > 0
+						then 
+							substring(@Date, 1, 4) + '-' + substring(@Date, 5, 2) + '-' + substring(@Date, 7, 2) 
+							+ ' ' + substring(@Time, 1, 2) + ':' + substring(@Time, 3, 2) + ':' + substring(@Time, 5, 2)
+						else '' end 
+	if(Len(@Text) > 0 and ISDATE(@Text) = 1)
+	begin
+		set @Result = convert(datetime,@Text)
+	end
+	else
+	begin
+		set @Result = null
+	end
 	return @Result
 End

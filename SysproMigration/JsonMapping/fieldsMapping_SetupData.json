@@ -7,7 +7,7 @@
             "Join": "left join [adaptv3system].[dbo].[country] country on country.Country_Name = u.Country",
             "Join1": "left join (SELECT [Country_ID], ROW_NUMBER() over(order by [County]) CountyID, [County] FROM [adaptv3system].[dbo].[county]) county on county.County = u.County",
             "Join2": "left join (SELECT [Country_ID], ROW_NUMBER() over(order by [Full_Name]) StateID, [State], [Full_Name] FROM [adaptv3system].[dbo].[state]) state on state.State = u.State",
-            "Join3": "outer apply (SELECT top 1 * from [tempdb].[dbo].[MigrateSupport] ms where ms.OldValTable = u.Email_Address and DatabaseID is not null) ms_UserGuid"
+            "Join3": "outer apply (SELECT top 1 * from [tempdb].[dbo].[MigrateSupport] ms where ms.OldValTable = u.Email_Address and DatabaseID is not null order by ms.Id desc) ms_UserGuid"
         },
         "Destination": {
             "Tables": "[st_Security].[dbo].[sec_User]",
@@ -110,7 +110,7 @@
             "Write_Appointments_to_Outlook_Syspro_TF": "IsWriteAppointmentsToOutlook",
             "Write_Tasks_to_Outlook_Syspro_TF": "WriteTasksToOutlook",
             "Write_Contacts_to_Outlook_Syspro_TF": "IsWriteContactsToOutlook",
-            "convert(smallint,uip_phone.Property_Value) IsMultiPhone": "IsMultiPhone",
+            "convert(smallint,convert(varchar,uip_phone.Property_Value)) IsMultiPhone": "IsMultiPhone",
             "Default_Activity_Type": "DefaultActivityTypeID",
             "ul.Location_ID": "DefaultActivityLocationID",
             "Default_Appointment_Type": "DefaultAppointmentTypeID",
@@ -2231,7 +2231,6 @@
             "Tables": "opp_Competing_Feature"
         },
         "Map": {
-            "Feature_ID": "CompetingFeatureID",
             "Competitor_ID": "CompetitorID",
             "Feature_Name": "CompetingFeatureName",
             "compf.Notes": "Notes"
@@ -2266,7 +2265,6 @@
         },
         "Map": {
             "Competitor_ID": "CompetitorID",
-            "Strength_ID": "CompetingStrengthID",
             "Strength_Name": "CompetingStrengthName",
             "comps.Notes": "Notes"
         }
@@ -2283,7 +2281,6 @@
         },
         "Map": {
             "Competitor_ID": "CompetitorID",
-            "Weakness_ID": "CompetingWeaknessID",
             "Weakness_Name": "CompetingWeaknessName",
             "compw.Notes": "Notes"
         }
@@ -2852,4 +2849,349 @@
             "rm.Notes": "Notes"
         }
     },
+    /*MIGRATE ACTIVITIES SETUP MODULE*/
+    //migrate [adaptv3system].[dbo].[acttp] to act_Activity_Type
+    {
+        "Id": 212,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[acttp] acttp",
+            "OrderBy": "order by Activity_Type_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "act_Activity_Type"
+        },
+        "Map": {
+            "Activity_Type_ID": "ActivityTypeID",
+            "Activity_Type_Name": "ActivityTypeName",
+            "Medium": "CommunicationTypeID",
+            "Direction": "DirectionID",
+            "Timed_Syspro_TF": "Timed",
+            "Default_Duration": "DefaultDuration",
+            "Input_Location_Syspro_TF": "IsInputLocation",
+            //Script_ID
+            "Input_Results_Syspro_TF": "IsInputResults",
+            "Default_Result": "DefaultResult",
+            "Default_Subject": "DefaultSubject",
+            "Account_Required_Syspro_TF": "IsAccountRequired",
+            "Contact_Required_Syspro_TF": "IsContactRequired",
+            "Must_Related_To_Syspro_TF": "IsMustRelatedTo",
+            "Related_To_Type": "RelatedToType",
+            "Service_Job_Type": "JobTypeID",
+            //Database_Specific
+            //Edit_Right
+            //Audit_Log
+            "acttp.Notes": "Notes",
+            "acttp.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "acttp.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[actres] to act_Result
+    {
+        "Id": 213,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[actres] actres",
+            "OrderBy": "order by Result_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "act_Result"
+        },
+        "Map": {
+            "Result_ID": "ResultID",
+            "Result_Name": "ResultName",
+            "actres.Notes": "Notes",
+            "actres.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "actres.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[acttpres] to act_Activity_Type_Result_Xref
+    {
+        "Id": 214,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[acttpres] acttpres",
+            "OrderBy": "order by Result_ID"
+        },
+        "Destination": {
+            "Tables": "act_Activity_Type_Result_Xref"
+        },
+        "Map": {
+            "Activity_Type_ID": "ActivityTypeID",
+            "Result_ID": "ResultID"
+            //"Follow_Up_Process": "FollowUpProcess"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[userloc] to act_Location
+    {
+        "Id": 215,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[userloc] userloc",
+            "OrderBy": "order by Location_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "act_Location"
+        },
+        "Map": {
+            "Location_ID": "LocationID",
+            "Location_Name": "LocationName",
+            "userloc.Notes": "Notes",
+            "userloc.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "userloc.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[cal] to act_Calendar
+    {
+        "Id": 216,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[cal] cal",
+            "OrderBy": "order by Calendar_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "act_Calendar"
+        },
+        "Map": {
+            "Calendar_ID": "CalendarID",
+            "Calendar_Name": "CalendarName",
+            "(case when Calendar_ID = 1 then convert(smallint,1) else convert(smallint,0) end) IsDefault": "IsDefault",
+            "cal.Notes": "Notes",
+            "cal.Created_Date": "CreatedDate",
+            "(case when Calendar_ID = 1 then -1 else ms_createdby.NewValTable end) CreatedUserID": "CreatedUserID",
+            "cal.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[cal] to act_Calendar_Alternate_Day
+    //Sunday
+    {
+        "Id": 217,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[cal] cal",
+            "OrderBy": "order by Calendar_ID",
+            "Where": "Open_Sunday = 'T'",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "act_Calendar_Alternate_Day"
+        },
+        "Map": {
+            "Calendar_ID": "CalendarID",
+            "1 AlternateDayID": "AlternateDayID",
+            "convert(varchar,[tempdb].[dbo].[GetTime](cal.Sunday_Start_Time),100) FromTime": "FromTime",
+            "convert(varchar,[tempdb].[dbo].[GetTime](cal.Sunday_End_Time),100) ToTime": "ToTime",
+            "cal.Created_Date": "CreatedDate",
+            "(case when Calendar_ID = 1 then -1 else ms_createdby.NewValTable end) CreatedUserID": "CreatedUserID",
+            "cal.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //Monday
+    {
+        "Id": 218,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[cal] cal",
+            "OrderBy": "order by Calendar_ID",
+            "Where": "Open_Monday = 'T'",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "act_Calendar_Alternate_Day"
+        },
+        "Map": {
+            "Calendar_ID": "CalendarID",
+            "2 AlternateDayID": "AlternateDayID",
+            "convert(varchar,[tempdb].[dbo].[GetTime](cal.Monday_Start_Time),100) FromTime": "FromTime",
+            "convert(varchar,[tempdb].[dbo].[GetTime](cal.Monday_End_Time),100) ToTime": "ToTime",
+            "cal.Created_Date": "CreatedDate",
+            "(case when Calendar_ID = 1 then -1 else ms_createdby.NewValTable end) CreatedUserID": "CreatedUserID",
+            "cal.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //Tuesday
+    {
+        "Id": 219,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[cal] cal",
+            "OrderBy": "order by Calendar_ID",
+            "Where": "Open_Tuesday = 'T'",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "act_Calendar_Alternate_Day"
+        },
+        "Map": {
+            "Calendar_ID": "CalendarID",
+            "3 AlternateDayID": "AlternateDayID",
+            "convert(varchar,[tempdb].[dbo].[GetTime](cal.Tuesday_Start_Time),100) FromTime": "FromTime",
+            "convert(varchar,[tempdb].[dbo].[GetTime](cal.Tuesday_End_Time),100) ToTime": "ToTime",
+            "cal.Created_Date": "CreatedDate",
+            "(case when Calendar_ID = 1 then -1 else ms_createdby.NewValTable end) CreatedUserID": "CreatedUserID",
+            "cal.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //Wednesday
+    {
+        "Id": 220,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[cal] cal",
+            "OrderBy": "order by Calendar_ID",
+            "Where": "Open_Wednesday = 'T'",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "act_Calendar_Alternate_Day"
+        },
+        "Map": {
+            "Calendar_ID": "CalendarID",
+            "4 AlternateDayID": "AlternateDayID",
+            "convert(varchar,[tempdb].[dbo].[GetTime](cal.Wednesday_Start_Time),100) FromTime": "FromTime",
+            "convert(varchar,[tempdb].[dbo].[GetTime](cal.Wednesday_End_Time),100) ToTime": "ToTime",
+            "cal.Created_Date": "CreatedDate",
+            "(case when Calendar_ID = 1 then -1 else ms_createdby.NewValTable end) CreatedUserID": "CreatedUserID",
+            "cal.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //Thursday
+    {
+        "Id": 221,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[cal] cal",
+            "OrderBy": "order by Calendar_ID",
+            "Where": "Open_Thursday = 'T'",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "act_Calendar_Alternate_Day"
+        },
+        "Map": {
+            "Calendar_ID": "CalendarID",
+            "5 AlternateDayID": "AlternateDayID",
+            "convert(varchar,[tempdb].[dbo].[GetTime](cal.Thursday_Start_Time),100) FromTime": "FromTime",
+            "convert(varchar,[tempdb].[dbo].[GetTime](cal.Thursday_End_Time),100) ToTime": "ToTime",
+            "cal.Created_Date": "CreatedDate",
+            "(case when Calendar_ID = 1 then -1 else ms_createdby.NewValTable end) CreatedUserID": "CreatedUserID",
+            "cal.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //Friday
+    {
+        "Id": 222,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[cal] cal",
+            "OrderBy": "order by Calendar_ID",
+            "Where": "Open_Friday = 'T'",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "act_Calendar_Alternate_Day"
+        },
+        "Map": {
+            "Calendar_ID": "CalendarID",
+            "6 AlternateDayID": "AlternateDayID",
+            "convert(varchar,[tempdb].[dbo].[GetTime](cal.Friday_Start_Time),100) FromTime": "FromTime",
+            "convert(varchar,[tempdb].[dbo].[GetTime](cal.Friday_End_Time),100) ToTime": "ToTime",
+            "cal.Created_Date": "CreatedDate",
+            "(case when Calendar_ID = 1 then -1 else ms_createdby.NewValTable end) CreatedUserID": "CreatedUserID",
+            "cal.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //Saturday
+    {
+        "Id": 223,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[cal] cal",
+            "OrderBy": "order by Calendar_ID",
+            "Where": "Open_Saturday = 'T'",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "act_Calendar_Alternate_Day"
+        },
+        "Map": {
+            "Calendar_ID": "CalendarID",
+            "7 AlternateDayID": "AlternateDayID",
+            "convert(varchar,[tempdb].[dbo].[GetTime](cal.Saturday_Start_Time),100) FromTime": "FromTime",
+            "convert(varchar,[tempdb].[dbo].[GetTime](cal.Saturday_End_Time),100) ToTime": "ToTime",
+            "cal.Created_Date": "CreatedDate",
+            "(case when Calendar_ID = 1 then -1 else ms_createdby.NewValTable end) CreatedUserID": "CreatedUserID",
+            "cal.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[caldoy] to act_Calendar_Alternate_DayOfYear
+    {
+        "Id": 224,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[caldoy] caldoy",
+            "OrderBy": "order by Calendar_ID"
+        },
+        "Destination": {
+            "Tables": "act_Calendar_Alternate_DayOfYear"
+        },
+        "Map": {
+            //Record_ID
+            "Calendar_ID": "CalendarID",
+            "convert(smallint,Month_Number) MonthNumber": "MonthNumber",
+            "convert(smallint,Day_of_Month_Number) DayOfMonth": "DayOfMonth",
+            "Can_Open_Syspro_TF": "IsOpen",
+            "Description": "Notes",
+            //Date
+            "convert(varchar,[tempdb].[dbo].[GetTime](caldoy.Start_Time),100) FromTime": "FromTime",
+            "convert(varchar,[tempdb].[dbo].[GetTime](caldoy.End_Time),100) ToTime": "ToTime"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[caldate] to act_Calendar_Alternate_Date
+    {
+        "Id": 225,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[caldate] caldate",
+            "OrderBy": "order by Calendar_ID"
+        },
+        "Destination": {
+            "Tables": "act_Calendar_Alternate_Date"
+        },
+        "Map": {
+            "Calendar_ID": "CalendarID",
+            //Record_ID
+            "[tempdb].[dbo].[GetDateTime](Date,'000000') Date": "Date",
+            "Can_Open_Syspro_TF": "IsOpen",
+            "Description": "Notes",
+            "convert(varchar,[tempdb].[dbo].[GetTime](caldate.Start_Time),100) FromTime": "FromTime",
+            "convert(varchar,[tempdb].[dbo].[GetTime](caldate.End_Time),100) ToTime": "ToTime"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[cannotes] to act_Canned_Note
+    {
+        "Id": 226,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[cannotes] cannotes",
+            "OrderBy": "order by Record_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "act_Canned_Note"
+        },
+        "Map": {
+            "Record_ID": "CannedNoteID",
+            "Subject": "Subject",
+            "cannotes.Created_Date": "CreatedDate",
+            "RTRIM(LTRIM(convert(varchar(max),isnull(cannotes.Canned_Note_Text,'')))) Notes": "Notes",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "cannotes.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    }
+
 ]

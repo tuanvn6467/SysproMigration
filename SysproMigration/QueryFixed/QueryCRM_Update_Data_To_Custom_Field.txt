@@ -81,11 +81,11 @@ declare	@UpdateFields		varchar(max)  = ''
 										(case	when ff.FieldTypeID = 6 and isnull(FieldMemo,'') = '' then 
 												'null'
 											when ff.FieldTypeID = 6 then 
-												(' ''' + FieldMemo + ''' ')
+												(' ''' + [dbo].[ufn_Replace_XmlChars](FieldMemo) + ''' ')
 											when isnull(FieldVal,'') = '' then
 												'null'
 											else
-												(' ''' + FieldVal + ''' ')
+												(' ''' + [dbo].[ufn_Replace_XmlChars](FieldVal) + ''' ')
 										end) + ' ',
 				@Delim				= ','
 			
@@ -110,11 +110,16 @@ declare	@UpdateFields		varchar(max)  = ''
 			begin
 				if(@CountLoop = 1000)
 				begin
-					set @TransactionSQL = @TransactionSQL + ' COMMIT END TRY BEGIN CATCH ROLLBACK TRANSACTION END CATCH'
-					--SELECT @TransactionSQL
-					exec (@TransactionSQL)	
-					set		@CountLoop		= 0
-					set		@TransactionSQL = 'BEGIN TRANSACTION BEGIN TRY'
+					begin try
+						set @TransactionSQL = @TransactionSQL + ' COMMIT END TRY BEGIN CATCH ROLLBACK TRANSACTION select 1 END CATCH'
+						--SELECT len(@TransactionSQL)
+						exec (@TransactionSQL)	
+						set		@CountLoop		= 0
+						set		@TransactionSQL = 'BEGIN TRANSACTION BEGIN TRY'
+					end try
+					begin catch
+						select len(@TransactionSQL)
+					end catch								
 				end
 				else begin
 					set @TransactionSQL = @TransactionSQL + @Sql + ' '
@@ -127,11 +132,14 @@ CLOSE Cur
 DEALLOCATE Cur 
 
 if(@TransactionSQL <> 'BEGIN TRANSACTION BEGIN TRY')
-BEGIN
-set @TransactionSQL = @TransactionSQL + ' COMMIT END TRY BEGIN CATCH ROLLBACK TRANSACTION END CATCH'
---SELECT @TransactionSQL
+BEGIN try
+set @TransactionSQL = @TransactionSQL + ' COMMIT END TRY BEGIN CATCH ROLLBACK TRANSACTION select 1 END CATCH'
+--SELECT LEN(@TransactionSQL)
 exec (@TransactionSQL)	
-END
+END try
+begin catch
+select len(@TransactionSQL)
+end catch
 delete from [dbo].[fld_Field_Value]
 
  

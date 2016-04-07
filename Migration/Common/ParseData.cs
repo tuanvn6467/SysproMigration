@@ -263,5 +263,25 @@ namespace Migration.Common
             var indexCham = text.LastIndexOf(".");
             return text.Substring(indexCham >= 0 ? indexCham + 1 : 0, text.Length - indexCham - 1);
         }*/
+
+        private static byte[] HexStringToBytes(string hexString)
+        {
+            if (hexString == null)
+                throw new ArgumentNullException("hexString");
+            if (hexString.Length % 2 != 0)
+                throw new ArgumentException("hexString must have an even length", "hexString");
+            var bytes = new byte[hexString.Length / 2];
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                string currentHex = hexString.Substring(i * 2, 2);
+                bytes[i] = Convert.ToByte(currentHex, 16);
+            }
+            return bytes;
+        }
+
+        public static string HexStringToString(byte[] bytes)
+        {
+            return Encoding.GetEncoding("ISO-8859-1").GetString(bytes);
+        }
     }
 }

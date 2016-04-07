@@ -626,7 +626,7 @@
             "OrderBy": "order by svc.Contract_Number",
             "Join": "left join [dbo].[contract_hold_notes] chn on chn.Contract_Number = svc.Contract_Number",
             "Join1": "left join [dbo].[contract_renew] cr on cr.Old_Contract = svc.Contract_Number",
-            "Join2": "outer apply (select top 1 * from [adaptv3system].[dbo].[users] statusby where statusby.User_ID = chn.Status_By) statusby",
+            "Join2": "outer apply (select top 1 * from [adaptv3system].[dbo].[users] statusby where statusby.User_ID COLLATE SQL_Latin1_General_CP1_CI_AS = chn.Status_By COLLATE SQL_Latin1_General_CP1_CI_AS) statusby",
             "Join3": "outer apply (select top 1 * from [tempdb].[dbo].[MigrateSupport] ms_statusby where ms_statusby.TargetServer='.' and ms_statusby.OldValTable = statusby.Email_Address order by ms_statusby.Id desc) ms_statusby",
             "JoinUser": "Created_By,Modified_By"
         },
@@ -1021,7 +1021,535 @@
             //[AssignStartCampaign]
         }
     },
-
+    //migrate [dbo].[milest] to wof_Milestone_Status
+    {
+        "Id": 1021,
+        "Source": {
+            "Tables": "[dbo].[milest] milest",
+            "OrderBy": "order by Parent_Record_Type",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "wof_Milestone_Status"
+        },
+        "Map": {
+            "Parent_Record_Type": "ModuleID",
+            "Parent_Record_ID_Syspro_FBI": "RecID",
+            "Milestone_ID": "MilestoneID",
+            "Status": "StatusID",
+            "[tempdb].[dbo].[GetDateTime](milest.Completed_Date,'000000') CompletedDate": "CompletedDate",
+            "milest.Notes": "Notes",
+            "milest.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "milest.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [dbo].[act] to act_Activity
+    {
+        "Id": 1022,
+        "Source": {
+            "Tables": "[dbo].[act] act",
+            "OrderBy": "order by Activity_ID",
+            "Join": "outer apply (select top 1 * from [dbo].[HTMLNotes] HTMLNotes where HTMLNotes.Record_ID = act.Activity_ID and HTMLNotes.Record_Type = 34) as HTMLNotes", //module activity
+            "JoinUser": "Performed_By"
+        },
+        "Destination": {
+            "Tables": "act_Activity"
+        },
+        "Map": {
+            "Activity_ID_Syspro_FBI": "ActivityID",
+            "act.Account_Number_Syspro_FBI": "AccountNumber",
+            "Contact_Number_Syspro_FBI": "ContactNumber",
+            "Related_Account_Number_Syspro_FBI": "RelatedAccountNumber",
+            "Related_Contact_Number_Syspro_FBI": "RelatedContactNumber",
+            "Regarding": "Regarding",
+            "Regarding_Record_ID_Syspro_FBI": "RegardingID",
+            "Primary_Source": "PrimarySourceID",
+            "Secondary_Source": "SecondarySourceID",
+            "Marketing_Campaign": "CampaignNumber",
+            "Marketing_Event": "EventNumber",
+            "Subject": "Subject",
+            "[tempdb].[dbo].[GetDate](act.Activity_Date) ActivityDate": "ActivityDate",
+            "[tempdb].[dbo].[GetTime](act.Activity_Time) ActivityTime": "ActivityTime",
+            "convert(bigint, Duration) Duration": "Duration",
+            "ms_performedby.NewValTable PerformedUserID": "PerformedUserID",
+            "Location": "Location",
+            "Activity_Type": "ActivityTypeID",
+            "Medium": "Medium",
+            "Attached_Record_ID_Syspro_FBI": "AttachedRecordID",
+            "Direction": "Direction",
+            "Activity_Result": "ActivityResultID",
+            "Private_Syspro_TF": "IsPrivate",
+            "Web_Message_Read_Syspro_TF": "IsWebMessageRead",
+            "Last_Email_Address_ID": "LastEmailAddressID",
+            "Last_Email_Attachment_ID": "LastEmailAttachmentID",
+            "Email_To_Count": "EmailToCount",
+            "Email_CC_Count": "EmailCCCount",
+            "Email_BCC_Count": "EmailBCCCount",
+            "Email_Attachment_Count": "EmailAttachmentCount",
+            "Email_Sent_Received_Syspro_TF": "IsEmailSentReceived",
+            "Ticket_Labor_Record": "TicketLaborRecordID",
+            "Note_Type": "NoteTypeID",
+            "(case when HTMLNotes.Record_ID > 0 then convert(varchar(max),convert(varbinary(max),HTMLNotes.Note_Storage)) else RTRIM(LTRIM(convert(varchar(max),isnull(act.Notes,'')))) end) Notes": "Notes"
+            //"act.Notes": "Notes",
+        }
+    },
+    //migrate [dbo].[actaddr] to act_Activity_EmailSend
+    {
+        "Id": 1023,
+        "Source": {
+            "Tables": "[dbo].[actaddr] actaddr",
+            "OrderBy": "order by Activity_ID",
+            "JoinUser": "User_ID"
+        },
+        "Destination": {
+            "Tables": "act_Activity_EmailSend"
+        },
+        "Map": {
+            "Activity_ID_Syspro_FBI": "ActivityID",
+            "actaddr.Account_Number_Syspro_FBI": "AccountNumber",
+            "actaddr.Contact_Number_Syspro_FBI": "ContactNumber",
+            //"Address_ID"
+            //Address_Type
+            "Send_To": "EmailSendTypeID",
+            "Sequence_Number": "SeqNo",
+            "ms_userid.NewValTable RecipientUserID": "RecipientUserID",
+            "Recipient_Name": "RecipientName",
+            "actaddr.Email_Address": "RecipientEmail"
+        }
+    },
+    //migrate [dbo].[actatt] to act_Activity_Attachment
+    {
+        "Id": 1024,
+        "Source": {
+            "Tables": "[dbo].[actatt] actatt",
+            "OrderBy": "order by Activity_ID"
+        },
+        "Destination": {
+            "Tables": "act_Activity_Attachment"
+        },
+        "Map": {
+            "Activity_ID_Syspro_FBI": "ActivityID",
+            "Attachment_Type": "AttachTypeID",
+            "Sequence_Number": "SeqNo",
+            "File_Name": "FileName"
+            //Document_Template_ID
+            //Attachment_ID
+        }
+    },
+    //migrate [dbo].[event] to eve_Event
+    {
+        "Id": 1025,
+        "Source": {
+            "Tables": "[dbo].[event] event",
+            "OrderBy": "order by Event_ID",
+            "JoinUser": "Performed_By,Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "eve_Event"
+        },
+        "Map": {
+            "Event_ID_Syspro_FBI": "EventID",
+            "Campaign_ID_Syspro_FBI": "CampaignID",
+            "Event_Type": "EventTypeID",
+            "Event_Name": "EventName",
+            "Performed_Syspro_TF": "IsPerformed",
+            "[tempdb].[dbo].[GetDateTime](event.Performed_Date,event.Performed_Time) PerformedDateTime": "PerformedDateTime",
+            "ms_performedby.NewValTable PerformedUserID": "PerformedUserID",
+            "[tempdb].[dbo].[GetDateTime](event.Event_Date,event.Event_Time) EventDateTime": "EventDateTime",
+            "Primary_Source": "PrimarySourceID",
+            "Secondary_Source": "SecondarySourceID",
+            "convert(decimal(10,2), Population) Population": "Population",
+            "Add_to_Campaign_Total_Syspro_TF": "IsAddCampaignTotal",
+            "Responses_Syspro_FD": "Responses",
+            "[tempdb].[dbo].[GetDateTime](event.Last_Response_Date,'000000') LastResponseDate": "LastResponseDate",
+            "Total_Sales_Syspro_FD": "TotalSales",
+            "Total_Expenses_Syspro_FD": "TotalExpenses",
+            "Total_Budget_Syspro_FD": "TotalBudget",
+            "Accounts_Contacted": "AccountsContacted",
+            "Accounts_Created": "AccountsCreated",
+            "Total_Pipeline_Value_Syspro_FD": "TotalPipelineValue",
+            "Total_Weighted_Pipeline_Value_Syspro_FD": "TotalWeightedPipelineValue",
+            "Opportunities_Count": "OppCount",
+            "Open_Opportunities_Count": "OpenOppCount",
+            "Won_Opportunities_Count": "WonOppCount",
+            "Lost_Opportunities_Count": "LostOppCount",
+            "Total_Oppty_Days_to_Close": "TotalOpptyDaysClose",
+            "event.Notes": "Notes",
+            "event.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "event.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [dbo].[event_contacts] to eve_Event_Contacts
+    {
+        "Id": 1026,
+        "Source": {
+            "Tables": "[dbo].[event_contacts] ec",
+            "OrderBy": "order by Event_ID"
+        },
+        "Destination": {
+            "Tables": "eve_Event_Contacts"
+        },
+        "Map": {
+            "Event_ID_Syspro_FBI": "EventID",
+            "Account_Number_Syspro_FBI": "AccountNumber",
+            "Contact_Number_Syspro_FBI": "ContactNumber",
+            "Outbound_Contact_Syspro_TF": "IsOutboundContact",
+            "Contacted_Syspro_TF": "IsContacted",
+            "[tempdb].[dbo].[GetDateTime](ec.Contacted_Date,ec.Contacted_Time) ContactedDate": "ContactedDate",
+            "Responded_Syspro_TF": "IsResponded",
+            "[tempdb].[dbo].[GetDateTime](ec.Responded_Date,ec.Responded_Time) RespondedDate": "RespondedDate"
+        }
+    },
+    //migrate [dbo].[evenacct] to eve_Event_Accounts
+    {
+        "Id": 1027,
+        "Source": {
+            "Tables": "[dbo].[evenacct] evenacct",
+            "OrderBy": "order by Event_ID"
+        },
+        "Destination": {
+            "Tables": "eve_Event_Accounts"
+        },
+        "Map": {
+            "Event_ID_Syspro_FBI": "EventID",
+            "Account_ID_Syspro_FBI": "AccountNumber",
+            "New_Account_Syspro_TF": "IsNewAccount",
+            "Contacted_Syspro_TF": "IsContacted",
+            "[tempdb].[dbo].[GetDateTime](evenacct.Contacted_Date,evenacct.Contacted_Time) ContactedDate": "ContactedDate",
+            "Responded_Syspro_TF": "IsResponded",
+            "[tempdb].[dbo].[GetDateTime](evenacct.Responded_Date,evenacct.Responded_Time) RespondedDate": "RespondedDate"
+        }
+    },
+    //migrate [dbo].[tasks] to tas_Task
+    {
+        "Id": 1028,
+        "Source": {
+            "Tables": "[dbo].[tasks] tasks",
+            "OrderBy": "order by Task_ID",
+            "JoinUser": "Assigned_To,Assigned_From,Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "tas_Task"
+        },
+        "Map": {
+            "Task_ID_Syspro_FBI": "TaskID",
+            "tasks.Account_Number_Syspro_FBI": "AccountNumber",
+            "Contact_Number_Syspro_FBI": "ContactNumber",
+            "Related_Account_Number_Syspro_FBI": "RelatedAccountNumber",
+            "Related_Contact_Number_Syspro_FBI": "RelatedContactNumber",
+            "Regarding": "Regarding",
+            "Regarding_Record_ID_Syspro_FBI": "RegardingID",
+            "Subject": "Subject",
+            "Task_Status": "TaskStatusID",
+            "Open_Task_Flag_Syspro_TF": "IsOpenTaskFlag",
+            "Task_Type": "TaskTypeID",
+            "Percent_Complete": "PercentComplete",
+            "ms_assignedto.NewValTable AssignedFrom": "AssignedFrom",
+            "ms_assignedfrom.NewValTable AssignedTo": "AssignedTo",
+            "Priority": "PriorityID",
+            "[tempdb].[dbo].[GetDateTime](tasks.Due_Date,tasks.Due_Time) DueDateTime": "DueDateTime",
+            "[tempdb].[dbo].[GetDateTime](tasks.Assigned_Date,tasks.Assigned_Time) AssignedDateTime": "AssignedDateTime",
+            "[tempdb].[dbo].[GetDateTime](tasks.Started_Date,tasks.Started_Time) StartedDateTime": "StartedDateTime",
+            "[tempdb].[dbo].[GetDateTime](tasks.Completed_Date,tasks.Completed_Time) CompletedDateTime": "CompletedDateTime",
+            //[Notify_Upon_Accept]
+            //[Notifiy_Upon_Decline]
+            //[Notify_Upon_Complete]
+            //[Notify_Upon_Re_Assign]
+            "Private_Syspro_TF": "IsPrivate",
+            "Create_Alarm_Syspro_TF": "IsCreateAlarm",
+            "Alarm_Time": "AlarmTime",
+            "Alarm_Units": "AlarmUnitID",
+            "Alarm_ID_Syspro_FBI": "AlarmID",
+            "Invitation_Response": "InvitationResponseID",
+            "[tempdb].[dbo].[GetDateTime](tasks.Response_Date,tasks.Response_Time) ResponseDateTime": "ResponseDateTime",
+            //Process_ID
+            "tasks.Notes": "Notes",
+            "tasks.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "tasks.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [dbo].[appt] to app_Appointment
+    {
+        "Id": 1029,
+        "Source": {
+            "Tables": "[dbo].[appt] appt",
+            "OrderBy": "order by Appointment_ID",
+            "Join": "left join adaptv3system..userloc ul on ul.Location_Name = appt.Location",
+            "JoinUser": "Assigned_To_User,Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "app_Appointment"
+        },
+        "Map": {
+            "Appointment_ID_Syspro_FBI": "AppointmentID",
+            "appt.Account_Number_Syspro_FBI": "AccountNumber",
+            "Contact_Number_Syspro_FBI": "ContactNumber",
+            "Related_Account_Number_Syspro_FBI": "RelatedAccountNumber",
+            "Related_Contact_Number_Syspro_FBI": "RelatedContactNumber",
+            "Regarding": "Regarding",
+            "Regarding_Record_ID_Syspro_FBI": "RegardingRecordID",
+            "Subject": "Subject",
+            "Activity_Type": "ActivityTypeID",
+            "Completed_Syspro_TF": "IsCompleted",
+            "ms_assignedtouser.NewValTable AssignToUserID": "AssignToUserID",
+            "Required_Attendee_Count": "RequiredAttendeeCount",
+            "Optional_Attendee_Count": "OptionalAttendeeCount",
+            "[tempdb].[dbo].[GetDateTime](appt.Start_Date,appt.Start_Time) StartDate": "StartDate",
+            "[tempdb].[dbo].[GetDateTime](appt.End_Date,appt.End_Time) EndDate": "EndDate",
+            "[tempdb].[dbo].[GetTime](appt.Start_Time) StartTime": "StartTime",
+            "[tempdb].[dbo].[GetTime](appt.End_Time) EndTime": "EndTime",
+            "All_Day_Appointment_Syspro_TF": "IsAllDayAppointment",
+            "ul.Location_ID": "LocationID",
+            "Priority": "PriorityID",
+            "Show_As": "ShowAs",
+            "Private_Syspro_TF": "IsPrivate",
+            "Can_Be_Postponed_Syspro_TF": "IsCanBePostponed",
+            "[tempdb].[dbo].[GetDateTime](appt.Postpone_Date_Limit,appt.Postpone_Time_Limit) PostponeDateLimit": "PostponeDateLimit",
+            "[tempdb].[dbo].[GetTime](appt.Postpone_Time_Limit) PostponeTimeLitmit": "PostponeTimeLitmit",
+            "Alarm_Syspro_TF": "IsAlarm",
+            "Alarm_Time": "AlarmDate",
+            "Alarm_Units": "AlarmUnits",
+            "Recurring_Syspro_TF": "IsRecurring",
+            "Notify_When_Accepted_Syspro_TF": "IsNotifyWhenAccepted",
+            "Notify_if_Declined_Syspro_TF": "IsNotifyIfDeclined",
+            "Notify_When_Completed_Syspro_TF": "IsNotifyWhenCompleted",
+            "Notify_if_Rescheduled_Syspro_TF": "IsNotifyIfRescheduled",
+            "Allowed_to_Decline_Syspro_TF": "IsAllowedToDecline",
+            "Allowed_to_Reschedule_Syspro_TF": "IsAllowedToReschedule",
+            //Process_Instance_ID
+            "appt.Notes": "Notes",
+            "appt.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "appt.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [dbo].[evenacct] to eve_Event_Accounts
+    {
+        "Id": 1030,
+        "Source": {
+            "Tables": "[dbo].[apptattd] apptattd",
+            "OrderBy": "order by Appointment_ID",
+            "JoinUser": "User_ID"
+        },
+        "Destination": {
+            "Tables": "app_Appointment_Attendee"
+        },
+        "Map": {
+            "Appointment_ID_Syspro_FBI": "AppointmentID",
+            "ms_userid.NewValTable UserID": "UserID",
+            "Invitation_Status": "InvitationStatus",
+            "convert(bigint,Appointment_ID) FirstAppointmentID": "FirstAppointmentID"
+        }
+    },
+    //migrate [dbo].[apptcal] to app_Appointment_Calendar
+    {
+        "Id": 1031,
+        "Source": {
+            "Tables": "[dbo].[apptcal] apptcal",
+            "OrderBy": "order by Appointment_ID",
+            "JoinUser": "User_ID"
+        },
+        "Destination": {
+            "Tables": "app_Appointment_Calendar"
+        },
+        "Map": {
+            "Appointment_ID_Syspro_FBI": "AppointmentID",
+            "ms_userid.NewValTable UserID": "UserID",
+            "Completed_Syspro_TF": "IsCompleted",
+            "Calendar_Record_Type": "CalendarRecordTypeID",
+            "[tempdb].[dbo].[GetDateTime](apptcal.Date,'000000') Date": "Date",
+            "All_Day_Event_Syspro_TF": "IsAllDayEvent",
+            "[tempdb].[dbo].[GetTime](apptcal.Start_Time) StartTime": "StartTime",
+            "[tempdb].[dbo].[GetTime](apptcal.End_Time) EndTime": "EndTime",
+            "Invitation_Status": "InvitationStatus",
+            "[tempdb].[dbo].[GetDateTime](apptcal.Invited_Date,apptcal.Invited_Time) InvitedDate": "InvitedDate",
+            "[tempdb].[dbo].[GetTime](apptcal.Invited_Time) InvitedTime": "InvitedTime",
+            "Invitation_Response": "InvitationResponse",
+            "[tempdb].[dbo].[GetDateTime](apptcal.Response_Date,apptcal.Response_Time) ResponseDate": "ResponseDate",
+            "[tempdb].[dbo].[GetTime](apptcal.Response_Time) ResponseTime": "ResponseTime",
+            "RTRIM(LTRIM(convert(varchar(max),isnull(Response_Notes,'')))) ResponseNotes": "ResponseNotes",
+            "convert(bigint,Appointment_ID) FirstAppointmentID": "FirstAppointmentID"
+        }
+    },
+    //migrate [dbo].[recur] to app_Recurrence
+    {
+        "Id": 1032,
+        "Source": {
+            "Tables": "[dbo].[recur] recur",
+            "OrderBy": "order by Appointment_ID",
+            "Join": "left join adaptv3system..userloc ul on ul.Location_Name = recur.Location",
+            "JoinUser": "Assigned_From,Assigned_To"
+        },
+        "Destination": {
+            "Tables": "app_Recurrence"
+        },
+        "Map": {
+            "Appointment_ID_Syspro_FBI": "AppointmentID",
+            "ms_assignedto.NewValTable AssignedTo": "AssignedTo",
+            "ms_assignedfrom.NewValTable AssignedFrom": "AssignedFrom",
+            "Activity_Type": "ActivityTypeID",
+            "Subject": "Subject",
+            "convert(varchar,ul.Location_ID) LocationID": "LocationID",
+            "Priority": "PriorityID",
+            "Show_As": "ShowAs",
+            "Private_Syspro_TF": "IsPrivate",
+            "recur.Account_Number_Syspro_FBI": "AccountNumber",
+            "Contact_Number_Syspro_FBI": "ContactNumber",
+            "Related_Account_Number_Syspro_FBI": "RelatedAccountNumber",
+            "Related_Contact_Number_Syspro_FBI": "RelatedContactNumber",
+            "Regarding_Type": "RegardingTypeID",
+            "Regarding_ID_Syspro_FBI": "RegardingID",
+            "Create_Alarm_Syspro_TF": "IsCreateAlarm",
+            "Alarm_Period": "AlarmPeriod",
+            "Alarm_Units": "AlarmUnits",
+            "Required_Attendee_Count": "RequiredAttendeeCount",
+            "Optional_Attendee_Count": "OptionalAttendeeCount",
+            "Allowed_to_Reschedule_Syspro_TF": "IsAllowedToReschedule",
+            "[tempdb].[dbo].[GetTime](recur.Appointment_Start_Time) AppointmentStartTime": "AppointmentStartTime",
+            "[tempdb].[dbo].[GetTime](recur.Appointment_End_Time) AppointmentEndTime": "AppointmentEndTime",
+            "All_Day_Appointment_Syspro_TF": "IsAllDayAppointment",
+            "Number_of_Days": "NumberOfDays",
+            "Recurrence_Pattern": "RecurrencePattern",
+            "Daily__Day_Count": "DailyDayCount",
+            "Daily__Day_Units": "DailyDayUnits",
+            "Weekly__Week_Count": "WeeklyWeekCount",
+            "Weekly__Sunday_Syspro_TF": "IsWeeklySunday",
+            "Weekly__Monday_Syspro_TF": "IsWeeklyMonday",
+            "Weekly__Tuesday_Syspro_TF": "IsWeeklyTuesday",
+            "Weekly__Wednesday_Syspro_TF": "IsWeeklyWednesday",
+            "Weekly__Thursday_Syspro_TF": "IsWeeklyThursday",
+            "Weekly__Friday_Syspro_TF": "IsWeeklyFriday",
+            "Weekly__Saturday_Syspro_TF": "IsWeeklySaturday",
+            "Monthly__Pattern_Type": "MonthlyPatternTypeID",
+            "Monthly__Fixed_Day_of_Month": "MonthFixedDayOfMonth",
+            "Monthly__Fixed_Month_Count": "MonthFixedMonthCount",
+            "Monthly__Relative_Day_of_Month": "MonthlyRelativeDayOfMonth",
+            "Monthly__Relative_Day_of_Week": "MonthlyRelativeDayOfWeek",
+            "Monthly__Relative_Month_Count": "MonthlyRelativeMonthCount",
+            "Yearly__Pattern_Type": "YearlyPatternTypeID",
+            "Yearly__Fixed_Month_Number": "YearlyFixedMonthNumber",
+            "Yearly__Fixed_Day_Number": "YearlyFixedDayNumber",
+            "Yearly__Relative_Day_of_Month": "YearlyRelativeDayOfMonth",
+            "Yearly__Relative_Day_of_Week": "YearlyRelativeDayOfWeek",
+            "Yearly__Relative_Month_Number": "YearlyRelativeMonthNumber",
+            "[tempdb].[dbo].[GetDateTime](recur.Recurrence_Start_Date,'000000') RecurrenceStartDate": "RecurrenceStartDate",
+            "Recurrence_Ends": "RecurrenceEnds",
+            "[tempdb].[dbo].[GetDateTime](recur.Recurrence_End_Date,'000000') RecurrenceEndDate": "RecurrenceEndDate",
+            "Recurrence_End_Count": "RecurrenceEndCount",
+            "RTRIM(LTRIM(convert(varchar(max),isnull(Appointment_Notes,'')))) AppointmentNotes": "AppointmentNotes"
+        }
+    },
+    //migrate [dbo].[recattd] to app_Recurrence_Attendee
+    {
+        "Id": 1033,
+        "Source": {
+            "Tables": "[dbo].[recattd] recattd",
+            "OrderBy": "order by Recurring_Pattern_ID",
+            "JoinUser": "User_ID"
+        },
+        "Destination": {
+            "Tables": "app_Recurrence_Attendee"
+        },
+        "Map": {
+            "Recurring_Pattern_ID": "RecurringPatternID",
+            "ms_userid.NewValTable UserID": "UserID",
+            "Invitation_Status": "InvitationStatus"
+        }
+    },
+    //migrate [dbo].[recurser] to app_Recurrence_Series
+    {
+        "Id": 1034,
+        "Source": {
+            "Tables": "[dbo].[recurser] recurser",
+            "OrderBy": "order by Series_Appointment_ID"
+        },
+        "Destination": {
+            "Tables": "app_Recurrence_Series"
+        },
+        "Map": {
+            "Series_Appointment_ID_Syspro_FBI": "SeriesAppointmentID",
+            "Recurrence_Appointment_ID_Syspro_FBI": "RecurrenceAppointmentID",
+            "Last_Recurrence_in_Series_Syspro_TF": "IsLastRecurrenceInSeries"
+        }
+    },
+    //migrate [dbo].[job_recur] to rpt_Job_Recurrence
+    {
+        "Id": 1035,
+        "Source": {
+            "Tables": "[dbo].[job_recur] jr",
+            "OrderBy": "order by Job_ID"
+        },
+        "Destination": {
+            "Tables": "rpt_Job_Recurrence"
+        },
+        "Map": {
+            "Job_ID_Syspro_FBI": "JobQueueID",
+            "Recurrence_Pattern": "RecurrencePattern",
+            "Daily__Day_Count": "DailyDayCount",
+            "Daily__Day_Units": "DailyDayUnits",
+            "Weekly__Week_Count": "WeeklyWeekCount",
+            "Weekly__Sunday_Syspro_TF": "IsWeeklySunday",
+            "Weekly__Monday_Syspro_TF": "IsWeeklyMonday",
+            "Weekly__Tuesday_Syspro_TF": "IsWeeklyTuesday",
+            "Weekly__Wednesday_Syspro_TF": "IsWeeklyWednesday",
+            "Weekly__Thursday_Syspro_TF": "IsWeeklyThursday",
+            "Weekly__Friday_Syspro_TF": "IsWeeklyFriday",
+            "Weekly__Saturday_Syspro_TF": "IsWeeklySaturday",
+            "Monthly__Pattern_Type": "MonthlyPatternTypeID",
+            "Monthly__Fixed_Day_of_Month": "MonthFixedDayOfMonth",
+            "Monthly__Fixed_Month_Count": "MonthFixedMonthCount",
+            "Monthly__Relative_Day_of_Month": "MonthlyRelativeDayOfMonth",
+            "Monthly__Relative_Day_of_Week": "MonthlyRelativeDayOfWeek",
+            "Monthly__Relative_Month_Count": "MonthlyRelativeMonthCount",
+            "Yearly__Pattern_Type": "YearlyPatternTypeID",
+            "Yearly__Fixed_Month_Number": "YearlyFixedMonthNumber",
+            "Yearly__Fixed_Day_Number": "YearlyFixedDayNumber",
+            "Yearly__Relative_Day_of_Month": "YearlyRelativeDayOfMonth",
+            "Yearly__Relative_Day_of_Week": "YearlyRelativeDayOfWeek",
+            "Yearly__Relative_Month_Number": "YearlyRelativeMonthNumber",
+            "[tempdb].[dbo].[GetDateTime](jr.Recurrence_Start_Date,'000000') RecurrenceStartDate": "RecurrenceStartDate",
+            "Recurrence_Ends": "RecurrenceEnds",
+            "[tempdb].[dbo].[GetDateTime](jr.Recurrence_End_Date,'000000') RecurrenceEndDate": "RecurrenceEndDate",
+            "Recurrence_End_Count": "RecurrenceEndCount"
+        }
+    },
+    //migrate [dbo].[sales_goals] to opp_Sale_Goal
+    {
+        "Id": 1036,
+        "Source": {
+            "Tables": "[dbo].[sales_goals] sg",
+            "OrderBy": "order by Goal_Record_ID",
+            "JoinUser": "Salesperson"
+        },
+        "Destination": {
+            "Tables": "opp_Sale_Goal"
+        },
+        "Map": {
+            "Goal_Record_ID": "SaleGoalID",
+            "ms_salesperson.NewValTable SalePersonUserID": "SalePersonUserID",
+            "Applies_To_Account": "WhichAccountTypeID",
+            "Account_Type": "AccontTypeID",
+            "sg.Account_Number_Syspro_FBI": "AccountNumber",
+            "Applies_To_Location": "WhichLocationTypeID",
+            "Region": "RegionID",
+            "Territory": "TerritoryID",
+            "Applies_To_Item": "WhichItemTypeID",
+            "Item_Class": "ItemClassID",
+            "Item_Number": "ItemNumber",
+            "[tempdb].[dbo].[GetDateTime](sg.Date_From,'000000') FromDate": "FromDate",
+            "[tempdb].[dbo].[GetDateTime](sg.Date_To,'000000') ToDate": "ToDate",
+            "Amount_Syspro_FD": "Amount"
+            //TotalPendingSales
+            //TotalActualSales
+        }
+    },
     /*migrate tab in record*/
     //MODULE ACCOUNT AND CONTACT
     //migrate [dbo].[relacct] to acc_Relationship_Account
@@ -1431,30 +1959,6 @@
             "Received_Mail_Box": "ReceivedMailBox",
             "Subject_Text": "SubjectText",
             "Body_Text": "BodyText"
-        }
-    },
-    //migrate [dbo].[milest] to wof_Milestone_Status
-    {
-        "Id": 2016,
-        "Source": {
-            "Tables": "[dbo].[milest] milest",
-            "OrderBy": "order by Parent_Record_Type",
-            "JoinUser": "Created_By,Modified_By"
-        },
-        "Destination": {
-            "Tables": "wof_Milestone_Status"
-        },
-        "Map": {
-            "Parent_Record_Type": "ModuleID",
-            "Parent_Record_ID_Syspro_FBI": "RecID",
-            "Milestone_ID": "MilestoneID",
-            "Status": "StatusID",
-            "[tempdb].[dbo].[GetDateTime](milest.Completed_Date,'000000') CompletedDate": "CompletedDate",
-            "milest.Notes": "Notes",
-            "milest.Created_Date": "CreatedDate",
-            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
-            "milest.Modified_Date": "UpdatedDate",
-            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     }
 ]

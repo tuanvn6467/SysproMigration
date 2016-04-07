@@ -587,7 +587,10 @@ namespace SysproMigration.Models
                         var dr = QueryBlock(queue.IsGetKeys > 0 ? desConn : sourceConn,
                             queue.IsGetKeys > 0
                                 ? queue.SqlQuery
-                                : queue.SqlQuery.CreateQueryFromQueue(p, fieldsMap.Size > 0 ? fieldsMap.Size : _batchSize, fieldsMap.WhereGlobal), false,
+                            : queue.SqlQuery.CreateQueryFromQueue(p, 
+                                            fieldsMap.Size > 0 ? fieldsMap.Size : _batchSize, 
+                                            fieldsMap.WhereGlobal)
+                            , false,
                             out done,
                             out records))
                     {
@@ -598,18 +601,20 @@ namespace SysproMigration.Models
                         {
                             desConn.CloseConnection();
                             desConn = DestinationConnectionString.CreateAndOpenConnection("Target With Script" + fieldsMap.Destination.Script);
+                            Logging.PushInfo("\nStart run script at:"+DateTime.Now);
                             Utils.Execute(desConn, fieldsMap.Destination.Script.GetTextInQueryFixedFolder(), fieldsMap.Destination.TimeOut);
+                            Logging.PushInfo("\nEnd Run script at:" + DateTime.Now);
                             desConn.CloseConnection();
                         }
-                        var migrationConn = MigrationConnectionString.CreateAndOpenConnection("Syspro Migration");
-                        queue.Status = (int) QueueStatusEnum.Success;
-                        Utils.UpdateQueueTable(migrationConn, queue);
-                        migrationConn.CloseConnection();
                         dr.Close();
                         Logging.PushInfo("Copyied");
                     }
                     p++;
                 }
+                var migrationConn = MigrationConnectionString.CreateAndOpenConnection("Syspro Migration");
+                queue.Status = (int)QueueStatusEnum.Success;
+                Utils.UpdateQueueTable(migrationConn, queue);
+                migrationConn.CloseConnection();
                 //raise table migrated event
                 if (TableMigrated != null && queue.IsLastRecord > 0)
                 {
@@ -625,6 +630,9 @@ namespace SysproMigration.Models
                 queue.Status = (int)QueueStatusEnum.Error;
                 queue.Exception = ex.ToString();
                 Utils.UpdateQueueTable(migrationConn, queue);
+
+                TableMigratedCount++;
+
                 migrationConn.CloseConnection();
             }
             finally
