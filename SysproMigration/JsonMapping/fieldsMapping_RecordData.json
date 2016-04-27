@@ -122,7 +122,7 @@
             "convert(bigint,acc.Account_Number) AccountNumber": "AccountNumber",
             "acc.Account_Name": "AccountName",
             "Account_Full_Name": "AccountFullName",
-            "Company_ID": "CompanyID",
+            "'' CompanyID": "CompanyID",
             "Customer_Number": "CustomerNumber",
             "Vendor_Number": "VendorNumber",
             "convert(varchar(255),acc.Account_Type) AccountTypeID": "AccountTypeID",
@@ -143,7 +143,7 @@
             //"Last_Service_Date": "",
             "convert(varchar(255),Support_Basis) SupportStatusID": "SupportStatusID",
             "Free_Support_Expires_Syspro_TF": "ReceivesFreeSupport",
-            "[tempdb].[dbo].[GetDate](Free_Support_Expires_Date) ReceivesFreeSupportUntil": "ReceivesFreeSupportUntil",
+            "[tempdb].[dbo].[GetDateTime](Free_Support_Expires_Date,'000000') ReceivesFreeSupportUntil": "ReceivesFreeSupportUntil",
             "convert(varchar(255),Service_Location) ServiceLocationID": "ServiceLocationID",
             "convert(varchar(255),acc.Service_Portal_Access_Level) ServicePortalAccessLevel": "ServicePortalAccessLevel",
             "convert(bigint,Primary_Sales_Contact) PrimaryContactID": "PrimaryContactID",
@@ -189,7 +189,7 @@
             "Closed_Service_Tickets": "TotalClosedServiceTicket",
             //"Last_Service_Contact": "",
             "convert(varchar(255),acc.Last_Milestone) LastMilestoneID": "LastMilestoneID",
-            "[tempdb].[dbo].[GetDate](acc.Last_Milestone_Date) LastMilestoneDate": "LastMilestoneDate",
+            "[tempdb].[dbo].[GetDateTime](acc.Last_Milestone_Date,'000000') LastMilestoneDate": "LastMilestoneDate",
             "convert(varchar(255),acc.Next_Milestone) NextMilestoneID": "NextMilestoneID",
             "convert(varchar(255),Tax_Schedule) TaxScheduleID": "TaxScheduleID",
             "convert(varchar(255),Payment_Terms) PaymentTermID": "PaymentTermID",
@@ -353,7 +353,7 @@
             //AccountingContactNumber
             "ct.Notes": "Notes",
             "ct.Last_Milestone": "LastMilestoneID",
-            "[tempdb].[dbo].[GetDate](ct.Last_Milestone_Date) LastMilestoneDate": "LastMilestoneDate",
+            "[tempdb].[dbo].[GetDateTime](ct.Last_Milestone_Date,'000000') LastMilestoneDate": "LastMilestoneDate",
             "ct.Next_Milestone": "NextMilestoneID",
             //Service_Portal_Access_Level
             //LastActivityDate
@@ -469,42 +469,42 @@
             "convert(varchar, Ticket_Status) TicketStatusTypeID": "TicketStatusTypeID",
             //"Open_Flag"
             //Skip_Client_Approval_Job
-            "[tempdb].[dbo].[GetDateTime](st.Reported_Date,'000000') ReportedDate": "ReportedDate",
-            "[tempdb].[dbo].[GetTime](st.Reported_Time) ReportedTime": "ReportedTime",
+            "[tempdb].[dbo].[GetDateTime](st.Reported_Date,st.Reported_Time) ReportedDate": "ReportedDate",
+            "convert(time,[tempdb].[dbo].[GetDateTime](st.Reported_Date,st.Reported_Time)) ReportedTime": "ReportedTime",
             "ms_reportedby.NewValTable ReportedBy": "ReportedBy",
             "convert(varchar,Ticket_Source) SourceID": "SourceID",
-            "[tempdb].[dbo].[GetDateTime](st.Started_Date,'000000') StartedDate": "StartedDate",
-            "[tempdb].[dbo].[GetTime](st.Started_Time) StartedTime": "StartedTime",
+            "[tempdb].[dbo].[GetDateTime](st.Started_Date,st.Started_Time) StartedDate": "StartedDate",
+            "convert(time,[tempdb].[dbo].[GetDateTime](st.Started_Date,st.Started_Time)) StartedTime": "StartedTime",
             "ms_startedby.NewValTable StartedBy": "StartedBy",
-            "[tempdb].[dbo].[GetDateTime](st.Must_Respond_By_Date,'000000') RespondedDate": "RespondedDate",
-            "[tempdb].[dbo].[GetTime](st.Must_Respond_By_Time) RespondedTime": "RespondedTime",
-            "[tempdb].[dbo].[GetDateTime](st.On_Hold_Date,'000000') OnHoldDate": "OnHoldDate",
-            "[tempdb].[dbo].[GetTime](st.On_Hold_Time) OnHoldTime": "OnHoldTime",
+            "[tempdb].[dbo].[GetDateTime](st.Must_Respond_By_Date,st.Must_Respond_By_Time) RespondedDate": "RespondedDate",
+            "convert(time,[tempdb].[dbo].[GetDateTime](st.Must_Respond_By_Date,st.Must_Respond_By_Time)) RespondedTime": "RespondedTime",
+            "[tempdb].[dbo].[GetDateTime](st.On_Hold_Date,st.On_Hold_Time) OnHoldDate": "OnHoldDate",
+            "convert(time,[tempdb].[dbo].[GetDateTime](st.On_Hold_Date,st.On_Hold_Time)) OnHoldTime": "OnHoldTime",
             "ms_holdplacedbyuser.NewValTable HoldPlacedByUserID": "HoldPlacedByUserID",
             "convert(varchar, On_Hold_Reason_ID) HoldReasonID": "HoldReasonID",
             "Hold_Waiting_For": "HoldWaitingForTypeID",
             "ms_holdwaitingforuser.NewValTable HoldWaitingForUserID": "HoldWaitingForUserID",
             "convert(bigint, st.Hold_Waiting_for_Account) HoldWaitingForAccountNumber": "HoldWaitingForAccountNumber",
-            "[tempdb].[dbo].[GetDateTime](st.Submitted_to_Client_Date,'000000') SubmittedToClientDate": "SubmittedToClientDate",
-            "[tempdb].[dbo].[GetTime](st.Submitted_to_Client_Time) SubmittedToClientTime": "SubmittedToClientTime",
+            "[tempdb].[dbo].[GetDateTime](st.Submitted_to_Client_Date,st.Submitted_to_Client_Time) SubmittedToClientDate": "SubmittedToClientDate",
+            "convert(time,[tempdb].[dbo].[GetDateTime](st.Submitted_to_Client_Date,st.Submitted_to_Client_Time)) SubmittedToClientTime": "SubmittedToClientTime",
             "ms_submittedtoclientby.NewValTable SubmittedToClientBy": "SubmittedToClientBy",
             //"Accepted_By_Client"
-            "[tempdb].[dbo].[GetDateTime](st.Accepted_Date,'000000') AcceptedDate": "AcceptedDate",
-            "[tempdb].[dbo].[GetTime](st.Accepted_Time) AcceptedTime": "AcceptedTime",
+            "[tempdb].[dbo].[GetDateTime](st.Accepted_Date,st.Accepted_Time) AcceptedDate": "AcceptedDate",
+            "convert(time,[tempdb].[dbo].[GetDateTime](st.Accepted_Date,st.Accepted_Time)) AcceptedTime": "AcceptedTime",
             "ms_acceptanceenteredby.NewValTable AcceptedBy": "AcceptedBy",
             //"Accepted_By_Contact_Number"
-            "[tempdb].[dbo].[GetDateTime](st.Submitted_for_Approval_Date,'000000') SubmittedForApprovalDate": "SubmittedForApprovalDate",
-            "[tempdb].[dbo].[GetTime](st.Submitted_for_Approval_Time) SubmittedForApprovalTime": "SubmittedForApprovalTime",
+            "[tempdb].[dbo].[GetDateTime](st.Submitted_for_Approval_Date,st.Submitted_for_Approval_Time) SubmittedForApprovalDate": "SubmittedForApprovalDate",
+            "convert(time,[tempdb].[dbo].[GetDateTime](st.Submitted_for_Approval_Date,st.Submitted_for_Approval_Time)) SubmittedForApprovalTime": "SubmittedForApprovalTime",
             "ms_submittedforapprovalby.NewValTable SubmittedForApprovalBy": "SubmittedForApprovalBy",
             "Approval_Status": "ApprovalStatusID",
-            "[tempdb].[dbo].[GetDateTime](st.Approved_Declined_Date,'000000') ApprovedDeclinedDate": "ApprovedDeclinedDate",
-            "[tempdb].[dbo].[GetTime](st.Approved_Declined_Time) ApprovedDeclinedTime": "ApprovedDeclinedTime",
+            "[tempdb].[dbo].[GetDateTime](st.Approved_Declined_Date,st.Approved_Declined_Time) ApprovedDeclinedDate": "ApprovedDeclinedDate",
+            "convert(time,[tempdb].[dbo].[GetDateTime](st.Approved_Declined_Date,st.Approved_Declined_Time)) ApprovedDeclinedTime": "ApprovedDeclinedTime",
             "ms_approveddeclinedby.NewValTable ApprovedDeclinedBy": "ApprovedDeclinedBy",
-            "[tempdb].[dbo].[GetDateTime](st.Closed_Date,'000000') ClosedDate": "ClosedDate",
-            "[tempdb].[dbo].[GetTime](st.Closed_Time) ClosedTime": "ClosedTime",
+            "[tempdb].[dbo].[GetDateTime](st.Closed_Date,st.Closed_Time) ClosedDate": "ClosedDate",
+            "convert(time,[tempdb].[dbo].[GetDateTime](st.Closed_Date,st.Closed_Time)) ClosedTime": "ClosedTime",
             "ms_closedbyuser.NewValTable ClosedBy": "ClosedBy",
-            "[tempdb].[dbo].[GetDateTime](st.Posted_Date,'000000') PostedDate": "PostedDate",
-            "[tempdb].[dbo].[GetTime](st.Posted_Time) PostedTime": "PostedTime",
+            "[tempdb].[dbo].[GetDateTime](st.Posted_Date,st.Posted_Time) PostedDate": "PostedDate",
+            "convert(time,[tempdb].[dbo].[GetDateTime](st.Posted_Date,st.Posted_Time)) PostedTime": "PostedTime",
             "ms_postedby.NewValTable PostedBy": "PostedBy",
             //Printed
             //Printed_Date
@@ -526,28 +526,28 @@
             "Assigned_To": "AssignedTo",
             "(case when Assigned_To = 2 then [tempdb].[dbo].GetUserIDNewCRM(Assigned_To_ID) else 0 end) AssignedToUser": "AssignedToUser",
             "convert(int,case when Assigned_To = 3 then Assigned_To_ID else NULL end) AssignedToQueue": "AssignedToQueue",
-            "[tempdb].[dbo].[GetDateTime](st.Assigned_Date,'000000') AssignedDate": "AssignedDate",
-            "[tempdb].[dbo].[GetTime](st.Assigned_Time) AssignedTime": "AssignedTime",
+            "[tempdb].[dbo].[GetDateTime](st.Assigned_Date,st.Assigned_Time) AssignedDate": "AssignedDate",
+            "convert(time,[tempdb].[dbo].[GetDateTime](st.Assigned_Date,st.Assigned_Time)) AssignedTime": "AssignedTime",
             //"[Original_Assigned_To]"
             //"[Original_Assigned_To_ID]"
             //"[Original_Assigned_Date]"
             //"[Original_Assigned_Time]"
             "convert(varchar,Escalation_Level) EscalationLevelID": "EscalationLevelID",
-            "[tempdb].[dbo].[GetDateTime](st.Last_Escalation_Date,'000000') LastEscalationDate": "LastEscalationDate",
-            "[tempdb].[dbo].[GetTime](st.Last_Escalation_Time) LastEscalationTime": "LastEscalationTime",
+            "[tempdb].[dbo].[GetDateTime](st.Last_Escalation_Date,st.Last_Escalation_Time) LastEscalationDate": "LastEscalationDate",
+            "convert(time,[tempdb].[dbo].[GetDateTime](st.Last_Escalation_Date,st.Last_Escalation_Time)) LastEscalationTime": "LastEscalationTime",
             "ms_lastescalationuser.NewValTable LastEscalationBy": "LastEscalationBy",
             "Escalation_Pattern_ID": "EscalationPatternID",
             "Routing_ID": "RoutingID",
-            "[tempdb].[dbo].[GetDateTime](st.Next_Escalation_Date,'000000') NextEscalationDate": "NextEscalationDate",
-            "[tempdb].[dbo].[GetTime](st.Next_Escalation_Time) NextEscalationTime": "NextEscalationTime",
+            "[tempdb].[dbo].[GetDateTime](st.Next_Escalation_Date,st.Next_Escalation_Time) NextEscalationDate": "NextEscalationDate",
+            "convert(time,[tempdb].[dbo].[GetDateTime](st.Next_Escalation_Date,st.Next_Escalation_Time)) NextEscalationTime": "NextEscalationTime",
             //"Next_Escalation_Trigger": "NextEscalationTrigger",
             //Last_Activity_Date
             //Last_Activity_ID
             //Next_Activity_Date
             //Next_Activity_ID
             "Response_Given_Syspro_TF": "IsResponseGiven",
-            "[tempdb].[dbo].[GetDateTime](st.Response_Date,'000000') ResponseRequiredByDate": "ResponseRequiredByDate",
-            "[tempdb].[dbo].[GetTime](st.Response_Time) ResponseRequiredByTime": "ResponseRequiredByTime",
+            "[tempdb].[dbo].[GetDateTime](st.Response_Date,st.Response_Time) ResponseRequiredByDate": "ResponseRequiredByDate",
+            "convert(time,[tempdb].[dbo].[GetDateTime](st.Response_Date,st.Response_Time)) ResponseRequiredByTime": "ResponseRequiredByTime",
             //Response_User
             "Total_Activity_Duration": "TotalActivityDurationMinutes",
             //"Override_Duration"
@@ -1052,10 +1052,12 @@
             "Tables": "[dbo].[act] act",
             "OrderBy": "order by Activity_ID",
             "Join": "outer apply (select top 1 * from [dbo].[HTMLNotes] HTMLNotes where HTMLNotes.Record_ID = act.Activity_ID and HTMLNotes.Record_Type = 34) as HTMLNotes", //module activity
+            "Join1": "left join [adaptv3system].[dbo].[acttp] acttp on acttp.Activity_Type_ID = act.Activity_Type",
             "JoinUser": "Performed_By"
         },
         "Destination": {
-            "Tables": "act_Activity"
+            "Tables": "act_Activity",
+            "Script": "QueryCRM_UpdateActivityNotes.txt"
         },
         "Map": {
             "Activity_ID_Syspro_FBI": "ActivityID",
@@ -1070,15 +1072,15 @@
             "Marketing_Campaign": "CampaignNumber",
             "Marketing_Event": "EventNumber",
             "Subject": "Subject",
-            "[tempdb].[dbo].[GetDate](act.Activity_Date) ActivityDate": "ActivityDate",
-            "[tempdb].[dbo].[GetTime](act.Activity_Time) ActivityTime": "ActivityTime",
+            "convert(date,[tempdb].[dbo].[GetDateTime](act.Activity_Date,act.Activity_Time)) ActivityDate": "ActivityDate",
+            "convert(time,[tempdb].[dbo].[GetDateTime](act.Activity_Date,act.Activity_Time)) ActivityTime": "ActivityTime",
             "convert(bigint, Duration) Duration": "Duration",
             "ms_performedby.NewValTable PerformedUserID": "PerformedUserID",
             "Location": "Location",
-            "Activity_Type": "ActivityTypeID",
-            "Medium": "Medium",
+            "case when acttp.Activity_Type_ID is null then null else act.Activity_Type end ActivityTypeID": "ActivityTypeID",
+            "act.Medium": "Medium",
             "Attached_Record_ID_Syspro_FBI": "AttachedRecordID",
-            "Direction": "Direction",
+            "act.Direction": "Direction",
             "Activity_Result": "ActivityResultID",
             "Private_Syspro_TF": "IsPrivate",
             "Web_Message_Read_Syspro_TF": "IsWebMessageRead",
@@ -1091,7 +1093,7 @@
             "Email_Sent_Received_Syspro_TF": "IsEmailSentReceived",
             "Ticket_Labor_Record": "TicketLaborRecordID",
             "Note_Type": "NoteTypeID",
-            "(case when HTMLNotes.Record_ID > 0 then convert(varchar(max),convert(varbinary(max),HTMLNotes.Note_Storage)) else RTRIM(LTRIM(convert(varchar(max),isnull(act.Notes,'')))) end) Notes": "Notes"
+            "(case when HTMLNotes.Record_ID > 0 then case when convert(varchar(max),convert(varbinary(max),HTMLNotes.Note_Storage),1) like '0x3C00%' then convert(nvarchar(max),convert(varbinary(max),HTMLNotes.Note_Storage)) else convert(varchar(max),convert(varbinary(max),HTMLNotes.Note_Storage))end else case when RTRIM(LTRIM(convert(varchar(max),isnull(act.Notes,'')))) like '%' + CHAR(10) + '%' then Replace(RTRIM(LTRIM(convert(varchar(max),isnull(act.Notes,'')))), char(10), '<br/>') else  RTRIM(LTRIM(convert(varchar(max),isnull(act.Notes,'')))) end end) Notes": "Notes"
             //"act.Notes": "Notes",
         }
     },
@@ -1133,7 +1135,8 @@
             "Activity_ID_Syspro_FBI": "ActivityID",
             "Attachment_Type": "AttachTypeID",
             "Sequence_Number": "SeqNo",
-            "File_Name": "FileName"
+            "File_Name": "FileName",
+            "File_Name PhysicalName": "PhysicalName"
             //Document_Template_ID
             //Attachment_ID
         }
@@ -1302,8 +1305,8 @@
             "Optional_Attendee_Count": "OptionalAttendeeCount",
             "[tempdb].[dbo].[GetDateTime](appt.Start_Date,appt.Start_Time) StartDate": "StartDate",
             "[tempdb].[dbo].[GetDateTime](appt.End_Date,appt.End_Time) EndDate": "EndDate",
-            "[tempdb].[dbo].[GetTime](appt.Start_Time) StartTime": "StartTime",
-            "[tempdb].[dbo].[GetTime](appt.End_Time) EndTime": "EndTime",
+            "convert(time,[tempdb].[dbo].[GetDateTime](appt.Start_Date,appt.Start_Time)) StartTime": "StartTime",
+            "convert(time,[tempdb].[dbo].[GetDateTime](appt.End_Date,appt.End_Time)) EndTime": "EndTime",
             "All_Day_Appointment_Syspro_TF": "IsAllDayAppointment",
             "ul.Location_ID": "LocationID",
             "Priority": "PriorityID",
@@ -1311,7 +1314,7 @@
             "Private_Syspro_TF": "IsPrivate",
             "Can_Be_Postponed_Syspro_TF": "IsCanBePostponed",
             "[tempdb].[dbo].[GetDateTime](appt.Postpone_Date_Limit,appt.Postpone_Time_Limit) PostponeDateLimit": "PostponeDateLimit",
-            "[tempdb].[dbo].[GetTime](appt.Postpone_Time_Limit) PostponeTimeLitmit": "PostponeTimeLitmit",
+            "convert(time,[tempdb].[dbo].[GetDateTime](appt.Postpone_Date_Limit,appt.Postpone_Time_Limit)) PostponeTimeLitmit": "PostponeTimeLitmit",
             "Alarm_Syspro_TF": "IsAlarm",
             "Alarm_Time": "AlarmDate",
             "Alarm_Units": "AlarmUnits",
@@ -1330,7 +1333,7 @@
             "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
     },
-    //migrate [dbo].[evenacct] to eve_Event_Accounts
+    //migrate [dbo].[apptattd] to app_Appointment_Attendee
     {
         "Id": 1030,
         "Source": {
@@ -1341,9 +1344,10 @@
         "Destination": {
             "Tables": "app_Appointment_Attendee"
         },
+        "WhereGlobal": "UserID > 0",
         "Map": {
             "Appointment_ID_Syspro_FBI": "AppointmentID",
-            "ms_userid.NewValTable UserID": "UserID",
+            "IsNull(ms_userid.NewValTable,0) UserID": "UserID",
             "Invitation_Status": "InvitationStatus",
             "convert(bigint,Appointment_ID) FirstAppointmentID": "FirstAppointmentID"
         }
@@ -1370,10 +1374,10 @@
             "[tempdb].[dbo].[GetTime](apptcal.End_Time) EndTime": "EndTime",
             "Invitation_Status": "InvitationStatus",
             "[tempdb].[dbo].[GetDateTime](apptcal.Invited_Date,apptcal.Invited_Time) InvitedDate": "InvitedDate",
-            "[tempdb].[dbo].[GetTime](apptcal.Invited_Time) InvitedTime": "InvitedTime",
+            "convert(time,[tempdb].[dbo].[GetDateTime](apptcal.Invited_Date,apptcal.Invited_Time)) InvitedTime": "InvitedTime",
             "Invitation_Response": "InvitationResponse",
             "[tempdb].[dbo].[GetDateTime](apptcal.Response_Date,apptcal.Response_Time) ResponseDate": "ResponseDate",
-            "[tempdb].[dbo].[GetTime](apptcal.Response_Time) ResponseTime": "ResponseTime",
+            "convert(time,[tempdb].[dbo].[GetDateTime](apptcal.Response_Date,apptcal.Response_Time)) ResponseTime": "ResponseTime",
             "RTRIM(LTRIM(convert(varchar(max),isnull(Response_Notes,'')))) ResponseNotes": "ResponseNotes",
             "convert(bigint,Appointment_ID) FirstAppointmentID": "FirstAppointmentID"
         }
@@ -1667,8 +1671,8 @@
             "Parent_Record_Type": "ModuleID",
             "Parent_Record_Number_Syspro_FD": "ModuleRecID",
             //Expense_Record_ID
-            "[tempdb].[dbo].[GetDateTime](Expense_Date,'000000') ExpenseDate": "ExpenseDate",
-            "[tempdb].[dbo].[GetTime](Expense_Time) ExpenseTime": "ExpenseTime",
+            "[tempdb].[dbo].[GetDateTime](Expense_Date,Expense_Time) ExpenseDate": "ExpenseDate",
+            "convert(time,[tempdb].[dbo].[GetDateTime](Expense_Date,Expense_Time)) ExpenseTime": "ExpenseTime",
             "ms_reportedby.NewValTable ReportedUserID": "ReportedUserID",
             "Expense_Category": "ExpenseCategoryID",
             "Description": "Description",
@@ -1731,7 +1735,7 @@
             "Opportunity_Number_Syspro_FBI": "OpportunityNumber",
             "Competitor_ID": "CompetitorID",
             "Competitor_Name": "OppCompetitorName",
-            "[tempdb].[dbo].[GetDate](Date_Reported) DateReported": "DateReported",
+            "convert(date,[tempdb].[dbo].[GetDateTime](Date_Reported,'000000')) DateReported": "DateReported",
             "ms_reportedby.NewValTable ReportedUserID": "ReportedUserID",
             "Our_Competitive_Strength": "OurCompetitiveStrengthTypeID",
             "Importance_to_Customer": "ImportanceToCustomerTypeID",
@@ -1794,7 +1798,7 @@
             "Opportunity_Number_Syspro_FBI": "OpportunityNumber",
             "Issue_Type": "IssueTypeID",
             "Issue_Name": "IssueName",
-            "[tempdb].[dbo].[GetDate](Date_Reported) DateReported": "DateReported",
+            "convert(date,[tempdb].[dbo].[GetDateTime](Date_Reported,'000000')) DateReported": "DateReported",
             "ms_reportedby.NewValTable ReportedUserID": "ReportedUserID",
             "Importance": "ImportanceToCustomerTypeID",
             "Competitive_Strength": "CompetitiveStrengthTypeID",
@@ -1817,8 +1821,8 @@
             "Associated_Account_Number": "AssociatedAccountNumber",
             "Associated_Contact_Number": "AssociatedContactNumber",
             "Association_Type": "AssociationTypeID",
-            "[tempdb].[dbo].[GetDateTime](Date_Discovered,'000000') DiscoveredDate": "DiscoveredDate",
-            "[tempdb].[dbo].[GetTime](Time_Discovered) DiscoveredTime": "DiscoveredTime",
+            "[tempdb].[dbo].[GetDateTime](Date_Discovered,Time_Discovered) DiscoveredDate": "DiscoveredDate",
+            "convert(time,[tempdb].[dbo].[GetDateTime](Date_Discovered,Time_Discovered)) DiscoveredTime": "DiscoveredTime",
             "oppassoc.Notes": "Notes"
         }
     },
@@ -1951,7 +1955,8 @@
             "OrderBy": "order by Campaign_Number"
         },
         "Destination": {
-            "Tables": "cam_Email_Filter"
+            "Tables": "cam_Email_Filter",
+            "Script": "QueryCRM_UpdateTotal.txt"
         },
         "Map": {
             "Campaign_Number_Syspro_FBI": "CampaignNumber",

@@ -35,7 +35,8 @@
 
             txtDestinationUserLogin: '#DestinationUserLogin',
             txtDestinationUserPassword: '#DestinationUserPassword',
-            IsMigrateCustomData: "#IsMigrateCustomData"
+            IsMigrateCustomData: "#IsMigrateCustomData",
+            TimeZoneSource: "#timeZoneSource",
         },
         totalTableMigrateCount: 0,
         tableMigratedCount: 0,
@@ -172,7 +173,9 @@
                         userPassword: $(ui.txtDestinationUserPassword).val(),
                         tennantID: $(ui.dbDestinationCompany + ' option:selected').attr("tennantID"),
                         databaseID: $(ui.dbDestinationCompany + ' option:selected').val(),
-                        isMigrateCustomData:$(ui.IsMigrateCustomData).is(":checked"),
+                        isMigrateCustomData: $(ui.IsMigrateCustomData).is(":checked"),
+                        timeZoneSource: $(ui.TimeZoneSource + ' option:selected').val(),
+                        timeZoneString: $(ui.TimeZoneSource + ' option:selected').attr('timeZoneString'),
                         convertAgain: isConvertAgain
                     },
                     beforeSend: function() {

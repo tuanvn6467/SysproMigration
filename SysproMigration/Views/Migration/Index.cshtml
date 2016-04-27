@@ -4,6 +4,7 @@
     ViewBag.Title = "Index.cshtml";
     var lstDatabase = ViewBag.LstDatabase != null ? (List<DatabaseModel>)ViewBag.LstDatabase : new List<DatabaseModel>();
     var totalTableMigrateCount = ViewBag.TableMigrateCount != null ? (int)ViewBag.TableMigrateCount : 0;
+    var timezoneList = ViewBag.TimeZoneList != null ? (List<TimeZoneEntity>) ViewBag.TimeZoneList : new List<TimeZoneEntity>();
 }
 <head>
     <title>CRM Database Conversion Utility</title>
@@ -72,6 +73,17 @@
                             </div>
                             <div class="col-md-3">
                                 <button class="btn btn-info" id="btnSourceCheckExist" type="button">Test Company</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">Time Zone</label>
+                            <div class="col-md-8">
+                                <select id="timeZoneSource" class="form-control">
+                                    @foreach (var timezone in timezoneList)
+                                    {
+                                        <option value="@timezone.BaseUtcOffSet" timeZoneString ="@timezone.Id">@timezone.Name</option>
+                                    }
+                                </select>
                             </div>
                         </div>
                         <div class="form-group">

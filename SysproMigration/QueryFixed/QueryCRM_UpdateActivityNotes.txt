@@ -1,0 +1,3 @@
+update act_Activity
+set Notes = replace(Notes,'http://"','"')
+where Notes like '%http://"%'

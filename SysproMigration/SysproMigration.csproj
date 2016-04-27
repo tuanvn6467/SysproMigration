@@ -154,6 +154,8 @@
     <Content Include="QueryFixed\QueryAdaptViewPref3Pivot_Required.txt" />
     <Content Include="QueryFixed\QueryAdaptViewServiceContractPrefPivot_Required.txt" />
     <Content Include="QueryFixed\QueryAdaptViewPref6Pivot_Required.txt" />
+    <Content Include="QueryFixed\QueryCRM_UpdateActivityNotes.txt" />
+    <Content Include="QueryFixed\QueryCRM_UpdateTotal.txt" />
     <Content Include="QueryFixed\QueryCRMUpdatePhysicalFieldName.txt" />
     <Content Include="QueryFixed\QueryAdaptConvertFieldName.txt" />
     <Content Include="QueryFixed\QueryAdaptFunctionCompareModuleID.txt" />

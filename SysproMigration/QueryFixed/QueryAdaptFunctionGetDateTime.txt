@@ -1,7 +1,8 @@
 Create Function [dbo].[GetDateTime]
 (
 	@Date varchar(255),
-	@Time varchar(255)
+	@Time varchar(255),
+	@TimeZone varchar(30)
 )
 Returns datetime
 AS
@@ -15,7 +16,17 @@ Begin
 						else '' end 
 	if(Len(@Text) > 0 and ISDATE(@Text) = 1)
 	begin
+		if charindex('-', @TimeZone) > 0
+			begin
+				set	@TimeZone	= replace(@TimeZone, '-', '+')
+			end
+			else --if charindex('+', @TimeZone) > 0
+			begin
+				set @TimeZone	= '+' + @TimeZone
+				set	@TimeZone	= replace(@TimeZone, '+', '-')
+			end
 		set @Result = convert(datetime,@Text)
+		set @Result = convert(datetime, switchoffset(convert(datetimeoffset, @Result), @TimeZone))
 	end
 	else
 	begin

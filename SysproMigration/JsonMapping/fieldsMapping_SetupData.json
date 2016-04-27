@@ -71,10 +71,10 @@
         "Destination": {
             "Tables": "[dbo].[sec_User_Preference]"
         },
-        "NeedTruncate": false,
         "WhereGlobal": "UserID is not null",
         "Map": {
             "ms_u.NewValTable UserID": "UserID",
+            "Syspro_TimeZone TimeZone": "TimeZone",
             "Regional_Settings": "IsRegionalSettings",
             "country.Country_ID HomeCountry": "HomeCountry",
             "Date_Format": "DateFormatType",
@@ -268,6 +268,60 @@
             "[tempdb].[dbo].[GetNewValue]('st_Security','adaptv3system','[dbo].[sec_Group]','[dbo].[sgroup]',[Group_ID],null,Syspro_TenantID,null) [Group_ID]": "GroupID"
         }
     },
+    //migrate [adaptv3system].[dbo].[currency_codes] to [crm_System].[dbo].[utl_Currency_Codes]
+    {
+        "Id": 9,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[currency_codes] cc",
+            "OrderBy": "order by Currency_Code",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "[crm_System].[dbo].[utl_Currency_Codes]"
+        },
+        "Map": {
+            "Currency_Code": "CurrencyCode",
+            "Currency_Name": "CurrencyName",
+            "Multiplier": "Multiplier",
+            "cc.Active_Syspro_TF": "IsActive",
+            "cc.Notes": "Notes",
+            "cc.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "cc.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[state] to [crm_System].[dbo].[utl_State]
+    {
+        "Id": 10,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[state] state",
+            "OrderBy": "order by State"
+        },
+        "Destination": {
+            "Tables": "[crm_System].[dbo].[utl_State]"
+        },
+        "Map": {
+            "Country_ID": "CountryID",
+            "State": "StateName",
+            "Full_Name": "FullName"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[county] to [crm_System].[dbo].[utl_County]
+    {
+        "Id": 11,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[county] county",
+            "OrderBy": "order by County"
+        },
+        "Destination": {
+            "Tables": "[crm_System].[dbo].[utl_County]"
+        },
+        "Map": {
+            "Country_ID": "CountryID",
+            "County": "CountyName"
+        }
+    },
     //migrate adaptv3system..acctyp to acc_Account_Type
     {
         "Id": 100,
@@ -366,7 +420,7 @@
         "Destination": {
             "Tables": "acc_Source"
         },
-        "NeedTruncate": false,
+        //"NeedTruncate": false,
         "Map": {
             "Secondary_Source_Name": "SourceName",
             "Primary_Source_ID": "ParentID",
@@ -2557,6 +2611,7 @@
         },
         "Map": {
             "One": "PreferenceID",
+            "Syspro_TimeZone TimeZone": "TimeZone",
             "My_Company_Name": "CompanyName",
             "My_Company_Address_Line_1": "AddressLine1",
             "My_Company_Address_Line_2": "AddressLine2",
@@ -2570,7 +2625,7 @@
             "([tempdb].[dbo].[ConvertPhoneFax](p.My_Company_Fax,'')) Fax": "Fax",
             "My_Company_Email": "Email",
             "My_Company_Web": "Web",
-            "My_Company_Logo": "Logo",
+            //"My_Company_Logo": "Logo",
             "homecountry.Country_ID HomeCountryID": "HomeCountryID",
             "Date_Format": "DateFormatType",
             "Date_Picture": "DatePictureFormat",
@@ -3192,6 +3247,347 @@
             "cannotes.Modified_Date": "UpdatedDate",
             "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
         }
-    }
+    },
+    //migrate [adaptv3system].[dbo].[reports] to [dbo].[rpt_Report]
+    {
+        "Id": 227,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[reports] reports",
+            "OrderBy": "order by reports.Report_ID",
+            "Join": "left join (select *,ROW_NUMBER() over(order by [Currency_Code]) CurrencyID from [adaptv3system].[dbo].[currency_codes]) curc on curc.Currency_Code = reports.Currency_Code",
+            "JoinUser": "Last_Run_By,Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "rpt_Report"
+        },
+        "Map": {
+            "Report_ID": "ReportID",
+            "Report_Name": "ReportName",
+            "Report_Class": "ReportClass",
+            "Run_Right_Syspro_TF": "RunRight",
+            "Modify_Right_Syspro_TF": "ModifyRight",
+            "Report_Type": "ReportTypeID",
+            "Report_Data_View": "ReportViewID",
+            "Query_ID": "ViewQueryID",
+            "Executable_Path": "ExecutablePath",
+            "Excel_Spreadsheet_File": "ExcelSpreadsheetFile",
+            "Excel_Starting_Row": "ExcelStartingRow",
+            "Spreadsheet_Report_Action": "SpreadsheetReportAction",
+            "convert(varchar(255),curc.CurrencyID) CurrencyCodeID": "CurrencyCodeID",
+            "Page_Orientation": "PageOrientation",
+            "Layout_Style": "LayoutStyle",
+            "Report_Title": "ReportTitle",
+            "Report_Subtitle": "ReportSubtitle",
+            "Sort_1_Table": "Sort1TableID",
+            "Sort_1_Field": "Sort1FieldID",
+            "Sort_1_Direction": "Sort1Direction",
+            "Sort_1_Group_Records_Syspro_TF": "Sort1GroupRecords",
+            "Sort_1_Group_Date_Values_By": "Sort1GroupDateValuesBy",
+            "Sort_1_Group_Numeric_Values_By": "Sort1GroupNumericValuesBy",
+            "Sort_2_Table": "Sort2TableID",
+            "Sort_2_Field": "Sort2FieldID",
+            "Sort_2_Direction": "Sort2Direction",
+            "Sort_2_Group_Records_Syspro_TF": "Sort2GroupRecords",
+            "Sort_2_Group_Date_Values_By": "Sort2GroupDateValuesBy",
+            "Sort_2_Group_Numeric_Values_By": "Sort2GroupNumericValuesBy",
+            "Sort_3_Table": "Sort3TableID",
+            "Sort_3_Field": "Sort3FieldID",
+            "Sort_3_Direction": "Sort3Direction",
+            "Report_Limit_Records_Flag_Syspro_TF": "ReportLimitRecordsFlag",
+            "Report_Limit_Records_Count": "ReportLimitRecordsCount",
+            "Group_Limit_Records_Flag_Syspro_TF": "GroupLimitRecordsFlag",
+            "Group_Limit_Records_Count": "GroupLimitRecordsCount",
+            "Reprint_Column_Headings_Syspro_TF": "ReprintColumnHeadings",
+            "Print_Cover_Page_Syspro_TF": "PrintCoverPage",
+            "Include_Record_Notes_Syspro_TF": "IncludeRecordNotes",
+            "Output_To": "OutputTo",
+            "File_Name": "FileName",
+            "Called_Program_Name": "CalledProgramName",
+            "Email_Distribution_List": "EmailDistributionList",
+            "reports.Email_Method": "EmailMethod",
+            "Email_Account_Ownership": "EmailAccountOwnership",
+            "Email_Account_ID": "EmailAccountID",
+            "Where_to_Execute": "WhereToExecute",
+            "Automation_Queue": "AutomationQueue",
+            "Recurrence_Flag_Syspro_TF": "RecurrenceFlag",
+            "Recurrence_Job_ID": "RecurrenceJobID",
+            "[tempdb].[dbo].[GetDateTime](reports.Last_Run_Date,reports.Last_Run_Time) LastRunDate": "LastRunDate",
+            "convert(time,[tempdb].[dbo].[GetDateTime](reports.Last_Run_Date,reports.Last_Run_Time)) LastRunTime": "LastRunTime",
+            "ms_lastrunby.NewValTable LastRunBy": "LastRunBy",
+            "Printer_Dialog_Syspro_TF": "PrinterDialog",
+            "When_to_Execute": "WhenToExecute",
+            "convert(varchar, case when Not_Used_1 = 'T' then 1 else 0 end) NotUsed1": "NotUsed1",
+            "Not_Used_2_Syspro_TF": "NotUsed2",
+            "convert(varchar, case when Not_Used_3 = 'T' then 1 else 0 end) NotUsed3": "NotUsed3",
+            "Not_Used_4_Syspro_TF": "NotUsed4",
+            "reports.Notes": "Notes",
+            "reports.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "reports.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[report_layout] to [dbo].[rpt_Report_Layout]
+    {
+        "Id": 228,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[report_layout] rl",
+            "OrderBy": "order by rl.Layout_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "rpt_Report_Layout"
+        },
+        "Map": {
+            "Layout_ID": "LayoutID",
+            "Layout_Name": "LayoutName",
+            "Named_Layout_Syspro_TF": "NamedLayout",
+            "Report_Data_View": "ReportViewID",
+            "Page_Orientation": "PageOrientation",
+            "Report_Layout_Style": "ReportLayoutStyle",
+            "Report_Title": "ReportTitle",
+            "Report_Subtitle": "ReportSubtitle",
+            "Print_Cover_Page_Syspro_TF": "PrintCoverPage",
+            "Include_Record_Notes_Syspro_TF": "IncludeRecordNotes",
+            "Include_Sort_Levels_Syspro_TF": "IncludeSortLevels",
+            "Sort_1_Table": "Sort1TableID",
+            "Sort_1_Field": "Sort1FieldID",
+            "Sort_1_Direction": "Sort1Direction",
+            "Sort_1_Print_Totals_Syspro_TF": "Sort1GroupRecords",
+            "Sort_1_Group_Date_Values_By": "Sort1GroupDateValuesBy",
+            "Sort_1_Group_Numeric_Values_By": "Sort1GroupNumericValuesBy",
+            "Sort_2_Table": "Sort2TableID",
+            "Sort_2_Field": "Sort2FieldID",
+            "Sort_2_Direction": "Sort2Direction",
+            "Sort_2_Print_Totals_Syspro_TF": "Sort2GroupRecords",
+            "Sort_2_Group_Date_Values_By": "Sort2GroupDateValuesBy",
+            "Sort_2_Group_Numeric_Values_By": "Sort2GroupNumericValuesBy",
+            "Sort_3_Table": "Sort3TableID",
+            "Sort_3_Field": "Sort3FieldID",
+            "Sort_3_Direction": "Sort3Direction",
+            "Report_Limit_Records_Flag_Syspro_TF": "ReportLimitRecordsFlag",
+            "Report_Limit_Records_Count": "ReportLimitRecordsCount",
+            "Group_Limit_Records_Flag_Syspro_TF": "GroupLimitRecordsFlag",
+            "Group_Limit_Records_Count": "GroupLimitRecordsCount",
+            "rl.Notes": "Notes",
+            "rl.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "rl.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[report_layout_cols] to [dbo].[rpt_Report_Layout_Column]
+    {
+        "Id": 229,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[report_layout_cols] rlc",
+            "OrderBy": "order by rlc.Layout_ID"
+        },
+        "Destination": {
+            "Tables": "rpt_Report_Layout_Column"
+        },
+        "Map": {
+            "Layout_ID": "LayoutID",
+            "Column_Number": "ColumnNumber",
+            "Field_1_ID": "Field1ID",
+            "Field_1_Picture": "Field1Picture",
+            //Field_1_Source
+            "Field_2_ID": "Field2ID",
+            "Field_2_Picture": "Field2Picture",
+            //Field_2_Source
+            "Column_X_Position_Syspro_FD": "ColumnXPosition",
+            "Column_Width_Syspro_FD": "ColumnWidth",
+            "Minimum_Width_Syspro_FD": "MinimumWidth",
+            "Label_1": "Label1",
+            "Label_2": "Label2",
+            "Field_1_Sum_Syspro_TF": "Field1Sum",
+            "Field_1_Average_Syspro_TF": "Field1Average",
+            "Field_1_Minimum_Value_Syspro_TF": "Field1MinimumValue",
+            "Field_1_Maximum_Value_Syspro_TF": "Field1MaximumValue",
+            "Field_2_Sum_Syspro_TF": "Field2Sum",
+            "Field_2_Average_Syspro_TF": "Field2Average",
+            "Field_2_Minimum_Value_Syspro_TF": "Field2MinimumValue",
+            "Field_2_Maximum_Value_Syspro_TF": "Field2MaximumValue"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[report_excel] to [dbo].[rpt_Report_Excel]
+    {
+        "Id": 230,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[report_excel] re",
+            "OrderBy": "order by re.Report_ID"
+        },
+        "Destination": {
+            "Tables": "rpt_Report_Excel"
+        },
+        "Map": {
+            "Report_ID": "ReportID",
+            "Excel_Column": "ExcelColumn",
+            "Mapped_Field_ID": "MappedFieldID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[report_default_layout] to [dbo].[rpt_Report_Default_Layout]
+    {
+        "Id": 231,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[report_default_layout] rdl",
+            "OrderBy": "order by rdl.Report_Data_View"
+        },
+        "Destination": {
+            "Tables": "rpt_Report_Default_Layout"
+        },
+        "Map": {
+            "Report_Data_View": "ReportViewID",
+            "Default_Internal_Layout": "DefaultInternalLayout",
+            "Default_Excel_Layout": "DefaultExcelLayout"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[report_columns] to [dbo].[rpt_Report_Column]
+    {
+        "Id": 232,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[report_columns] rc",
+            "OrderBy": "order by rc.Report_ID"
+        },
+        "Destination": {
+            "Tables": "rpt_Report_Column"
+        },
+        "Map": {
+            "Report_ID": "ReportID",
+            "Column_Number": "ColumnNumber",
+            "Field_1_ID": "Field1ID",
+            //"Field_1_Source": ""
+            "Field_1_Picture": "Field1Picture",
+            "Field_2_ID": "Field2ID",
+            //"Field_2_Source": ""
+            "Field_2_Picture": "Field2Picture",
+            "Column_X_Position_Syspro_FD": "ColumnXPosition",
+            "Column_Width_Syspro_FD": "ColumnWidth",
+            "Minimum_Width_Syspro_FD": "MinimumWidth",
+            "Label_1": "Label1",
+            "Label_2": "Label2",
+            "Field_1_Sum_Syspro_TF": "Field1Sum",
+            "Field_1_Average_Syspro_TF": "Field1Average",
+            "Field_1_Minimum_Value_Syspro_TF": "Field1MinimumValue",
+            "Field_1_Maximum_Value_Syspro_TF": "Field1MaximumValue",
+            "Field_2_Sum_Syspro_TF": "Field2Sum",
+            "Field_2_Average_Syspro_TF": "Field2Average",
+            "Field_2_Minimum_Value_Syspro_TF": "Field2MinimumValue",
+            "Field_2_Maximum_Value_Syspro_TF": "Field2MaximumValue"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[report_child] to [dbo].[rpt_Report_Child]
+    {
+        "Id": 233,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[report_child] rc",
+            "OrderBy": "order by rc.ReportID"
+        },
+        "Destination": {
+            "Tables": "rpt_Report_Child"
+        },
+        "Map": {
+            "ReportID": "ReportID",
+            "convert(int,Child_Record_Types) ChildRecordTypeID": "ChildRecordTypeID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[excel_report_layout] to [dbo].[rpt_Excel_Report_Layout]
+    {
+        "Id": 234,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[excel_report_layout] erl",
+            "OrderBy": "order by erl.Excel_Layout_ID",
+            "JoinUser": "Created_By,Modified_By"
+        },
+        "Destination": {
+            "Tables": "rpt_Excel_Report_Layout"
+        },
+        "Map": {
+            "Excel_Layout_ID": "ExcelLayoutID",
+            "Excel_Layout_Name": "ExcelLayoutName",
+            "Record_Type": "ReportViewID",
+            "Spreadsheet_File_Name": "SpreadsheetFileName",
+            "Starting_Row": "StartingRow",
+            "Include_Sort_Levels_Syspro_TF": "IncludeSortLevels",
 
+            "Sort_1_Table": "Sort1TableID",
+            "Sort_1_Field": "Sort1FieldID",
+            "Sort_1_Direction": "Sort1Direction",
+            "Sort_2_Table": "Sort2TableID",
+            "Sort_2_Field": "Sort2FieldID",
+            "Sort_2_Direction": "Sort2Direction",
+            "Sort_3_Table": "Sort3TableID",
+            "Sort_3_Field": "Sort3FieldID",
+            "Sort_3_Direction": "Sort3Direction",
+            "Report_Limit_Records_Flag_Syspro_TF": "ReportLimitRecordsFlag",
+            "Report_Limit_Records_Count": "ReportLimitRecordsCount",
+            "erl.Notes": "Notes",
+            "erl.Created_Date": "CreatedDate",
+            "ms_createdby.NewValTable CreatedUserID": "CreatedUserID",
+            "erl.Modified_Date": "UpdatedDate",
+            "ms_modifiedby.NewValTable UpdatedUserID ": "UpdatedUserID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[excel_report_layout_col] to [dbo].[rpt_Excel_Report_Layout_Column]
+    {
+        "Id": 235,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[excel_report_layout_col] erlc",
+            "OrderBy": "order by erlc.Excel_Layout_ID"
+        },
+        "Destination": {
+            "Tables": "rpt_Excel_Report_Layout_Column"
+        },
+        "Map": {
+            "Excel_Layout_ID": "ExcelLayoutID",
+            "Excel_Column": "ExcelColumn",
+            "Mapped_Field_ID": "MappedFieldID"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[wordindx] to [dbo].[utl_Word_Index]
+    {
+        "Id": 236,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[wordindx] wordindx",
+            "OrderBy": "order by wordindx.Topic_ID"
+        },
+        "Destination": {
+            "Tables": "utl_Word_Index"
+        },
+        "Map": {
+            "Word": "Word",
+            "Topic_ID": "TopicID",
+            "Position": "Position",
+            "Subject_Line_Syspro_TF": "IsSubjectLine"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[wordlist] to [dbo].[utl_Word_List]
+    {
+        "Id": 237,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[wordlist] wordlist",
+            "OrderBy": "order by wordlist.Frequency"
+        },
+        "Destination": {
+            "Tables": "utl_Word_List"
+        },
+        "Map": {
+            "Key_Word": "KeyWord",
+            "Frequency": "Frequency"
+        }
+    },
+    //migrate [adaptv3system].[dbo].[exceptlt] to [dbo].[utl_Except_Word]
+    {
+        "Id": 238,
+        "Source": {
+            "Tables": "[adaptv3system].[dbo].[exceptlt] exceptlt",
+            "OrderBy": "order by exceptlt.Word"
+        },
+        "Destination": {
+            "Tables": "utl_Except_Word"
+        },
+        "Map": {
+            "Word": "Word"
+        }
+    }
 ]

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using System.Xml;
 using Migration.Common;
 
@@ -34,14 +35,29 @@ namespace Migration
 
         public int Size { get; set; }
 
-        public string ReplaceKeySpecial(string key, int tenantID = 0)
+        public string ReplaceKeySpecial(string key, string timeZoneString, string timeZone, int tenantID = 0)
         {
             var result = key;
             
             if (result.Contains("Syspro_TenantID"))
             {
                 result = result.Replace("Syspro_TenantID", string.Format("convert(int, {0})", tenantID));
-            }else if (result.Contains("_Syspro_TF"))
+            }
+            else if (result.Contains("Syspro_TimeZone"))
+            {
+                result = result.Replace("Syspro_TimeZone", string.Format("convert(varchar, '{0}')", timeZoneString));
+            }
+            else if (result.Contains("Syspro_TimeZoneOffset"))
+            {
+                result = result.Replace("Syspro_TimeZoneOffset", string.Format("'{0}'", timeZone));
+            }
+            else if (result.Contains("[dbo].[GetDateTime]"))
+            {
+                var pattern = @"\[dbo\].\[GetDateTime\]\([a-z0-9',._]*";
+                var rgx = new Regex(pattern,RegexOptions.IgnoreCase);
+                result = rgx.Replace(result, string.Format("$&,'{0}'", timeZone));
+            }
+            else if (result.Contains("_Syspro_TF"))
             {
                 var fieldName = result.Replace("_Syspro_TF", "");
                 result = string.Format("case when {0} = 'T' then 1 else 0 end {1}", fieldName,
@@ -85,9 +101,9 @@ namespace Migration
             return result;
         }
 
-        public string CreateQueryFromSource(int page, int pageSize, int tenantID = 0, bool isWriteQueue = false)
+        public string CreateQueryFromSource(int page, int pageSize, string timeZoneString, string timeZone, int tenantID = 0, bool isWriteQueue = false)
         {
-            var res = Map.Keys.Aggregate("select ", (current, key) => current + (ReplaceKeySpecial(key, tenantID) + ",\n"));
+            var res = Map.Keys.Aggregate("select ", (current, key) => current + (ReplaceKeySpecial(key, timeZoneString, timeZone, tenantID) + ",\n"));
             res = string.Format(res + "ROW_NUMBER() over ({0}) as rownum",
                 !string.IsNullOrEmpty(Source.OrderBy) ? Source.OrderBy : "");
             res = res.TrimEnd(',');
@@ -136,9 +152,9 @@ namespace Migration
             return res;
         }
 
-        public string CreateQueryFromDestination(int tenantID = 0)
+        public string CreateQueryFromDestination(string timeZoneString, string timeZone, int tenantID = 0)
         {
-            var res = MapKeys.Keys.Aggregate("select top " + Destination.Top + " ", (current, key) => current + (ReplaceKeySpecial(key,tenantID) + ","));
+            var res = MapKeys.Keys.Aggregate("select top " + Destination.Top + " ", (current, key) => current + (ReplaceKeySpecial(key, timeZoneString, timeZone, tenantID) + ","));
             res = res.TrimEnd(',');
             res += " from " + Destination.Tables;
             

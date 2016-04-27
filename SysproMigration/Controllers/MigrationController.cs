@@ -36,10 +36,19 @@ namespace SysproMigration.Controllers
             /*var lstDataBase = Utils.GetListDatabase(builder.DataSource, builder.UserID, builder.Password);
             ViewBag.LstDatabase = lstDataBase;*/
             ViewBag.TableMigrateCount = _migrator.FieldsMaps.Count();
+            var listTimeZone = TimeZoneInfo.GetSystemTimeZones();
+            var timezoneList = listTimeZone.Select(
+                p => new TimeZoneEntity
+                {
+                    Id = p.Id,
+                    Name = p.DisplayName,
+                    BaseUtcOffSet = Utils.ValidateBaseUtcOffset(p)
+                }).ToList();
+            ViewBag.TimeZoneList = timezoneList;
             return View();
         }
 
-        public async Task<ActionResult> MigrateData(string sourceSQLServerName, string sourceDb, string targetDb, int tennantID, int databaseID, string userName, string userPassword, bool convertAgain, bool isMigrateCustomData)
+        public async Task<ActionResult> MigrateData(string sourceSQLServerName, string sourceDb, string targetDb, int tennantID, int databaseID, string userName, string userPassword, bool convertAgain, string timeZoneSource, string timeZoneString, bool isMigrateCustomData)
         {
             try
             {
@@ -88,6 +97,8 @@ namespace SysproMigration.Controllers
                 _migrator.DestinationDb = targetDb;
                 _migrator.TenantID = tennantID;
                 _migrator.DatabaseID = databaseID;
+                _migrator.TimeZone = timeZoneSource;
+                _migrator.TimeZoneString = timeZoneString;
                 _log = string.Empty;
                 _beginTime = DateTime.Now;
                 var thread = new Thread(_migrator.Run);
@@ -193,6 +204,7 @@ namespace SysproMigration.Controllers
                 TableMigratedCount = _migrator.TableMigratedCount, Success = !_migrator.Running && _migrator.Success, Error = _migrator.Error
             }, JsonRequestBehavior.AllowGet);
         }
+
 
         /*public ActionResult GetLog()
         {

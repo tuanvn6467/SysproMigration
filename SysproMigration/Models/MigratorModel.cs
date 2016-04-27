@@ -165,6 +165,11 @@ namespace SysproMigration.Models
         public string MigrationConnectionString { get; set; }
 
         public bool isMigrateCustomData { get; set; }
+
+        public string TimeZoneString { get; set; }
+
+        public string TimeZone { get; set; }
+
         public MigratorModel()
         {
             Init();
@@ -465,7 +470,7 @@ namespace SysproMigration.Models
                 }
 
                 var p = 0;
-                var sql = fieldsMap.CreateQueryFromSource(p, _batchSize, TenantID, true);
+                var sql = fieldsMap.CreateQueryFromSource(p, _batchSize, TimeZoneString, TimeZone, TenantID, true);
 
                 var records = 1000;
                 Logging.PushInfo("Write query from source table " + fieldsMap.Source.Tables);
@@ -494,7 +499,7 @@ namespace SysproMigration.Models
                 {
                     fieldsMap.Destination.Top = records.ToString(CultureInfo.InvariantCulture);
                     var doneGetKeys = false;
-                    var sqlGetKeys = fieldsMap.CreateQueryFromDestination(TenantID);
+                    var sqlGetKeys = fieldsMap.CreateQueryFromDestination(TimeZoneString, TimeZone, TenantID);
                     var recordGetKeys = 0;
                     using (
                         var drGetKeys = QueryBlock(desConn, sqlGetKeys.QueryInsertQueue(), fieldsMap.IsGetKeys,
@@ -708,7 +713,7 @@ namespace SysproMigration.Models
                 var done = false;
                 while (!done)
                 {
-                    var sql = fieldsMap.CreateQueryFromSource(p, _batchSize, TenantID);
+                    var sql = fieldsMap.CreateQueryFromSource(p, _batchSize, TimeZoneString, TimeZone, TenantID);
                     if (PackageMigrating != null)
                     {
                         PackageMigrating(this,
@@ -748,7 +753,7 @@ namespace SysproMigration.Models
                                 sbcGetKeys.ColumnMappings.Add(new SqlBulkCopyColumnMapping(i, mapKeys[i].Value));
                             }
                             var doneGetKeys = false;
-                            var sqlGetKeys = fieldsMap.CreateQueryFromDestination(TenantID);
+                            var sqlGetKeys = fieldsMap.CreateQueryFromDestination(TimeZoneString, TimeZone, TenantID);
                             if (PackageMigrating != null)
                             {
                                 PackageMigrating(this,

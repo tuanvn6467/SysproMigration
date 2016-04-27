@@ -50,6 +50,7 @@
     <Compile Include="Enums\MigratorStatus.cs" />
     <Compile Include="Enums\QueueStatusEnum.cs" />
     <Compile Include="FieldsMap.cs" />
+    <Compile Include="TimeZoneEntity.cs" />
     <Compile Include="ViewConstants.cs" />
     <Compile Include="FunctionConstants.cs" />
     <Compile Include="Source.cs" />

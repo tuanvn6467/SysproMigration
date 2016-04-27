@@ -542,5 +542,14 @@ namespace SysproMigration.Utility
                 page * pageSize, (page + 1) * pageSize);
             return query;
         }
+
+        public static string ValidateBaseUtcOffset(TimeZoneInfo timeZoneInfo)
+        {
+            var extra = timeZoneInfo.IsDaylightSavingTime(DateTime.Now) ? 1 : 0;
+            var hour = timeZoneInfo.BaseUtcOffset.Hours + extra;
+            var tempDate = new DateTime(DateTime.Now.Year, 1, 1, 0, 0, 0, 0);
+            tempDate = tempDate.AddHours(Math.Abs(hour)).AddMinutes(Math.Abs(timeZoneInfo.BaseUtcOffset.Minutes));
+            return hour.ToString().Contains("-") ? "-" + tempDate.ToString("HH:mm") : tempDate.ToString("HH:mm");
+        }
     }
 }
