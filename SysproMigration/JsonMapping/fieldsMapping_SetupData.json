@@ -3,11 +3,12 @@
         "Id": 1,
         "Source": {
             "Tables": "[adaptv3system].[dbo].[users] u",
-            "OrderBy": "order by [User_ID]",
+            "OrderBy": "order by u.[User_ID]",
             "Join": "left join [adaptv3system].[dbo].[country] country on country.Country_Name = u.Country",
             "Join1": "left join (SELECT [Country_ID], ROW_NUMBER() over(order by [County]) CountyID, [County] FROM [adaptv3system].[dbo].[county]) county on county.County = u.County",
             "Join2": "left join (SELECT [Country_ID], ROW_NUMBER() over(order by [Full_Name]) StateID, [State], [Full_Name] FROM [adaptv3system].[dbo].[state]) state on state.State = u.State",
-            "Join3": "outer apply (SELECT top 1 * from [tempdb].[dbo].[MigrateSupport] ms where ms.OldValTable = u.Email_Address and DatabaseID is not null order by ms.Id desc) ms_UserGuid"
+            "Join3": "left join [adaptv3system].[dbo].[login] login on login.User_ID = u.User_ID",
+            "Join4": "outer apply (SELECT top 1 * from [tempdb].[dbo].[MigrateSupport] ms where ms.OldValTable = u.Email_Address and DatabaseID is not null order by ms.Id desc) ms_UserGuid",
         },
         "Destination": {
             "Tables": "[st_Security].[dbo].[sec_User]",
@@ -28,7 +29,7 @@
             "TenantID TenantID": "TenantID"
         },
         "Map": {
-            "convert(varchar(255),User_ID) UserIDAdapt": "UserIDAdapt",
+            "convert(varchar(255),u.User_ID) UserIDAdapt": "UserIDAdapt",
             "convert(UNIQUEIDENTIFIER,ms_UserGuid.NewValTable) UserGUID": "UserGUID",
             "Syspro_TenantID TenantID": "TenantID",
             "First_Name + ' ' + Last_Name UserName": "UserName",
@@ -44,7 +45,7 @@
             "Mobile_Phone_Number": "MobilePhone",
             "Fax_Number": "FaxPhone",
             "Email_Address": "Email",
-            "Mailing_Address": "MailingAddress",
+            "(Mailing_Address - 1) MailingAddress": "MailingAddress",
             "Street_Address_Line_1": "AddressLine1",
             "Street_Address_Line_2": "AddressLine2",
             "Street_Address_Line_3": "AddressLine3",
@@ -53,6 +54,12 @@
             "state.StateID": "State",
             "Postal_Code": "PostalCode",
             "country.Country_ID": "Country",
+            "Password_Expires_Syspro_TF": "IsPasswordExpires",
+            "Password_Expiration_Days": "PasswordExpires",
+            "[tempdb].[dbo].[GetDateTime](login.Password_Expiration_Date,'000000') NextExpirationDate": "NextExpirationDate",
+            "[tempdb].[dbo].[GetDateTime](login.Last_Login_Date,login.Last_Login_Time) LastLogin": "LastLogin",
+            "[tempdb].[dbo].[GetDateTime](login.Last_Logout_Date,login.Last_Logout_Time) LastLogout": "LastLogout",
+            "[tempdb].[dbo].[GetDateTime](login.Last_Password_Change,'000000') LastChangePassword": "LastChangePassword",
             "u.Created_Date": "CreatedDate",
             "u.Modified_Date": "UpdatedDate"
         }

@@ -25,7 +25,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>01/18/2016 09:51:22</publishTime>
     </File>
     <File Include="bin/SysproMigration.dll">
-      <publishTime>04/15/2016 17:06:32</publishTime>
+      <publishTime>04/27/2016 11:32:03</publishTime>
     </File>
     <File Include="bin/System.Web.Helpers.dll">
       <publishTime>01/16/2016 09:59:54</publishTime>
@@ -73,7 +73,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/02/2016 14:33:00</publishTime>
     </File>
     <File Include="JsonMapping/fieldsMapping_RecordData.json">
-      <publishTime>04/15/2016 17:01:14</publishTime>
+      <publishTime>04/27/2016 11:30:01</publishTime>
     </File>
     <File Include="JsonMapping/fieldsMapping_Security.json">
       <publishTime>01/21/2016 16:49:44</publishTime>
@@ -203,6 +203,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="QueryFixed/QueryCRM_DropUniqueIndex.txt">
       <publishTime>03/28/2016 17:58:42</publishTime>
+    </File>
+    <File Include="QueryFixed/QueryCRM_UpdateActivityNotes.txt">
+      <publishTime>04/25/2016 13:42:43</publishTime>
     </File>
     <File Include="QueryFixed/QueryCRM_UpdateTotal.txt">
       <publishTime>04/11/2016 15:21:58</publishTime>
